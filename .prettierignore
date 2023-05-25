@@ -1,0 +1,5 @@
+CODEOWNERS
+*.md
+
+**/.git
+**/node_modules
