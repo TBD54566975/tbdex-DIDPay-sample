@@ -7,8 +7,6 @@ import "./App.css";
 // Using require statement, as there are problems importing ssi-sdk-wasm types
 const SSI = require("ssi-sdk-wasm");
 
-export const Web5Context = React.createContext(null);
-
 export default function App() {
   const [didState, setDidState] = useState<DidState | undefined>(undefined);
   const [vcs, setVcs] = useState<string[]>([]);
@@ -26,12 +24,6 @@ export default function App() {
   }
 
   async function selfSignNewVC() {
-    const privJwkKeyString = JSON.stringify(didState?.keys[0].privateKeyJwk);
-    var byteArray = new Uint8Array(new ArrayBuffer(privJwkKeyString.length));
-    for (var i = 0; i < privJwkKeyString.length; i++) {
-      byteArray[i] = privJwkKeyString.charCodeAt(i);
-    }
-
     const result = await SSI.createVerifiableCredential(
       didState?.id,
       JSON.stringify(didState?.keys[0].privateKeyJwk),
