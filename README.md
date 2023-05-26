@@ -1,9 +1,12 @@
 # DIDPay
 
-Congrats, project leads! You got a new project to grow!
+To run this project:
+```
+cd DIDPay
+npm install
+npm start
+```
 
-This stub is meant to help you form a strong community around your work. It's yours to adapt, and may 
-diverge from this initial structure. Just keep the files seeded in this repo, and the rest is yours to evolve! 
 
 ## Introduction
 
