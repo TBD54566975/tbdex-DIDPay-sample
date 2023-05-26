@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Web5 } from "@tbd54566975/web5";
-import { DidState } from "@tbd54566975/dids";
-import { ProfileApi } from "@tbd54566975/web5-user-agent";
-import "./App.css";
+import React, { useEffect, useState } from 'react';
+import { Web5 } from '@tbd54566975/web5';
+import { DidState } from '@tbd54566975/dids';
+import { ProfileApi } from '@tbd54566975/web5-user-agent';
+import './App.css';
 
 // Using require statement, as there are problems importing ssi-sdk-wasm types
-const SSI = require("ssi-sdk-wasm");
+const SSI = require('ssi-sdk-wasm');
 
 export default function App() {
   const [didState, setDidState] = useState<DidState | undefined>(undefined);
@@ -27,7 +27,7 @@ export default function App() {
     const result = await SSI.createVerifiableCredential(
       didState?.id,
       JSON.stringify(didState?.keys[0].privateKeyJwk),
-      JSON.stringify({ id: "blah", foo: "bar" })
+      JSON.stringify({ id: 'blah', foo: 'bar' })
     );
 
     setVcs((prev) => {
@@ -37,7 +37,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <p>didState: {didState ? JSON.stringify(didState) : "not created"}</p>
+      <p>didState: {didState ? JSON.stringify(didState) : 'not created'}</p>
       <h1>VCs</h1>
       <ul>
         {vcs.map((vc, index) => (
