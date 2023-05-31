@@ -1,16 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Root from './routes/Root';
+import Profile from './routes/Profile';
+import { loader as profileLoader } from './routes/Profile';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Root />,
+  },
+  {
+    path: '/profile/:profileId',
+    element: <Profile />,
+    loader: profileLoader,
+  },
+]);
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 
