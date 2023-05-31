@@ -8,7 +8,7 @@ import { CircularProgress } from '@mui/material';
 // Using require statement, as there are problems importing ssi-sdk-wasm types
 const SSI = require('ssi-sdk-wasm');
 
-export default function App() {
+export default function Root() {
   const [profile, setProfile] = useState<Profile | undefined>(undefined);
   const [vcs, setVcs] = useState<string[]>([]);
 
