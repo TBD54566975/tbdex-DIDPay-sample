@@ -1,20 +1,32 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import {
   Box,
+  Button,
   Divider,
   Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
+  Stack,
   Toolbar,
   Typography,
 } from '@mui/material';
+import { TruncatedTypography } from '../components/styled/TruncatedTypography';
+import { Web5Context } from '../context/Web5Context';
 
 const drawerWidth = 240;
 
 export default function Root() {
+  const { did } = useContext(Web5Context);
+
+  const handleCopyDidClick = () => {
+    if (did) {
+      navigator.clipboard.writeText(did);
+    }
+  };
+
   return (
     <Box sx={{ display: 'flex' }}>
       <Drawer
@@ -35,7 +47,7 @@ export default function Root() {
           </Typography>
         </Toolbar>
         <Divider />
-        <List>
+        <List sx={{ flexGrow: 1 }}>
           {['Verifiable Credentials', 'tbDex'].map((text, index) => (
             <ListItem
               key={text}
@@ -49,6 +61,19 @@ export default function Root() {
             </ListItem>
           ))}
         </List>
+        <Divider />
+        <Box sx={{ p: 1 }}>
+          <Typography variant="h6" color="text.secondary">
+            Active Profile
+          </Typography>
+          <TruncatedTypography variant="body1" color="text.primary">
+            {did}
+          </TruncatedTypography>
+          <Stack direction="row">
+            <Button onClick={handleCopyDidClick}>Copy DID</Button>
+            <Button>View JSON</Button>
+          </Stack>
+        </Box>
       </Drawer>
       <Box sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
         <Outlet />
