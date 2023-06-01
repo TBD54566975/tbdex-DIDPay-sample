@@ -26,12 +26,12 @@ const router = createBrowserRouter([
         path: '/tbdex',
         element: <TBDex />,
       },
+      {
+        path: '/profile/:profileId',
+        element: <Profile />,
+        loader: profileLoader,
+      },
     ],
-  },
-  {
-    path: '/profile/:profileId',
-    element: <Profile />,
-    loader: profileLoader,
   },
 ]);
 
