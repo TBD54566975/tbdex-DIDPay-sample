@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import { createContext } from 'react';
 import { Web5 } from '@tbd54566975/web5';
 
 interface Web5ContextType {
