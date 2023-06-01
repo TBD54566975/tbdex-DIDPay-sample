@@ -3,26 +3,11 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Root from './routes/Root';
-import Profile from './routes/Profile';
-import { loader as profileLoader } from './routes/Profile';
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Root />,
-  },
-  {
-    path: '/profile/:profileId',
-    element: <Profile />,
-    loader: profileLoader,
-  },
-]);
+import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <App />
   </React.StrictMode>
 );
 

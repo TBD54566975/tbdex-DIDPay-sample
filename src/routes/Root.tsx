@@ -1,61 +1,62 @@
-import React, { useEffect, useState } from 'react';
-import { Web5 } from '@tbd54566975/web5';
-import { Profile, ProfileApi } from '@tbd54566975/web5-user-agent';
-import './Root.css';
-import ProfileCard from '../components/ProfileCard';
-import { CircularProgress } from '@mui/material';
+import React from 'react';
+import { Link, Outlet } from 'react-router-dom';
+import {
+  Box,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 
-// Using require statement, as there are problems importing ssi-sdk-wasm types
-const SSI = require('ssi-sdk-wasm');
+const drawerWidth = 240;
 
 export default function Root() {
-  const [profile, setProfile] = useState<Profile | undefined>(undefined);
-  const [vcs, setVcs] = useState<string[]>([]);
-
-  useEffect(() => {
-    web5Connect();
-  }, []);
-
-  async function web5Connect() {
-    const { did } = await Web5.connect();
-
-    const profileApi = new ProfileApi();
-    const profile = await profileApi.getProfile(did);
-    setProfile(profile);
-  }
-
-  async function selfSignNewVC() {
-    const result = await SSI.createVerifiableCredential(
-      profile?.did?.id,
-      JSON.stringify(profile?.did?.keys[0].privateKeyJwk),
-      JSON.stringify({ id: 'blah', foo: 'bar' })
-    );
-
-    setVcs((prev) => {
-      return [JSON.stringify(result), ...prev];
-    });
-  }
-
-  if (!!profile) {
-    return (
-      <div className="container">
-        <ProfileCard profile={profile} />
-        <h1>VCs</h1>
-        <ul>
-          {vcs.map((vc, index) => (
-            <li key={index}>{vc}</li>
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <Drawer
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+          },
+        }}
+        variant="permanent"
+        anchor="left"
+      >
+        <Toolbar component={Link} to={'/'}>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            DIDPay
+          </Typography>
+        </Toolbar>
+        <Divider />
+        <List>
+          {['Verifiable Credentials', 'tbDex'].map((text, index) => (
+            <ListItem
+              key={text}
+              component={Link}
+              to={drawerLinkURL(text)}
+              disablePadding
+            >
+              <ListItemButton>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
           ))}
-        </ul>
-        <button hidden={!profile} onClick={selfSignNewVC}>
-          Self Sign a New VC
-        </button>
-      </div>
-    );
-  } else {
-    return (
-      <div className="container">
-        <CircularProgress />
-      </div>
-    );
-  }
+        </List>
+      </Drawer>
+      <Box sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
+        <Outlet />
+      </Box>
+    </Box>
+  );
+}
+
+function drawerLinkURL(str: string): string {
+  return str.replace(/\s/g, '');
 }
