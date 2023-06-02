@@ -19,7 +19,8 @@ import { Web5Context } from '../context/Web5Context';
 const drawerWidth = 240;
 
 export default function Root() {
-  const { did } = useContext(Web5Context);
+  const { profile } = useContext(Web5Context);
+  const did = profile?.did.id;
 
   const handleCopyDidClick = () => {
     if (did) {
