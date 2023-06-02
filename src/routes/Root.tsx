@@ -49,18 +49,20 @@ export default function Root() {
         </Toolbar>
         <Divider />
         <List sx={{ flexGrow: 1 }}>
-          {['Verifiable Credentials', 'tbDex'].map((text, index) => (
-            <ListItem
-              key={text}
-              component={Link}
-              to={drawerLinkURL(text)}
-              disablePadding
-            >
-              <ListItemButton>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+          {['Verifiable Credentials', 'Offerings', 'Quotes', 'Orders'].map(
+            (text, index) => (
+              <ListItem
+                key={text}
+                component={Link}
+                to={drawerLinkURL(text)}
+                disablePadding
+              >
+                <ListItemButton>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              </ListItem>
+            )
+          )}
         </List>
         <Divider />
         <Box sx={{ p: 1 }}>

@@ -4,7 +4,6 @@ import Root from './routes/Root';
 import Profile, { loader as profileLoader } from './routes/Profile';
 import VerifiableCredentials from './routes/VerifiableCredentials';
 import Index from './routes/Index';
-import TBDex from './routes/TBDex';
 import { Web5 } from '@tbd54566975/web5';
 import {
   Profile as Web5Profile,
@@ -12,6 +11,9 @@ import {
 } from '@tbd54566975/web5-user-agent';
 import { Web5Context } from './context/Web5Context';
 import { CircularProgress } from '@mui/material';
+import Offerings from './routes/Offerings';
+import Quotes from './routes/Quotes';
+import Orders from './routes/Orders';
 
 const router = createBrowserRouter([
   {
@@ -27,8 +29,16 @@ const router = createBrowserRouter([
         element: <VerifiableCredentials />,
       },
       {
-        path: '/tbdex',
-        element: <TBDex />,
+        path: '/offerings',
+        element: <Offerings />,
+      },
+      {
+        path: '/quotes',
+        element: <Quotes />,
+      },
+      {
+        path: '/orders',
+        element: <Orders />,
       },
       {
         path: '/profile/:profileId',
