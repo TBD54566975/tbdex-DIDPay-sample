@@ -78,7 +78,7 @@ export default function Root() {
           </Stack>
         </Box>
       </Drawer>
-      <Box sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
+      <Box overflow="auto" sx={{ p: 3 }}>
         <Outlet />
       </Box>
     </Box>
