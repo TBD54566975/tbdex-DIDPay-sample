@@ -74,7 +74,7 @@ export default function Root() {
           </TruncatedTypography>
           <Stack direction="row">
             <Button onClick={handleCopyDidClick}>Copy DID</Button>
-            <Button component={Link} to={`/profile/${did}`}>
+            <Button component={Link} to={`/profile`}>
               View JSON
             </Button>
           </Stack>
