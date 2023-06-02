@@ -22,7 +22,7 @@ export default function VerifiableCredentials() {
   }
 
   return (
-    <Box maxWidth="100%">
+    <Box overflow="auto">
       <h1>VCs</h1>
       <ul>
         {vcs.map((vc, index) => (
