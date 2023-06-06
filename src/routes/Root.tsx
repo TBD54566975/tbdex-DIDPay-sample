@@ -14,13 +14,13 @@ import {
   Typography,
 } from '@mui/material';
 import { TruncatedTypography } from '../components/styled/TruncatedTypography';
-import { Web5Context } from '../context/Web5Context';
+import { useWeb5Context } from '../context/Web5Context';
 
 const drawerWidth = 240;
 
 export default function Root() {
-  const { profile } = useContext(Web5Context);
-  const did = profile?.did.id;
+  const { profile } = useWeb5Context();
+  const did = profile.did.id;
 
   const handleCopyDidClick = () => {
     if (did) {

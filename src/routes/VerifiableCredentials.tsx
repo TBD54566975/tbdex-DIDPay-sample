@@ -1,18 +1,15 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Web5Context } from '../context/Web5Context';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useWeb5Context } from '../context/Web5Context';
 import { Box } from '@mui/material';
 
 // Using require statement, as there are problems importing ssi-sdk-wasm types
 const SSI = require('ssi-sdk-wasm');
 
 export default function VerifiableCredentials() {
-  const { web5, profile } = useContext(Web5Context);
+  const { web5, profile } = useWeb5Context();
   const [vcs, setVcs] = useState<any[]>([]);
 
   const fetchVcs = useCallback(async () => {
-    if (!web5 || !profile) {
-      return;
-    }
     const { records, status } = await web5.dwn.records.query({
       from: profile.did.id,
       message: {
@@ -38,14 +35,9 @@ export default function VerifiableCredentials() {
   }, [fetchVcs]);
 
   async function selfSignNewVC() {
-    // TODO: this sucks, find a way to make web5 non-optional
-    if (!web5) {
-      return;
-    }
-
     const result = await SSI.createVerifiableCredential(
-      profile?.did?.id,
-      JSON.stringify(profile?.did?.keys[0].privateKeyJwk),
+      profile.did?.id,
+      JSON.stringify(profile.did?.keys[0].privateKeyJwk),
       JSON.stringify({ id: 'blah', foo: 'bar' })
     );
 
@@ -73,9 +65,7 @@ export default function VerifiableCredentials() {
           <li key={index}>{JSON.stringify(vc)}</li>
         ))}
       </ul>
-      <button hidden={!profile} onClick={selfSignNewVC}>
-        Self Sign a New VC
-      </button>
+      <button onClick={selfSignNewVC}>Self Sign a New VC</button>
     </Box>
   );
 }
