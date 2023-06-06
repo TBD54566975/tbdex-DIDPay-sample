@@ -5,7 +5,7 @@ import {
   Profile as Web5Profile,
   ProfileApi,
 } from '@tbd54566975/web5-user-agent';
-import { Web5Context } from './context/Web5Context';
+import { Web5ContextProvider, useWeb5Context } from './context/Web5Context';
 import { CircularProgress } from '@mui/material';
 import Root from './routes/Root';
 import Index from './routes/Index';
@@ -49,29 +49,9 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  const [web5, setWeb5] = useState<Web5 | undefined>(undefined);
-  const [profile, setProfile] = useState<Web5Profile | undefined>(undefined);
-
-  useEffect(() => {
-    web5Connect();
-  }, []);
-
-  async function web5Connect() {
-    const { web5, did } = await Web5.connect();
-    const profileApi = new ProfileApi();
-    const profile = await profileApi.getProfile(did);
-
-    setWeb5(web5);
-    setProfile(profile);
-  }
-
-  if (web5 && profile) {
-    return (
-      <Web5Context.Provider value={{ web5, profile }}>
-        <RouterProvider router={router} />
-      </Web5Context.Provider>
-    );
-  } else {
-    return <CircularProgress />;
-  }
+  return (
+    <Web5ContextProvider>
+      <RouterProvider router={router} />
+    </Web5ContextProvider>
+  );
 }
