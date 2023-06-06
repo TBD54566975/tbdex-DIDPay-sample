@@ -10,9 +10,8 @@ interface Web5ContextType {
 
 const Web5Context = createContext<Web5ContextType | undefined>(undefined);
 
-export const Web5ContextProvider = ({
-  children,
-}: React.PropsWithChildren<{}>) => {
+type Props = { children: JSX.Element };
+export const Web5ContextProvider = ({ children }: Props) => {
   const [contextValue, setContextValue] = useState<Web5ContextType | undefined>(
     undefined
   );
