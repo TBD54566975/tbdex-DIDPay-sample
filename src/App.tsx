@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Web5 } from '@tbd54566975/web5';
-import {
-  Profile as Web5Profile,
-  ProfileApi,
-} from '@tbd54566975/web5-user-agent';
-import { Web5ContextProvider, useWeb5Context } from './context/Web5Context';
-import { CircularProgress } from '@mui/material';
+import { Web5ContextProvider } from './context/Web5Context';
 import Root from './routes/Root';
 import Index from './routes/Index';
 import VerifiableCredentials from './routes/VerifiableCredentials';
