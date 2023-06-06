@@ -19,13 +19,31 @@ import { useWeb5Context } from '../context/Web5Context';
 const drawerWidth = 240;
 
 export default function Root() {
-  const { profile } = useWeb5Context();
+  const { profile, web5 } = useWeb5Context();
   const did = profile.did.id;
 
   const handleCopyDidClick = () => {
     if (did) {
       navigator.clipboard.writeText(did);
     }
+  };
+
+  const handleWipeState = async () => {
+    // doesnt work for some reason
+    web5.appStorage.clear();
+
+    // hack instead
+    await manuallyClearState();
+  };
+
+  const manuallyClearState = async () => {
+    const localDBs = await window.indexedDB.databases();
+
+    for (const local of localDBs) {
+      window.indexedDB.deleteDatabase(local.name!);
+    }
+
+    document.location.reload();
   };
 
   return (
@@ -72,11 +90,12 @@ export default function Root() {
           <TruncatedTypography variant="body1" color="text.primary">
             {did}
           </TruncatedTypography>
-          <Stack direction="row">
+          <Stack direction="column">
             <Button onClick={handleCopyDidClick}>Copy DID</Button>
             <Button component={Link} to={`/profile`}>
               View JSON
             </Button>
+            <Button onClick={handleWipeState}>Wipe State</Button>
           </Stack>
         </Box>
       </Drawer>
