@@ -8,6 +8,9 @@ import Offerings from './routes/Offerings';
 import Quotes from './routes/Quotes';
 import Orders from './routes/Orders';
 import Profile from './routes/Profile';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -44,8 +47,10 @@ const router = createBrowserRouter([
 
 export default function App() {
   return (
-    <Web5ContextProvider>
-      <RouterProvider router={router} />
-    </Web5ContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <Web5ContextProvider>
+        <RouterProvider router={router} />
+      </Web5ContextProvider>
+    </QueryClientProvider>
   );
 }
