@@ -99,7 +99,7 @@ export default function Root() {
           </Stack>
         </Box>
       </Drawer>
-      <Box overflow="auto" sx={{ p: 3 }}>
+      <Box flex={1} overflow="auto" sx={{ p: 3 }}>
         <Outlet />
       </Box>
     </Box>
