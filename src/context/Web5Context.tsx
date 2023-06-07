@@ -39,7 +39,7 @@ export const Web5ContextProvider = ({ children }: Props) => {
   );
 };
 
-export const useWeb5Context = (): Web5ContextType => {
+export const useWeb5Context = () => {
   const context = useContext(Web5Context);
 
   if (!context) {
