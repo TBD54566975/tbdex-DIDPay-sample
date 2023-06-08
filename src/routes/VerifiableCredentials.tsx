@@ -1,13 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useWeb5Context } from '../context/Web5Context';
-import { Box } from '@mui/material';
+import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import { CredentialCard } from '../features/credentials/CredentialCard';
 
 // Using require statement, as there are problems importing ssi-sdk-wasm types
 const SSI = require('ssi-sdk-wasm');
 
-export default function VerifiableCredentials() {
+export default function VerifiableCredentials(props: any) {
+  console.log(props);
   const { web5, profile } = useWeb5Context();
-  const [vcs, setVcs] = useState<any[]>([]);
+  const [credentials, setCredentials] = useState<any[]>([]);
 
   const fetchVcs = useCallback(async () => {
     const { records, status } = await web5.dwn.records.query({
@@ -26,7 +29,7 @@ export default function VerifiableCredentials() {
         }) ?? []
       );
 
-      setVcs(vcs);
+      setCredentials(vcs);
     }
   }, [web5, profile]);
 
@@ -38,7 +41,12 @@ export default function VerifiableCredentials() {
     const result = await SSI.createVerifiableCredential(
       profile.did?.id,
       JSON.stringify(profile.did?.keys[0].privateKeyJwk),
-      JSON.stringify({ id: 'blah', foo: 'bar' })
+      JSON.stringify({
+        id: Math.random().toString(),
+        type: 'KYCAMLAttestation',
+        process: 'selfAttest',
+        approvalDate: new Date().toISOString(),
+      })
     );
 
     const { status } = await web5.dwn.records.write({
@@ -49,7 +57,7 @@ export default function VerifiableCredentials() {
     });
 
     if (200 <= status.code && status.code <= 299) {
-      setVcs((prev) => {
+      setCredentials((prev) => {
         return [result, ...prev];
       });
     } else {
@@ -58,14 +66,15 @@ export default function VerifiableCredentials() {
   }
 
   return (
-    <Box overflow="auto">
-      <h1>VCs</h1>
-      <ul>
-        {vcs.map((vc, index) => (
-          <li key={index}>{JSON.stringify(vc)}</li>
-        ))}
-      </ul>
-      <button onClick={selfSignNewVC}>Self Sign a New VC</button>
+    <Box>
+      <Grid container spacing={3} columns={12}>
+        {credentials.map((credential, index) => {
+          return <CredentialCard key={index} creds={credential} />;
+        })}
+      </Grid>
+      <Button sx={{ mt: 3 }} variant="contained" onClick={selfSignNewVC}>
+        Self Sign a New VC
+      </Button>
     </Box>
   );
 }
