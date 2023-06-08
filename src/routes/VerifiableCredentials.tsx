@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useWeb5Context } from '../context/Web5Context';
-import { Box, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { CredentialCard } from '../features/credentials/CredentialCard';
 
 // Using require statement, as there are problems importing ssi-sdk-wasm types
 const SSI = require('ssi-sdk-wasm');
 
-export default function VerifiableCredentials(props: any) {
-  console.log(props);
+export default function VerifiableCredentials() {
   const { web5, profile } = useWeb5Context();
   const [credentials, setCredentials] = useState<any[]>([]);
 
@@ -66,7 +65,7 @@ export default function VerifiableCredentials(props: any) {
   }
 
   return (
-    <Box>
+    <>
       <Grid container spacing={3} columns={12}>
         {credentials.map((credential, index) => {
           return <CredentialCard key={index} creds={credential} />;
@@ -75,6 +74,6 @@ export default function VerifiableCredentials(props: any) {
       <Button sx={{ mt: 3 }} variant="contained" onClick={selfSignNewVC}>
         Self Sign a New VC
       </Button>
-    </Box>
+    </>
   );
 }
