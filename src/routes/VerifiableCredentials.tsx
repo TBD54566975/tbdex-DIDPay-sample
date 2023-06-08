@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useWeb5Context } from '../context/Web5Context';
-import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { CredentialCard } from '../features/credentials/CredentialCard';
 
