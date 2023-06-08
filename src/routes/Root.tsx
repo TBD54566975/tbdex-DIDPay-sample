@@ -1,13 +1,14 @@
-import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
+  AppBar,
   Box,
   Button,
-  Divider,
+  CssBaseline,
   Drawer,
   List,
   ListItem,
   ListItemButton,
+  ListItemIcon,
   ListItemText,
   Stack,
   Toolbar,
@@ -15,11 +16,17 @@ import {
 } from '@mui/material';
 import { TruncatedTypography } from '../components/styled/TruncatedTypography';
 import { useWeb5Context } from '../context/Web5Context';
-
-const drawerWidth = 240;
+import {
+  AccountBalance,
+  PriceChange,
+  ShoppingBag,
+  Wallet,
+} from '@mui/icons-material';
 
 export default function Root() {
   const { profile, web5 } = useWeb5Context();
+  const location = useLocation();
+
   const did = profile.did.id;
 
   const handleCopyDidClick = () => {
@@ -37,17 +44,31 @@ export default function Root() {
   };
 
   const manuallyClearState = async () => {
-    const localDBs = await window.indexedDB.databases();
+    const databases = await window.indexedDB.databases();
 
-    for (const local of localDBs) {
-      window.indexedDB.deleteDatabase(local.name!);
+    for (const db of databases) {
+      window.indexedDB.deleteDatabase(db.name!);
     }
 
     document.location.reload();
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', height: '100%' }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        sx={{
+          width: `calc(100% - ${drawerWidth}px)`,
+          ml: `${drawerWidth}px`,
+        }}
+      >
+        <Toolbar>
+          <Typography variant="h6" noWrap component="div">
+            {getPrettyRouteName(location.pathname)}
+          </Typography>
+        </Toolbar>
+      </AppBar>
       <Drawer
         sx={{
           width: drawerWidth,
@@ -60,30 +81,39 @@ export default function Root() {
         variant="permanent"
         anchor="left"
       >
-        <Toolbar component={Link} to={'/'}>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            DIDPay
-          </Typography>
+        <Toolbar>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="h6" component="div">
+              DIDPay
+            </Typography>
+          </Box>
         </Toolbar>
-        <Divider />
-        <List sx={{ flexGrow: 1 }}>
+        <List sx={{ display: 'flex', flexDirection: 'column' }}>
           {['Verifiable Credentials', 'Offerings', 'Quotes', 'Orders'].map(
             (text, index) => (
               <ListItem
                 key={text}
-                component={Link}
-                to={drawerLinkURL(text)}
+                component={UncoloredLink}
+                to={getDrawerLinkURL(text)}
                 disablePadding
               >
                 <ListItemButton>
+                  <ListItemIcon>{getDrawerIcon(text)}</ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>
               </ListItem>
             )
           )}
         </List>
-        <Divider />
-        <Box sx={{ p: 1 }}>
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            p: 1,
+          }}
+        >
           <Typography variant="h6" color="text.secondary">
             Active Profile
           </Typography>
@@ -99,13 +129,61 @@ export default function Root() {
           </Stack>
         </Box>
       </Drawer>
-      <Box flex={1} overflow="auto" sx={{ p: 3 }}>
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          bgcolor: 'background.default',
+          p: 3,
+          overflow: 'hidden',
+        }}
+      >
+        <Toolbar />
         <Outlet />
       </Box>
     </Box>
   );
 }
 
-function drawerLinkURL(str: string): string {
-  return str.replace(/\s/g, '');
+const drawerWidth = 240;
+
+const UncoloredLink = (props: any) => {
+  return <Link {...props} style={{ color: 'inherit' }} />;
+};
+
+function getPrettyRouteName(route: string) {
+  switch (route) {
+    case '/verifiablecredentials':
+      return 'Verifiable Credentials';
+    case '/offerings':
+      return 'Offerings';
+    case '/quotes':
+      return 'Quotes';
+    case '/orders':
+      return 'Orders';
+    case '/profile':
+      return 'Profile';
+    default:
+      return 'Unknown';
+  }
+}
+
+function getDrawerIcon(page: string) {
+  switch (page) {
+    case 'Verifiable Credentials':
+      return <Wallet />;
+    case 'Offerings':
+      return <AccountBalance />;
+    case 'Quotes':
+      return <PriceChange />;
+    case 'Orders':
+      return <ShoppingBag />;
+    default:
+      return undefined;
+  }
+}
+
+function getDrawerLinkURL(route: string) {
+  return route.toLowerCase().replace(/\s/g, '');
 }
