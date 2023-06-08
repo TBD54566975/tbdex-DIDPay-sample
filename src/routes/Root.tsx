@@ -136,7 +136,7 @@ export default function Root() {
           flexGrow: 1,
           bgcolor: 'background.default',
           p: 3,
-          overflow: 'hidden',
+          overflowX: 'hidden',
         }}
       >
         <Toolbar />
