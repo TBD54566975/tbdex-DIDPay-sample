@@ -83,7 +83,7 @@ export function RootPage() {
       >
         <Toolbar>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h6" component="div">
+            <Typography variant="h6" component={UncoloredLink} to={'/'}>
               DIDPay
             </Typography>
           </Box>
@@ -154,6 +154,8 @@ const UncoloredLink = (props: any) => {
 
 function getPrettyRouteName(route: string) {
   switch (route) {
+    case '/':
+      return 'Index';
     case '/verifiablecredentials':
       return 'Verifiable Credentials';
     case '/offerings':
