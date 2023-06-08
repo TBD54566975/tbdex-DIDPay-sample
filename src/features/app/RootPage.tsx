@@ -14,8 +14,8 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { TruncatedTypography } from '../components/styled/TruncatedTypography';
-import { useWeb5Context } from '../context/Web5Context';
+import { TruncatedTypography } from '../../components/TruncatedTypography';
+import { useWeb5Context } from '../../context/Web5Context';
 import {
   AccountBalance,
   PriceChange,
@@ -23,7 +23,7 @@ import {
   Wallet,
 } from '@mui/icons-material';
 
-export default function Root() {
+export function RootPage() {
   const { profile, web5 } = useWeb5Context();
   const location = useLocation();
 

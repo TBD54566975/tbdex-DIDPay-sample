@@ -1,13 +1,13 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Web5ContextProvider } from './context/Web5Context';
-import Root from './routes/Root';
-import Index from './routes/Index';
-import VerifiableCredentials from './routes/VerifiableCredentials';
-import Offerings from './routes/Offerings';
-import Quotes from './routes/Quotes';
-import Orders from './routes/Orders';
-import Profile from './routes/Profile';
+import { RootPage } from './features/app/RootPage';
+import { IndexPage } from './features/app/IndexPage';
+import { VerifiableCredentialsPage } from './features/credentials/VerifiableCredentialsPage';
+import { OfferingsPage } from './features/offerings/OfferingsPage';
+import { QuotesPage } from './features/quotes/QuotesPage';
+import { OrdersPage } from './features/orders/OrdersPage';
+import { ProfilePage } from './features/profile/Profile';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
@@ -15,31 +15,31 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Root />,
+    element: <RootPage />,
     children: [
       {
         index: true,
-        element: <Index />,
+        element: <IndexPage />,
       },
       {
         path: '/verifiablecredentials',
-        element: <VerifiableCredentials />,
+        element: <VerifiableCredentialsPage />,
       },
       {
         path: '/offerings',
-        element: <Offerings />,
+        element: <OfferingsPage />,
       },
       {
         path: '/quotes',
-        element: <Quotes />,
+        element: <QuotesPage />,
       },
       {
         path: '/orders',
-        element: <Orders />,
+        element: <OrdersPage />,
       },
       {
         path: '/profile',
-        element: <Profile />,
+        element: <ProfilePage />,
       },
     ],
   },

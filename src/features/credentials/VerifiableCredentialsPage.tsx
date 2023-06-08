@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useWeb5Context } from '../context/Web5Context';
+import { useWeb5Context } from '../../context/Web5Context';
 import { Button } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { CredentialCard } from '../features/credentials/CredentialCard';
+import { CredentialCard } from './CredentialCard';
 
 // Using require statement, as there are problems importing ssi-sdk-wasm types
 const SSI = require('ssi-sdk-wasm');
 
-export default function VerifiableCredentials() {
+export function VerifiableCredentialsPage() {
   const { web5, profile } = useWeb5Context();
   const [credentials, setCredentials] = useState<any[]>([]);
 

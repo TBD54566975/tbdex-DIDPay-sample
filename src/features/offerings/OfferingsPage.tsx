@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Button, Stack, TextField } from '@mui/material';
-import { useWeb5Context } from '../context/Web5Context';
-import OfferingsList, { Offering } from '../components/OfferingsList';
+import { useWeb5Context } from '../../context/Web5Context';
+import { OfferingsList, type Offering } from './OfferingsList';
 
-export default function Offerings() {
+export function OfferingsPage() {
   const [pfiDid, setPfiDid] = useState('');
   const [offerings, setOfferings] = useState<Offering[]>([]);
 

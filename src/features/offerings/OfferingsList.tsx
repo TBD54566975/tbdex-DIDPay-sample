@@ -23,7 +23,7 @@ export type PaymentInstrument = {
 };
 
 type Props = { offerings: Offering[] };
-export default function OfferingsList({ offerings }: Props) {
+export function OfferingsList({ offerings }: Props) {
   return (
     <Box>
       <List>
