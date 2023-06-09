@@ -34,7 +34,6 @@ export function OfferingsPage() {
 
   return (
     <Box>
-      <h1>Offerings</h1>
       <Stack spacing={1}>
         <TextField
           label="PFI DID"
