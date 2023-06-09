@@ -5,6 +5,7 @@ import {
   Button,
   CssBaseline,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -22,12 +23,19 @@ import {
   ShoppingBag,
   Wallet,
 } from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/Menu';
+import { useState } from 'react';
 
 export function RootPage() {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { profile, web5 } = useWeb5Context();
   const location = useLocation();
 
   const did = profile.did.id;
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleCopyDidClick = () => {
     if (did) {
@@ -53,90 +61,131 @@ export function RootPage() {
     document.location.reload();
   };
 
+  const closeDrawerOnClick = () => setMobileOpen(false);
+
+  const container =
+    window !== undefined ? () => window.document.body : undefined;
+
+  const drawerContents = (
+    <>
+      <Toolbar>
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="h6" component={UncoloredLink} to={'/'}>
+            DIDPay
+          </Typography>
+        </Box>
+      </Toolbar>
+      <List sx={{ display: 'flex', flexDirection: 'column' }}>
+        {['Verifiable Credentials', 'Offerings', 'Quotes', 'Orders'].map(
+          (text, index) => (
+            <ListItem
+              key={text}
+              component={UncoloredLink}
+              to={getDrawerLinkURL(text)}
+              disablePadding
+              onClick={closeDrawerOnClick}
+            >
+              <ListItemButton>
+                <ListItemIcon>{getDrawerIcon(text)}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          )
+        )}
+      </List>
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          p: 1,
+        }}
+      >
+        <Typography variant="h6" color="text.secondary">
+          Active Profile
+        </Typography>
+        <TruncatedTypography variant="body1" color="text.primary">
+          {did}
+        </TruncatedTypography>
+        <Stack direction="column">
+          <Button onClick={handleCopyDidClick}>Copy DID</Button>
+          <Button component={Link} to={`/profile`}>
+            View JSON
+          </Button>
+          <Button onClick={handleWipeState}>Wipe State</Button>
+        </Stack>
+      </Box>
+    </>
+  );
+
   return (
-    <Box sx={{ display: 'flex', height: '100%' }}>
+    <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar
         position="fixed"
         sx={{
-          width: `calc(100% - ${drawerWidth}px)`,
-          ml: `${drawerWidth}px`,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
         }}
       >
         <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
           <Typography variant="h6" noWrap component="div">
             {getPrettyRouteName(location.pathname)}
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-          },
-        }}
-        variant="permanent"
-        anchor="left"
+      <Box
+        component="nav"
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
       >
-        <Toolbar>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h6" component={UncoloredLink} to={'/'}>
-              DIDPay
-            </Typography>
-          </Box>
-        </Toolbar>
-        <List sx={{ display: 'flex', flexDirection: 'column' }}>
-          {['Verifiable Credentials', 'Offerings', 'Quotes', 'Orders'].map(
-            (text, index) => (
-              <ListItem
-                key={text}
-                component={UncoloredLink}
-                to={getDrawerLinkURL(text)}
-                disablePadding
-              >
-                <ListItemButton>
-                  <ListItemIcon>{getDrawerIcon(text)}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            )
-          )}
-        </List>
-        <Box
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
           sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            p: 1,
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+            },
           }}
         >
-          <Typography variant="h6" color="text.secondary">
-            Active Profile
-          </Typography>
-          <TruncatedTypography variant="body1" color="text.primary">
-            {did}
-          </TruncatedTypography>
-          <Stack direction="column">
-            <Button onClick={handleCopyDidClick}>Copy DID</Button>
-            <Button component={Link} to={`/profile`}>
-              View JSON
-            </Button>
-            <Button onClick={handleWipeState}>Wipe State</Button>
-          </Stack>
-        </Box>
-      </Drawer>
-
+          {drawerContents}
+        </Drawer>
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+            },
+          }}
+          open
+        >
+          {drawerContents}
+        </Drawer>
+      </Box>
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          bgcolor: 'background.default',
           p: 3,
-          overflowX: 'hidden',
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
         <Toolbar />
