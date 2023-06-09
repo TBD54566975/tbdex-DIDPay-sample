@@ -16,7 +16,7 @@ export const CredentialCard = ({ creds }: Props) => {
         <CardHeader
           title={creds.vc.credentialSubject.type}
           subheader={`Issued: ${new Date(
-            creds.vc.credentialSubject.approvalDate
+            creds.vc.issuanceDate
           ).toLocaleString()}`}
         />
         <CardContent>
