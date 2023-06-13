@@ -17,14 +17,13 @@ import {
 } from '@mui/material';
 import { TruncatedTypography } from '../../../components/TruncatedTypography';
 import { useWeb5Context } from '../../../context/Web5Context';
-import {
-  AccountBalance,
-  PriceChange,
-  ShoppingBag,
-  Wallet,
-} from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useState } from 'react';
+import { DrawerIcon } from './DrawerIcon';
+import { RootUtils } from './rootUtils';
+import { UncoloredRouterLink } from './UncoloredRouterLink';
+
+const drawerWidth = 240;
 
 export function RootPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -70,7 +69,7 @@ export function RootPage() {
     <>
       <Toolbar>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="h6" component={UncoloredLink} to={'/'}>
+          <Typography variant="h6" component={UncoloredRouterLink} to={'/'}>
             DIDPay
           </Typography>
         </Box>
@@ -80,13 +79,15 @@ export function RootPage() {
           (text, index) => (
             <ListItem
               key={text}
-              component={UncoloredLink}
-              to={getDrawerLinkURL(text)}
+              component={UncoloredRouterLink}
+              to={RootUtils.getDrawerLinkURL(text)}
               disablePadding
               onClick={closeDrawerOnClick}
             >
               <ListItemButton>
-                <ListItemIcon>{getDrawerIcon(text)}</ListItemIcon>
+                <ListItemIcon>
+                  <DrawerIcon page={text} />
+                </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>
@@ -119,66 +120,85 @@ export function RootPage() {
     </>
   );
 
+  const desktopDrawer = (
+    <Drawer
+      variant="permanent"
+      sx={{
+        display: { xs: 'none', sm: 'block' },
+        '& .MuiDrawer-paper': {
+          boxSizing: 'border-box',
+          width: drawerWidth,
+        },
+      }}
+      open
+    >
+      {drawerContents}
+    </Drawer>
+  );
+
+  const mobileDrawer = (
+    <Drawer
+      container={container}
+      variant="temporary"
+      open={mobileOpen}
+      onClose={handleDrawerToggle}
+      ModalProps={{
+        keepMounted: true, // Better open performance on mobile.
+      }}
+      sx={{
+        display: { xs: 'block', sm: 'none' },
+        '& .MuiDrawer-paper': {
+          boxSizing: 'border-box',
+          width: drawerWidth,
+        },
+      }}
+    >
+      {drawerContents}
+    </Drawer>
+  );
+
+  const header = (
+    <AppBar
+      position="fixed"
+      sx={{
+        width: { sm: `calc(100% - ${drawerWidth}px)` },
+        ml: { sm: `${drawerWidth}px` },
+      }}
+    >
+      <Toolbar>
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{ mr: 2, display: { sm: 'none' } }}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" noWrap component="div">
+          {RootUtils.getPrettyRouteName(location.pathname)}
+        </Typography>
+      </Toolbar>
+    </AppBar>
+  );
+
+  const main = (
+    <>
+      <Toolbar />
+      <Outlet />
+    </>
+  );
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            {getPrettyRouteName(location.pathname)}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      {header}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
       >
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-            },
-          }}
-        >
-          {drawerContents}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-            },
-          }}
-          open
-        >
-          {drawerContents}
-        </Drawer>
+        {mobileDrawer}
+        {desktopDrawer}
       </Box>
       <Box
         component="main"
@@ -188,53 +208,8 @@ export function RootPage() {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Toolbar />
-        <Outlet />
+        {main}
       </Box>
     </Box>
   );
-}
-
-const drawerWidth = 240;
-
-const UncoloredLink = (props: any) => {
-  return <Link {...props} style={{ color: 'inherit' }} />;
-};
-
-function getPrettyRouteName(route: string) {
-  switch (route) {
-    case '/':
-      return 'Index';
-    case '/verifiablecredentials':
-      return 'Verifiable Credentials';
-    case '/offerings':
-      return 'Offerings';
-    case '/quotes':
-      return 'Quotes';
-    case '/orders':
-      return 'Orders';
-    case '/profile':
-      return 'Profile';
-    default:
-      return 'Unknown';
-  }
-}
-
-function getDrawerIcon(page: string) {
-  switch (page) {
-    case 'Verifiable Credentials':
-      return <Wallet />;
-    case 'Offerings':
-      return <AccountBalance />;
-    case 'Quotes':
-      return <PriceChange />;
-    case 'Orders':
-      return <ShoppingBag />;
-    default:
-      return undefined;
-  }
-}
-
-function getDrawerLinkURL(route: string) {
-  return route.toLowerCase().replace(/\s/g, '');
 }
