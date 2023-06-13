@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Dialog,
@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { CreateCredentialForm } from './CreateCredentialTypes';
+import { Form } from './DialogFormTypes';
 import { useWeb5Context } from '../../context/Web5Context';
 import { ChangeEvent } from 'react';
 
@@ -18,13 +18,9 @@ const SSI = require('ssi-sdk-wasm');
 type Props = {
   onClose: DialogProps['onClose'];
   onCreate: (credential: any) => void;
-  form?: CreateCredentialForm;
+  form?: Form;
 };
-export default function CreateCredentialDialog({
-  onClose,
-  onCreate,
-  form,
-}: Props) {
+export default function DialogForm({ onClose, onCreate, form }: Props) {
   const { web5, profile } = useWeb5Context();
   const [formState, setFormState] = useState<{ [key: string]: string }>({});
 

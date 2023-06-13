@@ -1,4 +1,4 @@
-export type CreateCredentialForm = {
+export type Form = {
   title?: string;
   subtitle?: string;
   type: string;

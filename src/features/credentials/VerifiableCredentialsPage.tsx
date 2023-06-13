@@ -3,15 +3,15 @@ import { useWeb5Context } from '../../context/Web5Context';
 import { Button, Stack } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { CredentialCard } from './CredentialCard';
-import CreateCredentialDialog from './CreateCredentialDialog';
-import { CreateCredentialForm } from './CreateCredentialTypes';
+import DialogForm from '../../components/DialogForm/DialogForm';
+import { Form } from '../../components/DialogForm/DialogFormTypes';
 import { AchVcForm, BtcVcForm, KycVcForm } from './CreateCredentialForms';
 
 export function VerifiableCredentialsPage() {
   const { web5, profile } = useWeb5Context();
   const [credentials, setCredentials] = useState<any[]>([]);
   const [createCredentialForm, setCreateCredentialForm] = useState<
-    CreateCredentialForm | undefined
+    Form | undefined
   >(undefined);
 
   const fetchVcs = useCallback(async () => {
@@ -84,7 +84,7 @@ export function VerifiableCredentialsPage() {
           Create Self-Signed BTC VC
         </Button>
       </Stack>
-      <CreateCredentialDialog
+      <DialogForm
         onClose={closeCreateCredentialDialog}
         onCreate={handleCreateCredential}
         form={createCredentialForm}
