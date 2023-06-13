@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Web5ContextProvider } from './context/Web5Context';
-import { RootPage } from './features/app/RootPage';
+import { RootPage } from './features/app/root/RootPage';
 import { IndexPage } from './features/app/IndexPage';
 import { VerifiableCredentialsPage } from './features/credentials/VerifiableCredentialsPage';
 import { OfferingsPage } from './features/offerings/OfferingsPage';

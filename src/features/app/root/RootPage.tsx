@@ -15,8 +15,8 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { TruncatedTypography } from '../../components/TruncatedTypography';
-import { useWeb5Context } from '../../context/Web5Context';
+import { TruncatedTypography } from '../../../components/TruncatedTypography';
+import { useWeb5Context } from '../../../context/Web5Context';
 import {
   AccountBalance,
   PriceChange,
