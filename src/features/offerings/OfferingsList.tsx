@@ -1,29 +1,12 @@
 import React from 'react';
-import { Box, List, ListItem, Typography } from '@mui/material';
+import { Box, Button, List, ListItem, Typography } from '@mui/material';
+import { Offering } from '../../tbDexTypes';
 
-// TODO: Offering/PaymentInstrument should be pulled out into
-// a common library once it's solidified ab it more.
-// That way these objects can be used across this app and PFI app.
-export type Offering = {
-  id: string;
-  pair: string;
-  unitPrice: string;
-  fee: string;
-  min?: string;
-  max?: string;
-  payinInstruments: PaymentInstrument[];
-  payoutInstruments: PaymentInstrument[];
-  presentationRequest: object;
+type Props = {
+  offerings: Offering[];
+  onRfqButtonClick: (offering: Offering) => void;
 };
-
-export type PaymentInstrument = {
-  kind: string;
-  fee?: string;
-  presentationRequest?: object;
-};
-
-type Props = { offerings: Offering[] };
-export function OfferingsList({ offerings }: Props) {
+export default function OfferingsList({ offerings, onRfqButtonClick }: Props) {
   return (
     <Box>
       <List>
@@ -36,6 +19,12 @@ export function OfferingsList({ offerings }: Props) {
                 {offering.fee}, Min: {offering.min || 'N/A'}, Max:{' '}
                 {offering.max || 'N/A'}
               </Typography>
+              <Button
+                variant="outlined"
+                onClick={() => onRfqButtonClick(offering)}
+              >
+                Send RFQ
+              </Button>
             </Box>
           </ListItem>
         ))}

@@ -4,14 +4,21 @@ import { Button, Stack } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { CredentialCard } from './CredentialCard';
 import DialogForm from '../../components/DialogForm/DialogForm';
-import { Form } from '../../components/DialogForm/DialogFormTypes';
-import { AchVcForm, BtcVcForm, KycVcForm } from './CreateCredentialForms';
+import {
+  CreateCredentialForm,
+  AchVcForm,
+  BtcVcForm,
+  KycVcForm,
+} from './CreateCredentialForms';
+
+// Using require statement, as there are problems importing ssi-sdk-wasm types
+const SSI = require('ssi-sdk-wasm');
 
 export function VerifiableCredentialsPage() {
   const { web5, profile } = useWeb5Context();
   const [credentials, setCredentials] = useState<any[]>([]);
   const [createCredentialForm, setCreateCredentialForm] = useState<
-    Form | undefined
+    CreateCredentialForm | undefined
   >(undefined);
 
   const fetchVcs = useCallback(async () => {
@@ -51,11 +58,32 @@ export function VerifiableCredentialsPage() {
     setCreateCredentialForm(BtcVcForm);
   };
 
-  const handleCreateCredential = (credential: any) => {
-    setCredentials((prev) => {
-      return [credential, ...prev];
+  const handleSubmit = async (formState: { [key: string]: string }) => {
+    const result = await SSI.createVerifiableCredential(
+      profile.did?.id,
+      JSON.stringify(profile.did?.keys[0].privateKeyJwk),
+      JSON.stringify({
+        id: Math.random().toString(),
+        type: createCredentialForm?.type,
+        ...formState,
+      })
+    );
+
+    const { status } = await web5.dwn.records.write({
+      data: result,
+      message: {
+        schema: 'my/vcs',
+      },
     });
-    closeCreateCredentialDialog();
+
+    if (200 <= status.code && status.code <= 299) {
+      closeCreateCredentialDialog();
+      setCredentials((prev) => {
+        return [result, ...prev];
+      });
+    } else {
+      console.error(`Error writing VC: ${status.code} - ${status.detail}`);
+    }
   };
 
   const closeCreateCredentialDialog = () => {
@@ -86,7 +114,7 @@ export function VerifiableCredentialsPage() {
       </Stack>
       <DialogForm
         onClose={closeCreateCredentialDialog}
-        onCreate={handleCreateCredential}
+        onSubmit={handleSubmit}
         form={createCredentialForm}
       />
     </>

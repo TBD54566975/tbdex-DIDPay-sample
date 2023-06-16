@@ -1,7 +1,6 @@
 export type Form = {
   title?: string;
   subtitle?: string;
-  type: string;
   fields: FormField[];
 };
 

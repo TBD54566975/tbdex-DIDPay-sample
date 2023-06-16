@@ -1,9 +1,13 @@
 import { Form } from '../../components/DialogForm/DialogFormTypes';
 
+export type CreateCredentialForm = Form & {
+  type: string;
+};
+
 const warningSubtitle =
   'PLEASE DO NOT INPUT REAL INFO! THIS IS JUST FOR TESTING!';
 
-export const KycVcForm: Form = {
+export const KycVcForm: CreateCredentialForm = {
   title: 'KYC Verifiable Credential',
   subtitle: warningSubtitle,
   type: 'KYCAMLAttestation',
@@ -13,7 +17,7 @@ export const KycVcForm: Form = {
   ],
 };
 
-export const AchVcForm: Form = {
+export const AchVcForm: CreateCredentialForm = {
   title: 'ACH Verifiable Credential',
   subtitle: warningSubtitle,
   type: 'ACHAttestation',
@@ -23,7 +27,7 @@ export const AchVcForm: Form = {
   ],
 };
 
-export const BtcVcForm: Form = {
+export const BtcVcForm: CreateCredentialForm = {
   title: 'Bitcoin Verifiable Credential',
   subtitle: warningSubtitle,
   type: 'BTCAttestation',

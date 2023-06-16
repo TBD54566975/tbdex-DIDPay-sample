@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import {
   Button,
   Dialog,
@@ -9,19 +9,13 @@ import {
   Typography,
 } from '@mui/material';
 import { Form } from './DialogFormTypes';
-import { useWeb5Context } from '../../context/Web5Context';
-import { ChangeEvent } from 'react';
-
-// Using require statement, as there are problems importing ssi-sdk-wasm types
-const SSI = require('ssi-sdk-wasm');
 
 type Props = {
   onClose: DialogProps['onClose'];
-  onCreate: (credential: any) => void;
+  onSubmit: (formState: { [key: string]: string }) => void;
   form?: Form;
 };
-export default function DialogForm({ onClose, onCreate, form }: Props) {
-  const { web5, profile } = useWeb5Context();
+export default function DialogForm({ onClose, onSubmit, form }: Props) {
   const [formState, setFormState] = useState<{ [key: string]: string }>({});
 
   if (!form) {
@@ -39,29 +33,7 @@ export default function DialogForm({ onClose, onCreate, form }: Props) {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    const result = await SSI.createVerifiableCredential(
-      profile.did?.id,
-      JSON.stringify(profile.did?.keys[0].privateKeyJwk),
-      JSON.stringify({
-        id: Math.random().toString(),
-        type: form.type,
-        ...formState,
-      })
-    );
-
-    const { status } = await web5.dwn.records.write({
-      data: result,
-      message: {
-        schema: 'my/vcs',
-      },
-    });
-
-    if (200 <= status.code && status.code <= 299) {
-      onCreate(result);
-    } else {
-      console.error(`Error writing VC: ${status.code} - ${status.detail}`);
-    }
+    onSubmit(formState);
   };
 
   return (
