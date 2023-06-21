@@ -1,30 +1,17 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Stack,
-  TextField,
-  createTheme,
-  ThemeProvider,
-} from '@mui/material';
 import { useWeb5Context } from '../../context/Web5Context';
-import OfferingsList from './OfferingsList';
-import DialogForm from '../../components/DialogForm/DialogForm';
+import { OfferingsListTailwind } from './OfferingsListTailwind';
 import { RfqForm, createRfqForm } from './RfqForm';
 import { Offering, RFQ } from '../../tbDexTypes';
 import { tbDexProtocolDefinition } from '../../tbDexProtocol';
-import { yellow } from '@mui/material/colors';
+import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 
-export function OfferingsPage() {
+export function OfferingsPageTailwind() {
   const [pfiDid, setPfiDid] = useState('');
   const [offerings, setOfferings] = useState<Offering[]>([]);
   const [rfqForm, setRfqForm] = useState<RfqForm | undefined>(undefined);
 
   const { web5 } = useWeb5Context();
-
-  const handlePfiDidChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPfiDid(event.target.value);
-  };
 
   const handleGetOfferingsClick = async () => {
     const { records } = await web5.dwn.records.query({
@@ -78,62 +65,52 @@ export function OfferingsPage() {
     setRfqForm(undefined);
   };
 
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: '#F7DE1C',
-        contrastText: 'black',
-      },
-      text: {
-        primary: '#F0EB8D',
-        secondary: '#F0EB8D',
-      },
-    },
-    components: {
-      MuiTextField: {
-        styleOverrides: {
-          root: {
-            backgroundColor: '#transparent', // Black background color
-            color: '#F0EB8D', // Yellow font color
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: '#F0EB8D', // Yellow border color
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-
   return (
-    <ThemeProvider theme={theme}>
-      <Box>
-        <Stack spacing={1}>
-          <TextField
-            label="PFI DID"
-            value={pfiDid}
-            onChange={handlePfiDidChange}
-            fullWidth
+    <div className="flex flex-col items-end">
+      <div className="w-full">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium leading-6 text-gray-900"
+        >
+          PFI DID
+        </label>
+        <div className="relative mt-2 rounded-md shadow-sm">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            className="block w-full rounded-md border-0 py-1.5 pr-10 text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500 sm:text-sm sm:leading-6"
+            placeholder="did:ion:..."
+            defaultValue="Karma, karma, karma, karma, karma chameleon"
+            aria-invalid="true"
+            aria-describedby="pfi-error"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleGetOfferingsClick}
-          >
-            Get Offerings
-          </Button>
-        </Stack>
-        <OfferingsList
-          offerings={offerings}
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <ExclamationCircleIcon
+              className="h-5 w-5 text-red-500"
+              aria-hidden="true"
+            />
+          </div>
+        </div>
+        <p className="mt-2 text-sm text-red-600" id="pfi-error">
+          Not a valid PFI DID.
+        </p>
+      </div>
+      <button
+        type="button"
+        className="mt-2 rounded-md bg-white/10 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-white/20"
+        onClick={handleGetOfferingsClick}
+      >
+        Get Offerings
+      </button>
+
+      <hr className="my-4"></hr>
+      <div className="w-full">
+        <OfferingsListTailwind
+          replaceWithOfferings={offerings}
           onRfqButtonClick={handleRfqButtonClick}
-        />
-        <DialogForm
-          onClose={closeRfqDialogForm}
-          onSubmit={createRfq}
-          form={rfqForm}
-        />
-      </Box>
-    </ThemeProvider>
+        ></OfferingsListTailwind>
+      </div>
+    </div>
   );
 }

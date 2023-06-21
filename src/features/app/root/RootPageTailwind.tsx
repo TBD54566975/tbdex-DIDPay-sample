@@ -3,32 +3,28 @@ import { Dialog, Transition } from '@headlessui/react';
 import {
   Bars3Icon,
   CalendarIcon,
-  ChartPieIcon,
   DocumentDuplicateIcon,
   FolderIcon,
   HomeIcon,
   UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useWeb5Context } from '../../../context/Web5Context';
 
-const navigation = [
-  { name: 'Dashboard', link: '#', icon: HomeIcon, current: true },
+let navigation = [
   {
     name: 'Verifiable Credentials',
     link: '/verifiablecredentials',
     icon: UsersIcon,
     current: false,
   },
-  { name: 'Offerings', link: '/offerings', icon: FolderIcon, current: false },
-  { name: 'Quotes', link: '/quotes', icon: CalendarIcon, current: false },
   {
-    name: 'Orders',
+    name: 'Order History',
     link: '/orders',
     icon: DocumentDuplicateIcon,
     current: false,
   },
-  { name: 'Reports', link: '/reports', icon: ChartPieIcon, current: false },
 ];
 
 function classNames(...classes: string[]) {
@@ -37,6 +33,28 @@ function classNames(...classes: string[]) {
 
 export function RootPageTailwind() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentOption, setCurrentOption] = useState('');
+
+  const { profile, web5 } = useWeb5Context();
+  const location = useLocation();
+
+  const did = profile.did.id;
+
+  const handleSidebarItemClick = (index: number) => {
+    const updatedNavigation = navigation.map((item, i) => ({
+      ...item,
+      current: i === index,
+    }));
+    navigation = updatedNavigation;
+
+    if (index === -1) {
+      setCurrentOption(''); // Set header to empty string
+    } else {
+      setCurrentOption(navigation[index].name);
+    }
+
+    setSidebarOpen(false);
+  };
 
   return (
     <>
@@ -48,7 +66,7 @@ export function RootPageTailwind() {
         <body class="h-full">
         ```
       */}
-      <div>
+      <div className="dark">
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -104,20 +122,23 @@ export function RootPageTailwind() {
                   {/* Sidebar component, swap this element with another sidebar if you like */}
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
                     <div className="flex h-16 shrink-0 items-center">
-                      <img
-                        className="h-8 w-auto"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        alt="Your Company"
-                      />
+                      <Link to="/" onClick={() => handleSidebarItemClick(-1)}>
+                        <img
+                          className="h-8 w-auto"
+                          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                          alt="Your Company"
+                        />
+                      </Link>
                     </div>
                     <nav className="flex flex-1 flex-col">
                       <ul className="flex flex-1 flex-col gap-y-7">
                         <li>
                           <ul className="-mx-2 space-y-1">
-                            {navigation.map((item) => (
+                            {navigation.map((item, index) => (
                               <li key={item.name}>
-                                <Link //TODO: this link doesn't work properly
+                                <Link
                                   to={item.link}
+                                  onClick={() => handleSidebarItemClick(index)}
                                   className={classNames(
                                     item.current
                                       ? 'bg-gray-800 text-white'
@@ -149,20 +170,23 @@ export function RootPageTailwind() {
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
             <div className="flex h-16 shrink-0 items-center">
-              <img
-                className="h-8 w-auto"
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                alt="Your Company"
-              />
+              <Link to="/" onClick={() => handleSidebarItemClick(-1)}>
+                <img
+                  className="h-8 w-auto"
+                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                  alt="Your Company"
+                />
+              </Link>
             </div>
             <nav className="flex flex-1 flex-col">
               <ul className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul className="-mx-2 space-y-1">
-                    {navigation.map((item) => (
+                    {navigation.map((item, index) => (
                       <li key={item.name}>
                         <Link
                           to={item.link}
+                          onClick={() => handleSidebarItemClick(index)}
                           className={classNames(
                             item.current
                               ? 'bg-gray-800 text-white'
@@ -181,8 +205,8 @@ export function RootPageTailwind() {
                   </ul>
                 </li>
                 <li className="-mx-6 mt-auto">
-                  <a
-                    href="#"
+                  <Link
+                    to="/profile"
                     className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800"
                   >
                     <img
@@ -192,7 +216,7 @@ export function RootPageTailwind() {
                     />
                     <span className="sr-only">Your profile</span>
                     <span aria-hidden="true">Ethan Lee</span>
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </nav>
@@ -209,23 +233,21 @@ export function RootPageTailwind() {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
           <div className="flex-1 text-sm font-semibold leading-6 text-white">
-            Dashboard
+            {navigation.find((item) => item.current)?.name}
           </div>
-          <a href="#">
+          <Link to="/profile">
             <span className="sr-only">Your profile</span>
             <img
               className="h-8 w-8 rounded-full bg-gray-800"
               src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
               alt=""
             />
-          </a>
+          </Link>
         </div>
 
         <main className="py-10 lg:pl-72">
           <div className="px-4 sm:px-6 lg:px-8">
-            <Link to="/verifiablecredentials">
-              Go to Verifiable Credentials
-            </Link>
+            <Outlet />
           </div>
         </main>
       </div>
