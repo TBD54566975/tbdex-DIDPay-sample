@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { Box, Button, Stack, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Stack,
+  TextField,
+  createTheme,
+  ThemeProvider,
+} from '@mui/material';
 import { useWeb5Context } from '../../context/Web5Context';
 import OfferingsList from './OfferingsList';
 import DialogForm from '../../components/DialogForm/DialogForm';
 import { RfqForm, createRfqForm } from './RfqForm';
 import { Offering, RFQ } from '../../tbDexTypes';
 import { tbDexProtocolDefinition } from '../../tbDexProtocol';
+import { yellow } from '@mui/material/colors';
 
 export function OfferingsPage() {
   const [pfiDid, setPfiDid] = useState('');
@@ -70,32 +78,62 @@ export function OfferingsPage() {
     setRfqForm(undefined);
   };
 
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFFF00',
+        contrastText: 'black',
+      },
+      text: {
+        primary: '#FFFF00', // Yellow label color
+        secondary: '#FFFF00',
+      },
+    },
+    components: {
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#transparent', // Black background color
+            color: '#FFFF00', // Yellow font color
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#FFFF00', // Yellow border color
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
   return (
-    <Box>
-      <Stack spacing={1}>
-        <TextField
-          label="PFI DID"
-          value={pfiDid}
-          onChange={handlePfiDidChange}
-          fullWidth
+    <ThemeProvider theme={theme}>
+      <Box>
+        <Stack spacing={1}>
+          <TextField
+            label="PFI DID"
+            value={pfiDid}
+            onChange={handlePfiDidChange}
+            fullWidth
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleGetOfferingsClick}
+          >
+            Get Offerings
+          </Button>
+        </Stack>
+        <OfferingsList
+          offerings={offerings}
+          onRfqButtonClick={handleRfqButtonClick}
         />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleGetOfferingsClick}
-        >
-          Get Offerings
-        </Button>
-      </Stack>
-      <OfferingsList
-        offerings={offerings}
-        onRfqButtonClick={handleRfqButtonClick}
-      />
-      <DialogForm
-        onClose={closeRfqDialogForm}
-        onSubmit={createRfq}
-        form={rfqForm}
-      />
-    </Box>
+        <DialogForm
+          onClose={closeRfqDialogForm}
+          onSubmit={createRfq}
+          form={rfqForm}
+        />
+      </Box>
+    </ThemeProvider>
   );
 }

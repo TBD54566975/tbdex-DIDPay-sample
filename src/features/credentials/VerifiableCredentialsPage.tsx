@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useWeb5Context } from '../../context/Web5Context';
-import { Button, Stack } from '@mui/material';
+import { Button, Stack, createTheme, ThemeProvider } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { CredentialCard } from './CredentialCard';
 import DialogForm from '../../components/DialogForm/DialogForm';
@@ -90,8 +90,21 @@ export function VerifiableCredentialsPage() {
     setCreateCredentialForm(undefined);
   };
 
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFFF00',
+        contrastText: 'black',
+      },
+      text: {
+        primary: '#FFFF00', // Yellow label color
+        secondary: '#FFFF00',
+      },
+    },
+  });
+
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <Grid container spacing={3} columns={12}>
         {credentials.map((credential, index) => {
           return <CredentialCard key={index} creds={credential} />;
@@ -117,6 +130,6 @@ export function VerifiableCredentialsPage() {
         onSubmit={handleSubmit}
         form={createCredentialForm}
       />
-    </>
+    </ThemeProvider>
   );
 }

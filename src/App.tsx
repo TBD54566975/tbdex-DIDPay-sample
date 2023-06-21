@@ -2,6 +2,7 @@ import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Web5ContextProvider } from './context/Web5Context';
 import { RootPage } from './features/app/root/RootPage';
+import { RootPageTailwind } from './features/app/root/RootPageTailwind';
 import { IndexPage } from './features/app/IndexPage';
 import { VerifiableCredentialsPage } from './features/credentials/VerifiableCredentialsPage';
 import { OfferingsPage } from './features/offerings/OfferingsPage';
@@ -15,7 +16,7 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <RootPage />,
+    element: <RootPageTailwind />,
     children: [
       {
         index: true,
@@ -49,6 +50,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Web5ContextProvider>
+        {/* <RootPageTailwind></RootPageTailwind> */}
         <RouterProvider router={router} />
       </Web5ContextProvider>
     </QueryClientProvider>

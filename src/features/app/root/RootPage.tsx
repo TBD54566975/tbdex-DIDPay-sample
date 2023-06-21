@@ -14,6 +14,8 @@ import {
   Stack,
   Toolbar,
   Typography,
+  createTheme,
+  ThemeProvider,
 } from '@mui/material';
 import { TruncatedTypography } from '../../../components/TruncatedTypography';
 import { useWeb5Context } from '../../../context/Web5Context';
@@ -65,16 +67,43 @@ export function RootPage() {
   const container =
     window !== undefined ? () => window.document.body : undefined;
 
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFFF00',
+        contrastText: 'black',
+      },
+      text: {
+        primary: '#FFFF00', // Yellow label color
+        secondary: '#FFFF00', //try using R108, G238, B254
+      },
+    },
+  });
+
   const drawerContents = (
-    <>
-      <Toolbar>
+    <ThemeProvider theme={theme}>
+      <Toolbar
+        sx={{
+          borderRight: '2px solid',
+          borderRightColor: 'yellow',
+          backgroundColor: 'black',
+        }}
+      >
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
           <Typography variant="h6" component={UncoloredRouterLink} to={'/'}>
             DIDPay
           </Typography>
         </Box>
       </Toolbar>
-      <List sx={{ display: 'flex', flexDirection: 'column' }}>
+      <List
+        sx={{
+          borderRight: '2px solid',
+          borderRightColor: 'yellow',
+          backgroundColor: 'black',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {['Verifiable Credentials', 'Offerings', 'Quotes', 'Orders'].map(
           (text, index) => (
             <ListItem
@@ -95,6 +124,9 @@ export function RootPage() {
         )}
       </List>
       <Box
+        bgcolor="black"
+        borderRight={2}
+        borderColor="yellow"
         sx={{
           flex: 1,
           display: 'flex',
@@ -117,76 +149,84 @@ export function RootPage() {
           <Button onClick={handleWipeState}>Wipe State</Button>
         </Stack>
       </Box>
-    </>
+    </ThemeProvider>
   );
 
   const desktopDrawer = (
-    <Drawer
-      variant="permanent"
-      sx={{
-        display: { xs: 'none', sm: 'block' },
-        '& .MuiDrawer-paper': {
-          boxSizing: 'border-box',
-          width: drawerWidth,
-        },
-      }}
-      open
-    >
-      {drawerContents}
-    </Drawer>
+    <ThemeProvider theme={theme}>
+      <Drawer
+        variant="permanent"
+        sx={{
+          borderRight: '10px solid',
+          borderRightColor: 'red',
+          display: { xs: 'none', sm: 'block' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: drawerWidth,
+          },
+        }}
+        open
+      >
+        {drawerContents}
+      </Drawer>
+    </ThemeProvider>
   );
 
   const mobileDrawer = (
-    <Drawer
-      container={container}
-      variant="temporary"
-      open={mobileOpen}
-      onClose={handleDrawerToggle}
-      ModalProps={{
-        keepMounted: true, // Better open performance on mobile.
-      }}
-      sx={{
-        display: { xs: 'block', sm: 'none' },
-        '& .MuiDrawer-paper': {
-          boxSizing: 'border-box',
-          width: drawerWidth,
-        },
-      }}
-    >
-      {drawerContents}
-    </Drawer>
+    <ThemeProvider theme={theme}>
+      <Drawer
+        container={container}
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: drawerWidth,
+          },
+        }}
+      >
+        {drawerContents}
+      </Drawer>
+    </ThemeProvider>
   );
 
   const header = (
-    <AppBar
-      position="fixed"
-      sx={{
-        width: { sm: `calc(100% - ${drawerWidth}px)` },
-        ml: { sm: `${drawerWidth}px` },
-      }}
-    >
-      <Toolbar>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{ mr: 2, display: { sm: 'none' } }}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" noWrap component="div">
-          {RootUtils.getPrettyRouteName(location.pathname)}
-        </Typography>
-      </Toolbar>
-    </AppBar>
+    <ThemeProvider theme={theme}>
+      <AppBar
+        position="fixed"
+        sx={{
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            {RootUtils.getPrettyRouteName(location.pathname)}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+    </ThemeProvider>
   );
 
   const main = (
-    <>
+    <ThemeProvider theme={theme}>
       <Toolbar />
       <Outlet />
-    </>
+    </ThemeProvider>
   );
 
   return (
