@@ -5,7 +5,7 @@ import {
   ArrowPathIcon,
   UsersIcon,
   XMarkIcon,
-  MagnifyingGlassIcon,
+  HomeIcon,
 } from '@heroicons/react/24/outline';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useWeb5Context } from '../../../context/Web5Context';
@@ -16,7 +16,13 @@ import { default as tbdLogo } from './tbd-logo.svg';
 
 let navigation = [
   {
-    name: 'Verifiable Credentials',
+    name: 'Home',
+    link: '/',
+    icon: HomeIcon,
+    current: true,
+  },
+  {
+    name: 'Identity',
     link: '/verifiablecredentials',
     icon: UsersIcon,
     current: false,

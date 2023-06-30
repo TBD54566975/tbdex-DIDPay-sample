@@ -4,6 +4,10 @@ import {
   CreditCardIcon,
 } from '@heroicons/react/20/solid';
 import { Offering, PaymentMethodKind } from '@tbd54566975/tbdex';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 type CardProps = {
   offering: Offering;
@@ -17,8 +21,10 @@ function getRate(
   return `1 ${quoteCurrency} / ${unitPrice} ${baseCurrency}`;
 }
 
+// TODO: add a back button
 export function OfferingCard({ offering, handleAction }: CardProps) {
-  console.log(offering);
+  const kyc = JSON.parse(offering.kycRequirements);
+
   return (
     <div className="overflow-hidden bg-neutral-900 shadow sm:rounded-lg">
       <div className="px-4 py-6 sm:px-6 flex items-center justify-between">
@@ -27,7 +33,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
             {offering?.description ?? 'No description available'}
           </h3>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
-            listed on {offering.createdTime}
+            Listed {dayjs(offering.createdTime).fromNow(true)} ago
           </p>
         </div>
         <div onClick={() => handleAction()}>
@@ -77,11 +83,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
               KYC requirements
             </dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim
-              incididunt cillum culpa consequat. Excepteur qui ipsum aliquip
-              consequat sint. Sit id mollit nulla mollit nostrud in ea officia
-              proident. Irure nostrud pariatur mollit ad adipisicing
-              reprehenderit deserunt qui eu.
+              {kyc.presentation_definition.input_descriptors[0].name}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">

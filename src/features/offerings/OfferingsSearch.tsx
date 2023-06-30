@@ -1,12 +1,9 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Combobox, Dialog, Transition } from '@headlessui/react';
-import { Offering, PaymentMethodKind } from '@tbd54566975/tbdex';
-import {
-  ExclamationCircleIcon,
-  MagnifyingGlassIcon,
-} from '@heroicons/react/20/solid';
+import { Offering } from '@tbd54566975/tbdex';
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { useNavigate } from 'react-router-dom';
-import moment from 'moment';
+import { offerings } from '../FakeObjects';
 
 export function OfferingsSearch() {
   const [pfiDid, setPfiDid] = useState('');
@@ -15,6 +12,7 @@ export function OfferingsSearch() {
   const [open, setOpen] = useState(false);
 
   const navigate = useNavigate();
+  // const isPatternValid = /^did:ion:/.test(pfiDid);
 
   const handlePfiDidChange = (event: {
     target: { value: React.SetStateAction<string> };
@@ -23,6 +21,7 @@ export function OfferingsSearch() {
   };
 
   const handleGetOfferingsClick = async () => {
+    // TODO: search for pfiDid offering
     // const { records } = await web5.dwn.records.query({
     //   from: pfiDid,
     //   message: {
@@ -39,167 +38,15 @@ export function OfferingsSearch() {
     // );
 
     // setOfferings(offerings);
-    navigate('offerings');
-  };
-
-  function generateUniqueId(): string {
-    const timestamp: number = new Date().getTime();
-    const randomId: string = Math.random().toString(36).substr(2, 9);
-    return `${timestamp}-${randomId}`;
-  }
-
-  function generateRandomTimestamp(): string {
-    const randomTimestamp = moment()
-      .subtract(Math.floor(Math.random() * 12), 'months')
-      .subtract(Math.floor(Math.random() * 30), 'days')
-      .set('hour', Math.floor(Math.random() * 24))
-      .set('minute', Math.floor(Math.random() * 60))
-      .set('second', Math.floor(Math.random() * 60))
-      .set('millisecond', Math.floor(Math.random() * 1000))
-      .format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ');
-
-    return randomTimestamp;
-  }
-
-  const offerings: Offering[] = [
-    {
-      id: generateUniqueId(),
-      description: 'TBD',
-      baseCurrency: 'BTC',
-      quoteCurrency: 'USD',
-      unitPrice: '30025.50',
-      baseFee: '15',
-      min: '100',
-      max: '20000',
-      kycRequirements: 'string',
-      payinMethods: [
-        {
-          kind: PaymentMethodKind.DEBIT_CARD,
-          paymentPresentationRequestJwt: 'string',
-        },
-        {
-          kind: PaymentMethodKind.SQUARE_PAY,
-          paymentPresentationRequestJwt: 'string',
-        },
-      ],
-      payoutMethods: [
-        {
-          kind: PaymentMethodKind.BITCOIN_ADDRESS,
-          paymentPresentationRequestJwt: 'string',
-          fee: {
-            flatFee: '5',
-          },
-        },
-      ],
-      createdTime: generateRandomTimestamp(),
-    },
-    {
-      id: generateUniqueId(),
-      description: 'TBD',
-      baseCurrency: 'BTC',
-      quoteCurrency: 'MXN',
-      unitPrice: '514279.77',
-      baseFee: '235',
-      min: '1000',
-      max: '400000',
-      kycRequirements: 'string',
-      payinMethods: [
-        {
-          kind: PaymentMethodKind.DEBIT_CARD,
-          paymentPresentationRequestJwt: 'string',
-          fee: {
-            flatFee: '20',
-          },
-        },
-      ],
-      payoutMethods: [
-        {
-          kind: PaymentMethodKind.BITCOIN_ADDRESS,
-          paymentPresentationRequestJwt: 'string',
-          fee: {
-            flatFee: '10',
-          },
-        },
-      ],
-      createdTime: generateRandomTimestamp(),
-    },
-    {
-      id: generateUniqueId(),
-      description: 'TBD',
-      baseCurrency: 'USD',
-      quoteCurrency: 'GHA',
-      unitPrice: '11.3',
-      baseFee: '2',
-      min: '10',
-      max: '950',
-      kycRequirements: 'string',
-      payinMethods: [
-        {
-          kind: PaymentMethodKind.DEBIT_CARD,
-          paymentPresentationRequestJwt: 'string',
-        },
-        {
-          kind: PaymentMethodKind.SQUARE_PAY,
-          paymentPresentationRequestJwt: 'string',
-          fee: {
-            flatFee: '8',
-          },
-        },
-      ],
-      payoutMethods: [
-        {
-          kind: PaymentMethodKind.BITCOIN_ADDRESS,
-          paymentPresentationRequestJwt: 'string',
-          fee: {
-            flatFee: '45',
-          },
-        },
-      ],
-      createdTime: generateRandomTimestamp(),
-    },
-    {
-      id: generateUniqueId(),
-      description: 'TBD',
-      baseCurrency: 'BTC',
-      quoteCurrency: 'GHA',
-      unitPrice: '339288.15',
-      baseFee: '175',
-      min: '900',
-      max: '9000',
-      kycRequirements: 'string',
-      payinMethods: [
-        {
-          kind: PaymentMethodKind.DEBIT_CARD,
-          paymentPresentationRequestJwt: 'string',
-          fee: {
-            flatFee: '30',
-          },
-        },
-      ],
-      payoutMethods: [
-        {
-          kind: PaymentMethodKind.BITCOIN_ADDRESS,
-          paymentPresentationRequestJwt: 'string',
-          fee: {
-            flatFee: '50',
-          },
-        },
-      ],
-      createdTime: generateRandomTimestamp(),
-    },
-  ];
-
-  const isPatternValid = /^did:ion:/.test(pfiDid);
-
-  const showError = () => {
-    return !isPatternValid && pfiDid.length > 0;
+    // TODO: will need to change '/offering' state to accept multiple offerings
+    // navigate('/offering', { state: { offering: offering } });
+    navigate('/offerings');
   };
 
   const handleKeyDown = (event: { key: string }) => {
     if (event.key === 'Enter') {
       handleGetOfferingsClick();
     }
-    navigate('/offerings');
   };
 
   const handleComboboxChange = (offering: Offering) => {
@@ -235,17 +82,24 @@ export function OfferingsSearch() {
     return `1 ${quoteCurrency} / ${unitPrice} ${baseCurrency}`;
   }
 
-  function getPriceRange(min: string, max: string, quoteCurrency: string) {
-    return `${min} ${quoteCurrency} - ${max} ${quoteCurrency}`;
-  }
-
-  function getBaseFee(baseFee: string, quoteCurrency: string) {
-    return `${baseFee} ${quoteCurrency} fee`;
-  }
-
   function classNames(...classes: (string | boolean)[]) {
     return classes.filter(Boolean).join(' ');
   }
+
+  useEffect(() => {
+    const handleHotkey = (event: KeyboardEvent) => {
+      if (event.key === 'k' && event.metaKey) {
+        event.preventDefault();
+        setOpen((prevOpen) => !prevOpen);
+      }
+    };
+
+    document.addEventListener('keydown', handleHotkey);
+
+    return () => {
+      document.removeEventListener('keydown', handleHotkey);
+    };
+  }, []);
 
   return (
     <>
@@ -255,11 +109,14 @@ export function OfferingsSearch() {
             className="block rounded-md w-full py-1.5 pl-3 pr-12 bg-neutral-900 text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm"
             placeholder="Search..."
             onClick={() => setOpen(true)}
-            // onKeyDown={handleKeyDown}
-            // onChange={handlePfiDidChange}
+            onKeyDown={handleKeyDown}
+            onChange={handlePfiDidChange}
             style={{ outline: 'none', boxShadow: 'none' }}
             readOnly
           />
+          <span className="absolute inset-y-0 right-3 flex items-center text-gray-400">
+            <span className="hidden lg:inline-block">⌘K</span>
+          </span>
         </div>
       </div>
 

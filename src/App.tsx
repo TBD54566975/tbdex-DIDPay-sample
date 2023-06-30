@@ -4,7 +4,7 @@ import { Web5ContextProvider } from './context/Web5Context';
 import { RootPage } from './features/app/root/RootPage';
 import { IndexPage } from './features/app/IndexPage';
 import { VerifiableCredentialsPage } from './features/credentials/VerifiableCredentialsPage';
-import { OngoingOrdersPage } from './features/orders/OngoingOrdersPage';
+import { HomePage } from './features/home/HomePage';
 import { HistoryPage } from './features/history/HistoryPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { OfferingsPage } from './features/offerings/OfferingsPage';
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <OngoingOrdersPage />,
+        element: <HomePage />,
       },
       {
         path: '/verifiablecredentials',

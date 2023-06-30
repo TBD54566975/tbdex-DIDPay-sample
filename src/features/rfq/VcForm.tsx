@@ -141,6 +141,7 @@ function VcDropdown({ header, value, onChange }: VcDropdownProps) {
   );
 }
 
+// TODO: if user doesn't have vc, put a vc issuing form in the modal
 export function VcForm({ vcData, onSubmit, onBack }: VcFormProps) {
   const [credential, setCredential] = useState(vcData.credential);
 

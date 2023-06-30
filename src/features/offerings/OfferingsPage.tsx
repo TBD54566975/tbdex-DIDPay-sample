@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-  ChevronRightIcon,
-  CodeBracketIcon,
-  CreditCardIcon,
-} from '@heroicons/react/20/solid';
 import { RfqModal } from '../rfq/RfqModal';
-import { Offering, PaymentMethodKind } from '@tbd54566975/tbdex';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { OfferingCard } from './OfferingCard';
 
