@@ -1,15 +1,24 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/features/app/root/RootPageTailwind.tsx',
-    './src/features/credentials/VerifiableCredentialsPageTailwind.tsx',
-    './src/features/offerings/OfferingsPageTailwind.tsx',
-    './src/features/offerings/OfferingsListTailwind.tsx',
-    './src/features/orders/OrdersPageTailwind.tsx',
+    './src/features/app/root/RootPage.tsx',
+    './src/features/credentials/VerifiableCredentialsPage.tsx',
+    './src/features/history/HistoryPage.tsx',
+    './src/features/offerings/OfferingPage.tsx',
+    './src/features/offerings/OfferingCard.tsx',
+    './src/features/offerings/OfferingsSearch.tsx',
+    './src/features/rfq/RfqModal.tsx',
+    './src/features/rfq/ProgressPanel.tsx',
+    './src/features/rfq/PaymentForm.tsx',
+    './src/features/rfq/VcForm.tsx',
+    './src/features/rfq/ExchangeForm.tsx',
+    './src/features/rfq/ReviewForm.tsx',
+    './src/features/orders/OngoingOrdersPage.tsx',
+    './src/features/threads/ThreadFeed.tsx',
   ],
-  darkMode: 'class',
   theme: {
     extend: {},
   },
   plugins: [require('@tailwindcss/forms')],
+  darkMode: 'class',
 };

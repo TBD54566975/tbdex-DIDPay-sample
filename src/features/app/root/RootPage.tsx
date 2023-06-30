@@ -1,255 +1,271 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Fragment, useState } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
 import {
-  AppBar,
-  Box,
-  Button,
-  CssBaseline,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Stack,
-  Toolbar,
-  Typography,
-  createTheme,
-  ThemeProvider,
-} from '@mui/material';
-import { TruncatedTypography } from '../../../components/TruncatedTypography';
+  Bars3Icon,
+  ArrowPathIcon,
+  UsersIcon,
+  XMarkIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/react/24/outline';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useWeb5Context } from '../../../context/Web5Context';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useState } from 'react';
-import { DrawerIcon } from './DrawerIcon';
-import { RootUtils } from './rootUtils';
-import { UncoloredRouterLink } from './UncoloredRouterLink';
+import { OfferingsSearch } from '../../offerings/OfferingsSearch';
+import { default as leftBracket } from './left-bracket-light.svg';
+import { default as rightBracket } from './right-bracket-light.svg';
+import { default as tbdLogo } from './tbd-logo.svg';
 
-const drawerWidth = 240;
+let navigation = [
+  {
+    name: 'Verifiable Credentials',
+    link: '/verifiablecredentials',
+    icon: UsersIcon,
+    current: false,
+  },
+  {
+    name: 'Order History',
+    link: '/history',
+    icon: ArrowPathIcon,
+    current: false,
+  },
+];
+
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(' ');
+}
 
 export function RootPage() {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentOption, setCurrentOption] = useState('');
+
   const { profile, web5 } = useWeb5Context();
   const location = useLocation();
 
   const did = profile.did.id;
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const handleSidebarItemClick = (index: number) => {
+    const updatedNavigation = navigation.map((item, i) => ({
+      ...item,
+      current: i === index,
+    }));
+    navigation = updatedNavigation;
 
-  const handleCopyDidClick = () => {
-    if (did) {
-      navigator.clipboard.writeText(did);
-    }
-  };
-
-  const handleWipeState = async () => {
-    // doesnt work for some reason
-    web5.appStorage.clear();
-
-    // hack instead
-    await manuallyClearState();
-  };
-
-  const manuallyClearState = async () => {
-    const databases = await window.indexedDB.databases();
-
-    for (const db of databases) {
-      window.indexedDB.deleteDatabase(db.name!);
+    if (index === -1) {
+      setCurrentOption(''); // Set header to empty string
+    } else {
+      console.log(navigation[index].name);
+      setCurrentOption(navigation[index].name);
     }
 
-    document.location.reload();
+    setSidebarOpen(false);
   };
-
-  const closeDrawerOnClick = () => setMobileOpen(false);
-
-  const container =
-    window !== undefined ? () => window.document.body : undefined;
-
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: '#FFFF00',
-        contrastText: 'black',
-      },
-      text: {
-        primary: '#FFFF00', // Yellow label color
-        secondary: '#FFFF00', //try using R108, G238, B254
-      },
-    },
-  });
-
-  const drawerContents = (
-    <ThemeProvider theme={theme}>
-      <Toolbar
-        sx={{
-          borderRight: '2px solid',
-          borderRightColor: 'yellow',
-          backgroundColor: 'black',
-        }}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="h6" component={UncoloredRouterLink} to={'/'}>
-            DIDPay
-          </Typography>
-        </Box>
-      </Toolbar>
-      <List
-        sx={{
-          borderRight: '2px solid',
-          borderRightColor: 'yellow',
-          backgroundColor: 'black',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        {['Verifiable Credentials', 'Offerings', 'Quotes', 'Orders'].map(
-          (text, index) => (
-            <ListItem
-              key={text}
-              component={UncoloredRouterLink}
-              to={RootUtils.getDrawerLinkURL(text)}
-              disablePadding
-              onClick={closeDrawerOnClick}
-            >
-              <ListItemButton>
-                <ListItemIcon>
-                  <DrawerIcon page={text} />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          )
-        )}
-      </List>
-      <Box
-        bgcolor="black"
-        borderRight={2}
-        borderColor="yellow"
-        sx={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-          p: 1,
-        }}
-      >
-        <Typography variant="h6" color="text.secondary">
-          Active Profile
-        </Typography>
-        <TruncatedTypography variant="body1" color="text.primary">
-          {did}
-        </TruncatedTypography>
-        <Stack direction="column">
-          <Button onClick={handleCopyDidClick}>Copy DID</Button>
-          <Button component={Link} to={`/profile`}>
-            View JSON
-          </Button>
-          <Button onClick={handleWipeState}>Wipe State</Button>
-        </Stack>
-      </Box>
-    </ThemeProvider>
-  );
-
-  const desktopDrawer = (
-    <ThemeProvider theme={theme}>
-      <Drawer
-        variant="permanent"
-        sx={{
-          borderRight: '10px solid',
-          borderRightColor: 'red',
-          display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: drawerWidth,
-          },
-        }}
-        open
-      >
-        {drawerContents}
-      </Drawer>
-    </ThemeProvider>
-  );
-
-  const mobileDrawer = (
-    <ThemeProvider theme={theme}>
-      <Drawer
-        container={container}
-        variant="temporary"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
-        }}
-        sx={{
-          display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: drawerWidth,
-          },
-        }}
-      >
-        {drawerContents}
-      </Drawer>
-    </ThemeProvider>
-  );
-
-  const header = (
-    <ThemeProvider theme={theme}>
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            {RootUtils.getPrettyRouteName(location.pathname)}
-          </Typography>
-        </Toolbar>
-      </AppBar>
-    </ThemeProvider>
-  );
-
-  const main = (
-    <ThemeProvider theme={theme}>
-      <Toolbar />
-      <Outlet />
-    </ThemeProvider>
-  );
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      {header}
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-      >
-        {mobileDrawer}
-        {desktopDrawer}
-      </Box>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-        }}
-      >
-        {main}
-      </Box>
-    </Box>
+    <>
+      {/*
+        This example requires updating your template:
+
+        ```
+        <html class="h-full bg-white">
+        <body class="h-full">
+        ```
+      */}
+      <div>
+        <Transition.Root show={sidebarOpen} as={Fragment}>
+          <Dialog
+            as="div"
+            className="relative z-50 lg:hidden"
+            onClose={setSidebarOpen}
+          >
+            <Transition.Child
+              as={Fragment}
+              enter="transition-opacity ease-linear duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity ease-linear duration-300"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-gray-900/80" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 flex">
+              <Transition.Child
+                as={Fragment}
+                enter="transition ease-in-out duration-300 transform"
+                enterFrom="-translate-x-full"
+                enterTo="translate-x-0"
+                leave="transition ease-in-out duration-300 transform"
+                leaveFrom="translate-x-0"
+                leaveTo="-translate-x-full"
+              >
+                <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-in-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in-out duration-300"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
+                      <button
+                        type="button"
+                        className="-m-2.5 p-2.5"
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        <span className="sr-only">Close sidebar</span>
+                        <XMarkIcon
+                          className="h-6 w-6 text-white"
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </div>
+                  </Transition.Child>
+                  {/* Sidebar component, swap this element with another sidebar if you like */}
+                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-950 px-6 pb-2 ring-1 ring-white/10">
+                    <div
+                      className="flex h-16 shrink-0 items-center "
+                      style={{ filter: 'var(--color-primary-yellow-filter)' }}
+                    >
+                      <img
+                        className="h-8 w-auto"
+                        src={leftBracket}
+                        alt="left bracket"
+                      />
+                      <Link
+                        to="/"
+                        onClick={() => handleSidebarItemClick(-1)}
+                        style={{ fontSize: '22px' }}
+                      >
+                        <div>DIDPay</div>
+                      </Link>
+                      <img
+                        className="h-8 w-auto"
+                        src={rightBracket}
+                        alt="right bracket"
+                      />
+                    </div>
+                    <nav className="flex flex-1 flex-col">
+                      <ul className="flex flex-1 flex-col gap-y-7">
+                        <li>
+                          <ul className="-mx-2 space-y-1">
+                            {navigation.map((item, index) => (
+                              <li key={item.name}>
+                                <Link
+                                  to={item.link}
+                                  onClick={() => handleSidebarItemClick(index)}
+                                  className={classNames(
+                                    item.current
+                                      ? 'bg-gray-800 text-white'
+                                      : 'text-yellow-300 hover:text-yellow-100 hover:bg-gray-800',
+                                    'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                  )}
+                                >
+                                  <item.icon
+                                    className="h-6 w-6 shrink-0"
+                                    aria-hidden="true"
+                                  />
+                                  {item.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </Dialog>
+        </Transition.Root>
+
+        {/* Static sidebar for desktop */}
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+          {/* Sidebar component, swap this element with another sidebar if you like */}
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-950 px-6">
+            <div className="flex h-16 shrink-0 items-center">
+              <img
+                className="h-8 w-auto"
+                src={leftBracket}
+                alt="left bracket"
+                style={{ filter: 'var(--color-primary-yellow-filter)' }}
+              />
+              <Link
+                to="/"
+                onClick={() => handleSidebarItemClick(-1)}
+                style={{ fontSize: '22px' }}
+              >
+                <div
+                  style={{
+                    filter: 'var(--color-primary-yellow-filter)',
+                  }}
+                >
+                  DIDPay
+                </div>
+              </Link>
+              <img
+                className="h-8 w-auto"
+                src={rightBracket}
+                alt="right bracket"
+                style={{ filter: 'var(--color-primary-yellow-filter)' }}
+              />
+            </div>
+            <nav className="flex flex-1 flex-col">
+              <ul className="flex flex-1 flex-col gap-y-7">
+                <li>
+                  <ul className="-mx-2 space-y-1">
+                    {navigation.map((item, index) => (
+                      <li key={item.name}>
+                        <Link
+                          to={item.link}
+                          onClick={() => handleSidebarItemClick(index)}
+                          className={classNames(
+                            item.current
+                              ? 'bg-gray-800 text-white'
+                              : 'text-yellow-300 hover:text-yellow-100 hover:bg-gray-800',
+                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                          )}
+                        >
+                          <item.icon
+                            className="h-6 w-6 shrink-0"
+                            aria-hidden="true"
+                          />
+                          {item.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-neutral-950 px-4 py-4 shadow-sm sm:px-6">
+          <button
+            type="button"
+            className="-m-2.5 p-2.5 text-gray-400"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <span className="sr-only">Open sidebar</span>
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          </button>
+
+          <div className="ml-auto lg:gap-x-6 lg:pl-64">
+            {/* {navigation.find((item) => item.current)?.name} */}
+
+            <OfferingsSearch></OfferingsSearch>
+          </div>
+        </div>
+
+        <main className="py-10 lg:pl-72">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </>
   );
 }
