@@ -62,7 +62,7 @@ const kycRequirements = {
   },
 };
 
-export const offerings: Offering[] = [
+export const fakeOfferings: Offering[] = [
   {
     id: generateUniqueId(),
     description: 'TBD',

@@ -2,17 +2,20 @@ import { useState } from 'react';
 import { RfqModal } from '../rfq/RfqModal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { OfferingCard } from './OfferingCard';
+import { Offering } from '@tbd54566975/tbdex';
 
 export function OfferingsPage() {
   const [rfqModalOpen, setRfqModalOpen] = useState(false);
-  // const [selectedOffering, setSelectedOffering] = useState(offerings[0]); // TODO: fix
+  const [selectedOffering, setSelectedOffering] = useState<
+    Offering | undefined
+  >(); // TODO: fix
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { offering } = location.state || {}; // Use destructuring with default value
+  const { offerings } = location.state || {}; // Use destructuring with default value
 
-  const handleRequestQuote = () => {
-    // setSelectedOffering(offering);
+  const handleRequestQuote = (offering: Offering) => {
+    setSelectedOffering(offering);
     setRfqModalOpen(true);
   };
 
@@ -21,19 +24,24 @@ export function OfferingsPage() {
     if (hasSubmitted) {
       navigate('/');
     } else {
-      navigate('/offering', { state: { offering: offering } });
+      navigate('/offerings', { state: { offerings } });
     }
   };
 
   return (
     <div>
-      <OfferingCard
-        offering={offering}
-        handleAction={handleRequestQuote}
-      ></OfferingCard>
-      {rfqModalOpen && (
+      {offerings &&
+        offerings.map((offering: Offering, index: string) => (
+          <div className="pb-8 pl-4 pr-4" key={index}>
+            <OfferingCard
+              offering={offering}
+              handleAction={() => handleRequestQuote(offering)}
+            ></OfferingCard>
+          </div>
+        ))}
+      {rfqModalOpen && selectedOffering && (
         <RfqModal
-          offering={offering}
+          offering={selectedOffering}
           isOpen={rfqModalOpen}
           onClose={handleModalClose}
         />

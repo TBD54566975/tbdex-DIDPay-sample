@@ -29,7 +29,7 @@ export function HomePage() {
         {keys.map((contextId, index) => {
           const threadData = threadManager.getThread(contextId);
           return (
-            <div className="flow-root pb-7">
+            <div className="flow-root pb-7" key={index}>
               <div className="overflow-hidden bg-neutral-900 shadow sm:rounded-lg rounded-md">
                 <div className="px-4 py-6 sm:px-6">
                   <Threads threadData={threadData}></Threads>

@@ -5,9 +5,8 @@ import { ReviewForm } from './ReviewForm';
 import { VcForm } from './VcForm';
 import { ExchangeForm } from './ExchangeForm';
 import { PaymentForm } from './PaymentForm';
-import { Offering } from '@tbd54566975/tbdex';
+import { Offering, Rfq, aliceProtocolDefinition } from '@tbd54566975/tbdex';
 import { useWeb5Context } from '../../context/Web5Context';
-
 import {
   FormData,
   ExchangeFormData,
@@ -25,7 +24,6 @@ type RfqModalProps = {
 
 export function RfqModal({ offering, isOpen, onClose }: RfqModalProps) {
   const { profile, web5 } = useWeb5Context();
-
   const [step, setStep] = useState(0);
   const [exchangeData, setExchangeData] = useState<ExchangeFormData>({
     amount: '',
@@ -44,34 +42,6 @@ export function RfqModal({ offering, isOpen, onClose }: RfqModalProps) {
     { name: 'Select VCs', status: 'upcoming' },
     { name: 'Review', status: 'upcoming' },
   ];
-
-  const createRfq = async () => {
-    // const rfq: Rfq = {
-    //   pair: offering.pair, // TODO: move this, maybe to `Form` and have caller supply constructor?
-    //   amount: exchangeData.amount,
-    //   verifiablePresentationJwt: vcData.credential,
-    //   payinInstrument: {
-    //     kind: paymentData.payinInstrument
-    //   },
-    //   payoutInstrument: {
-    //     kind: paymentData.payoutInstrument
-    //   }
-    // };
-    // const { record, status } = await web5.dwn.records.write({
-    //   data: rfq,
-    //   message: {
-    //     protocol: tbDexProtocolDefinition.protocol,
-    //     protocolPath: 'RFQ',
-    //     schema: 'https://tbd.website/protocols/tbdex/RequestForQuote',
-    //     recipient: pfiDid,
-    //   },
-    // });
-    // if (200 <= status.code && status.code <= 299) {
-    //   // closeRfqDialogForm();
-    // } else {
-    //   alert('Error creating RFQ (Code $(status.code)');
-    // }
-  };
 
   const handleNextStep = (formData: FormData | null = null) => {
     if (step === 0) {
@@ -100,6 +70,46 @@ export function RfqModal({ offering, isOpen, onClose }: RfqModalProps) {
       setVcData(vcFormData);
     }
     setStep((prevStep) => prevStep - 1);
+  };
+
+  // TODO: follow up on PaymentMethodKind returning numbers
+  const createRfq = async () => {
+    // Create the Rfq object from form data
+    const rfq: Rfq = {
+      baseCurrency: offering.baseCurrency,
+      quoteCurrency: offering.quoteCurrency,
+      amount: exchangeData.amount,
+      kycProof: 'proofff',
+      payinMethod: {
+        kind: paymentData.payinInstrument,
+      },
+      payoutMethod: {
+        kind: paymentData.payoutInstrument,
+      },
+    };
+
+    const { record, status } = await web5.dwn.records.write({
+      data: rfq,
+      message: {
+        protocol: aliceProtocolDefinition.protocol,
+        protocolPath: 'RFQ',
+        schema: aliceProtocolDefinition.types.RFQ.schema,
+        recipient:
+          'did:ion:EiB1rtmnzpHDkTgVPkx9wUbS_OrtF5yIJEpICsZlsHq86g:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJhdXRoeiIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJ2UGlPYTVtMXhzQXI3NUVVN2pDVE9PeU9tYk5ocjEwNHVoUkR5YnBfcmM0IiwieSI6InlqMzdUT0RiQjUwbkVtZnFfb3JNVEpDM2lHNXh5Wk9LaXBhbGFzWW85NW8ifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6Ikpzb25XZWJLZXkyMDIwIn0seyJpZCI6ImVuYyIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiI1NGxqSXhiSFlBYjdtVnF0S2x3YmdBTEJCOUQwLUJiN1loVG9rNnJSZkdFIiwieSI6IjRqam80RDFzbHY5b3BGeTlDVWVtbGV2TklDYXRjV2huR1d6Q1NIa0VlbXMifSwicHVycG9zZXMiOlsia2V5QWdyZWVtZW50Il0sInR5cGUiOiJKc29uV2ViS2V5MjAyMCJ9XSwic2VydmljZXMiOlt7ImlkIjoiZHduIiwic2VydmljZUVuZHBvaW50Ijp7Im1lc3NhZ2VBdXRob3JpemF0aW9uS2V5cyI6WyIjYXV0aHoiXSwibm9kZXMiOlsiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd241IiwiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd24zIl0sInJlY29yZEVuY3J5cHRpb25LZXlzIjpbIiNlbmMiXX0sInR5cGUiOiJEZWNlbnRyYWxpemVkV2ViTm9kZSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQzdMVjc1QkFRVkpaaDh3ZFpOZkk2LUlNTzJ3Vm5UTWk4SVlPUUt4aHpmbncifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUFuRE9PalVzVkFUbE5uS3RxbUl4dzVKUDZocFUtSWpqWHItdWJMN1RFWTRRIiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlCZEk0VEFEUUdZSVRnMHlQR2ZMS1U1X2lYQndicWlfQ2FkaElkRThxWkNuQSJ9fQ',
+        // recipient: pfiDid,
+      },
+    });
+
+    if (200 <= status.code && status.code <= 299) {
+      console.log(status.code + ' ' + status.detail);
+    } else {
+      console.log(status.code + ' ' + status.detail);
+      alert('Error creating RFQ (Code $(status.code)');
+    }
+
+    record?.send(
+      'did:ion:EiB1rtmnzpHDkTgVPkx9wUbS_OrtF5yIJEpICsZlsHq86g:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJhdXRoeiIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJ2UGlPYTVtMXhzQXI3NUVVN2pDVE9PeU9tYk5ocjEwNHVoUkR5YnBfcmM0IiwieSI6InlqMzdUT0RiQjUwbkVtZnFfb3JNVEpDM2lHNXh5Wk9LaXBhbGFzWW85NW8ifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6Ikpzb25XZWJLZXkyMDIwIn0seyJpZCI6ImVuYyIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiI1NGxqSXhiSFlBYjdtVnF0S2x3YmdBTEJCOUQwLUJiN1loVG9rNnJSZkdFIiwieSI6IjRqam80RDFzbHY5b3BGeTlDVWVtbGV2TklDYXRjV2huR1d6Q1NIa0VlbXMifSwicHVycG9zZXMiOlsia2V5QWdyZWVtZW50Il0sInR5cGUiOiJKc29uV2ViS2V5MjAyMCJ9XSwic2VydmljZXMiOlt7ImlkIjoiZHduIiwic2VydmljZUVuZHBvaW50Ijp7Im1lc3NhZ2VBdXRob3JpemF0aW9uS2V5cyI6WyIjYXV0aHoiXSwibm9kZXMiOlsiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd241IiwiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd24zIl0sInJlY29yZEVuY3J5cHRpb25LZXlzIjpbIiNlbmMiXX0sInR5cGUiOiJEZWNlbnRyYWxpemVkV2ViTm9kZSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQzdMVjc1QkFRVkpaaDh3ZFpOZkk2LUlNTzJ3Vm5UTWk4SVlPUUt4aHpmbncifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUFuRE9PalVzVkFUbE5uS3RxbUl4dzVKUDZocFUtSWpqWHItdWJMN1RFWTRRIiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlCZEk0VEFEUUdZSVRnMHlQR2ZMS1U1X2lYQndicWlfQ2FkaElkRThxWkNuQSJ9fQ'
+    );
   };
 
   return (

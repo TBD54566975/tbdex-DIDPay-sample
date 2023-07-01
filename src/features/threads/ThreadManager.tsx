@@ -1,4 +1,9 @@
-import { TbDEXMessage, OrderStatus, Status } from '@tbd54566975/tbdex';
+import {
+  TbDEXMessage,
+  OrderStatus,
+  Status,
+  aliceProtocolDefinition,
+} from '@tbd54566975/tbdex';
 import { Web5 } from '@tbd54566975/web5';
 import { populateThreadMap } from '../FakeObjects';
 
@@ -10,61 +15,50 @@ export type ThreadData = {
 
 export class ThreadManager {
   private threadMap: Map<string, ThreadData>;
-  private aliceProtocolDefinition;
 
   constructor(web5: Web5) {
     this.threadMap = new Map<string, ThreadData>();
     this.threadMap = populateThreadMap(10);
-    this.aliceProtocolDefinition = {
-      protocol: 'https://tbd.website/protocols/tbdex',
-      types: {
-        RFQ: {
-          schema: 'https://tbd.website/protocols/tbdex/RequestForQuote',
-          dataFormats: ['application/json'],
-        },
-        Quote: {
-          schema: 'https://tbd.website/protocols/tbdex/Quote',
-          dataFormats: ['application/json'],
-        },
-        OrderStatus: {
-          schema: 'https://tbd.website/protocols/tbdex/OrderStatus',
-          dataFormats: ['application/json'],
-        },
-      },
-      structure: {
-        // alice sends RFQs, not receives them
-        RFQ: {
-          // whoever received the RFQ that Alice sent, can write back a Quote to Alice
-          Quote: {
-            $actions: [
-              {
-                who: 'recipient',
-                of: 'RFQ',
-                can: 'write',
-              },
-            ],
-            // OrderStatus can be written to Alice's DWN by someone who wrote RFQ/Quote (i.e. PFI)
-            OrderStatus: {
-              $actions: [
-                {
-                  who: 'author',
-                  of: 'RFQ/Quote',
-                  can: 'write',
-                },
-              ],
-            },
-          },
-        },
-      },
-    };
-    // this.initializeAsync(web5);
+    this.configureProtocol(web5);
+    // this.populateThreadMap(web5);
   }
 
-  private async initializeAsync(web5: Web5): Promise<void> {
+  private async configureProtocol(web5: Web5) {
+    const { protocols, status } = await web5.dwn.protocols.query({
+      message: {
+        filter: {
+          protocol: aliceProtocolDefinition.protocol,
+        },
+      },
+    });
+
+    if (status.code !== 200) {
+      alert('Failed to query protocols. check console');
+      console.error('Failed to query protocols', status);
+      return;
+    }
+
+    // protocol already exists
+    if (protocols.length > 0) {
+      console.log('protocol already exists', protocols[0]);
+      return;
+    }
+
+    // create protocol
+    const { status: configureStatus } = await web5.dwn.protocols.configure({
+      message: {
+        definition: aliceProtocolDefinition,
+      },
+    });
+
+    console.log('configure protocol status', configureStatus);
+  }
+
+  private async populateThreadMap(web5: Web5): Promise<void> {
     const records = await web5.dwn.records.query({
       message: {
         filter: {
-          protocol: this.aliceProtocolDefinition.protocol,
+          protocol: aliceProtocolDefinition.protocol,
         },
         dateCreated: 'createdDescending',
       },

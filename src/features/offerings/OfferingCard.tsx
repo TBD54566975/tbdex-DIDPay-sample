@@ -23,10 +23,13 @@ function getRate(
 
 // TODO: add a back button
 export function OfferingCard({ offering, handleAction }: CardProps) {
-  const kyc = JSON.parse(offering.kycRequirements);
+  let kyc = 'No KYC requirements';
+  if (false) {
+    kyc = JSON.parse(offering.kycRequirements);
+  }
 
   return (
-    <div className="overflow-hidden bg-neutral-900 shadow sm:rounded-lg">
+    <div className="overflow-hidden bg-neutral-900 shadow rounded-lg">
       <div className="px-4 py-6 sm:px-6 flex items-center justify-between">
         <div>
           <h3 className="text-base font-semibold leading-7 text-gray-300">
@@ -38,7 +41,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
         </div>
         <div onClick={() => handleAction()}>
           <div className="flex items-center">
-            <div className="text-indigo-600 text-sm">Request a Quote</div>
+            <div className="text-indigo-600 text-sm">Request</div>
             <ChevronRightIcon
               className="h-5 w-5 flex-none text-gray-400 ml-1"
               aria-hidden="true"
@@ -83,7 +86,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
               KYC requirements
             </dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {kyc.presentation_definition.input_descriptors[0].name}
+              {kyc}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -94,7 +97,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
               <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
                 {offering.payinMethods.map((payin, index) => (
                   <li
-                    key={index}
+                    key={`payin${index}`}
                     className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6"
                   >
                     <div className="flex w-0 flex-1 items-center">
@@ -131,7 +134,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
               <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
                 {offering.payoutMethods.map((payout, index) => (
                   <li
-                    key={index}
+                    key={`payout${index}`}
                     className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6"
                   >
                     <div className="flex w-0 flex-1 items-center">

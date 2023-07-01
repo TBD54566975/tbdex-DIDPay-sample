@@ -1,8 +1,5 @@
-import {
-  CheckCircleIcon,
-  ClockIcon,
-  ExclamationCircleIcon,
-} from '@heroicons/react/24/solid';
+import { CheckCircleIcon, ClockIcon } from '@heroicons/react/24/solid';
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { ThreadData } from './ThreadManager';
 import { QuoteCard } from '../quotes/QuoteCard';
 import { Status } from '@tbd54566975/tbdex';
