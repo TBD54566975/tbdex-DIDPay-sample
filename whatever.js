@@ -4,6 +4,8 @@ function createJsonSchemaFromPresentationDefinition(pd) {
   const fieldNameToJsonPathMap = {}
   const jsonSchema = {
     "$schema": "http://json-schema.org/draft-07/schema",
+    "required": [],
+    "additionalProperties": false,
     "type": "object",
     "properties": {}
   }
@@ -14,6 +16,11 @@ function createJsonSchemaFromPresentationDefinition(pd) {
 
   for (let field of constraints.fields) {
     jsonSchema.properties[field.name] = field.filter
+
+    if (!field.optional) {
+      jsonSchema.required.push(field.name)
+    }
+    
     fieldNameToJsonPathMap[field.name] = field.path[0]
   }
 
@@ -64,6 +71,7 @@ const pd = {
           {
             'path': ['$.credentialSubject.middleName'],
             'name': 'Middle Name',
+            'optional': true,
             'filter': {
               'type': 'string'
             }
