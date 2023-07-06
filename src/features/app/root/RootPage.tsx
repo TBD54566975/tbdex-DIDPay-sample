@@ -12,7 +12,6 @@ import { useWeb5Context } from '../../../context/Web5Context';
 import { OfferingsSearch } from '../../offerings/OfferingsSearch';
 import { default as leftBracket } from './left-bracket-light.svg';
 import { default as rightBracket } from './right-bracket-light.svg';
-import { default as tbdLogo } from './tbd-logo.svg';
 
 let navigation = [
   {
@@ -28,7 +27,7 @@ let navigation = [
     current: false,
   },
   {
-    name: 'Order History',
+    name: 'History',
     link: '/history',
     icon: ArrowPathIcon,
     current: false,

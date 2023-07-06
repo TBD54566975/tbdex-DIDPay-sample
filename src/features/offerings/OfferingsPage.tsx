@@ -12,7 +12,8 @@ export function OfferingsPage() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { offerings } = location.state || {}; // Use destructuring with default value
+  const { offerings } = location.state || {};
+  const { pfiDid } = location.state || {};
 
   const handleRequestQuote = (offering: Offering) => {
     setSelectedOffering(offering);
@@ -24,7 +25,7 @@ export function OfferingsPage() {
     if (hasSubmitted) {
       navigate('/');
     } else {
-      navigate('/offerings', { state: { offerings } });
+      navigate('/offerings', { state: { offerings, pfiDid } });
     }
   };
 
@@ -42,6 +43,7 @@ export function OfferingsPage() {
       {rfqModalOpen && selectedOffering && (
         <RfqModal
           offering={selectedOffering}
+          pfiDid={pfiDid}
           isOpen={rfqModalOpen}
           onClose={handleModalClose}
         />

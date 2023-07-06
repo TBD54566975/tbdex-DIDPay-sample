@@ -10,8 +10,39 @@ import { populateThreadMap } from '../FakeObjects';
 export type ThreadData = {
   rfq?: TbDEXMessage<'rfq'>;
   quote?: TbDEXMessage<'quote'>;
-  orderStatuses: TbDEXMessage<'orderStatus'>[];
+  orderStatuses?: TbDEXMessage<'orderStatus'>[];
 };
+
+export async function configureProtocol(web5: Web5) {
+  const { protocols, status } = await web5.dwn.protocols.query({
+    message: {
+      filter: {
+        protocol: aliceProtocolDefinition.protocol,
+      },
+    },
+  });
+
+  if (status.code !== 200) {
+    alert('Failed to query protocols. check console');
+    console.error('Failed to query protocols', status);
+    return;
+  }
+
+  // protocol already exists
+  if (protocols.length > 0) {
+    console.log('protocol already exists', protocols[0]);
+    return;
+  }
+
+  // create protocol
+  const { status: configureStatus } = await web5.dwn.protocols.configure({
+    message: {
+      definition: aliceProtocolDefinition,
+    },
+  });
+
+  console.log('configure protocol status', configureStatus);
+}
 
 export class ThreadManager {
   private threadMap: Map<string, ThreadData>;

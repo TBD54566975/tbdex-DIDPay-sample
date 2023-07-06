@@ -5,7 +5,12 @@ import { ReviewForm } from './ReviewForm';
 import { VcForm } from './VcForm';
 import { ExchangeForm } from './ExchangeForm';
 import { PaymentForm } from './PaymentForm';
-import { Offering, Rfq, aliceProtocolDefinition } from '@tbd54566975/tbdex';
+import {
+  Offering,
+  Rfq,
+  aliceProtocolDefinition,
+  createMessage,
+} from '@tbd54566975/tbdex';
 import { useWeb5Context } from '../../context/Web5Context';
 import {
   FormData,
@@ -15,14 +20,17 @@ import {
   Step,
   credentials,
 } from './FormTypes';
+import currency from 'currency.js';
 
 type RfqModalProps = {
   offering: Offering;
+  pfiDid: string;
   isOpen: boolean;
   onClose: (hasSubmitted: boolean) => void;
 };
 
-export function RfqModal({ offering, isOpen, onClose }: RfqModalProps) {
+// TODO: send cents amount in rfq pls pls pls
+export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
   const { profile, web5 } = useWeb5Context();
   const [step, setStep] = useState(0);
   const [exchangeData, setExchangeData] = useState<ExchangeFormData>({
@@ -74,42 +82,49 @@ export function RfqModal({ offering, isOpen, onClose }: RfqModalProps) {
 
   // TODO: follow up on PaymentMethodKind returning numbers
   const createRfq = async () => {
+    console.log('tbdex offering id: ' + offering.id);
+    const amountInCents = currency(exchangeData.amount)
+      .multiply(100)
+      .value.toString();
     // Create the Rfq object from form data
-    const rfq: Rfq = {
+    const rfq = {
+      offeringId: offering.id,
       baseCurrency: offering.baseCurrency,
       quoteCurrency: offering.quoteCurrency,
-      amount: exchangeData.amount,
-      kycProof: 'proofff',
+      amount: amountInCents,
+      kycProof:
+        'eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa29KYzQ2elNkRnh0WmJHN0JCVjFDMWlmQ2ljR1VoVEJTWTc5RGpmYmg1WFcyI3o2TWtvSmM0NnpTZEZ4dFpiRzdCQlYxQzFpZkNpY0dVaFRCU1k3OURqZmJoNVhXMiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2ODgzMzEyOTcsImlzcyI6ImRpZDprZXk6ejZNa29KYzQ2elNkRnh0WmJHN0JCVjFDMWlmQ2ljR1VoVEJTWTc5RGpmYmg1WFcyIiwidnAiOnsiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwiaG9sZGVyIjoiZGlkOmtleTp6Nk1rb0pjNDZ6U2RGeHRaYkc3QkJWMUMxaWZDaWNHVWhUQlNZNzlEamZiaDVYVzIiLCJwcmVzZW50YXRpb25fc3VibWlzc2lvbiI6eyJkZWZpbml0aW9uX2lkIjoiMmVkZGYyNWYtZjc5Zi00MTA1LWFjODEtNTQ0Yzk4OGY2ZDc4IiwiZGVzY3JpcHRvcl9tYXAiOlt7ImZvcm1hdCI6Imp3dF92cCIsImlkIjoiMCIsInBhdGgiOiIkLnZlcmlmaWFibGVDcmVkZW50aWFsWzBdIn1dLCJpZCI6ImJvYi1zdWJtaXNzaW9uLWlkIn0sInR5cGUiOlsiVmVyaWZpYWJsZVByZXNlbnRhdGlvbiJdLCJ2ZXJpZmlhYmxlQ3JlZGVudGlhbCI6WyJleUpoYkdjaU9pSkZaRVJUUVNJc0ltdHBaQ0k2SWpobVlUaGtaVGN6TFRNMVpUQXROREJqTWkxaE9UVmtMVGt4T0RnMU9XTmxOVGczWkNJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcFlYUWlPakUyT0Rnek16RXlPVGNzSW1semN5STZJbVJwWkRwclpYazZlalpOYTI5S1l6UTJlbE5rUm5oMFdtSkhOMEpDVmpGRE1XbG1RMmxqUjFWb1ZFSlRXVGM1UkdwbVltZzFXRmN5SWl3aWFuUnBJam9pTVdNMU5qUTJNV1l0TWpNMk55MDBZV1V5TFdFME56TXRNREU0WmpRNE9HUmhOR1ZpSWl3aWJtSm1Jam94TmpnNE16TXhNamszTENKdWIyNWpaU0k2SWpnNU5EYzFPV0pqTFROaU1HRXROR1ZsT0MwNE1tUTNMVE0yTWpZME5tUXhNVGMxWVNJc0luTjFZaUk2SW1ScFpEcHJaWGs2ZWpaTmEyOUtZelEyZWxOa1JuaDBXbUpITjBKQ1ZqRkRNV2xtUTJsalIxVm9WRUpUV1RjNVJHcG1ZbWcxV0ZjeUlpd2lkbU1pT25zaVFHTnZiblJsZUhRaU9sc2lhSFIwY0hNNkx5OTNkM2N1ZHpNdWIzSm5Mekl3TVRndlkzSmxaR1Z1ZEdsaGJITXZkakVpWFN3aWRIbHdaU0k2V3lKV1pYSnBabWxoWW14bFEzSmxaR1Z1ZEdsaGJDSmRMQ0pwYzNOMVpYSWlPaUlpTENKcGMzTjFZVzVqWlVSaGRHVWlPaUlpTENKamNtVmtaVzUwYVdGc1UzVmlhbVZqZENJNmV5SmhaR1J5WlhOeklqcDdJbU52ZFc1MGNua2lPaUpWVTBFaUxDSnNiMk5oYkdsMGVTSTZJa3h2Y3lCQmJtZGxiR1Z6SWl3aWNHOXpkR0ZzUTI5a1pTSTZJamt3TWpFd0lpd2ljbVZuYVc5dUlqb2lRMEVpTENKemRISmxaWFJCWkdSeVpYTnpJam9pTVRJeklFaHZiR3g1ZDI5dlpDQkNiSFprTGlKOUxDSmlhWEowYUVSaGRHVWlPaUl3TlMwd01pMHhPVGN5SWl3aVptRnRhV3g1VG1GdFpTSTZJbXB2YUc1emIyNGlMQ0ptYVhKemRFNWhiV1VpT2lKaWIySWlMQ0puYVhabGJrNWhiV1VpT2lKa2QyRjVibVVpTENKdGFXUmtiR1ZPWVcxbElqb2lkR2hsSUhKdlkyc2lMQ0p3WlhKemIyNWhiRWxrWlc1MGFXWnBaWElpT2x0N0ltbGtaVzUwYVdacFpYSWlPaUl4TWpNdE5EVXROamM0T1NJc0ltbHpjM1ZsY2lJNklsVlRJRk52WTJsaGJDQlRaV04xY21sMGVTQkJaRzFwYm1semRISmhkR2x2YmlJc0luUjVjR1VpT2lKVGIyTnBZV3dnVTJWamRYSnBkSGtnVG5WdFltVnlJbjFkZlgxOS53LWlqTWdnNkZuMklBSDRkVXJ2djRCQ2M0Q3drNlJtMFdKSmtiMEJlOFY1MUkweVcxMFRjQzU3czI2emVaY0lrRTVlbjExbEtLYWRlTVktRTFQQ2ZDUSJdfSwiZXhwIjoxNjg4MzM4NDk3fQ.allPa5CrO7-sCv4XC6as7ri75chITd9fdTl4vZ07ogPpn0vLZa6vA_v2BbsT1RWhDiVluYtVINKFxj_RvydtBQ',
       payinMethod: {
         kind: paymentData.payinInstrument,
       },
       payoutMethod: {
         kind: paymentData.payoutInstrument,
+        paymentVerifiablePresentationJwt: '',
       },
     };
 
+    const tbdexMsg = createMessage({
+      to: pfiDid,
+      from: profile.id,
+      type: 'rfq',
+      body: rfq,
+    });
+
+    console.log(tbdexMsg);
+
     const { record, status } = await web5.dwn.records.write({
-      data: rfq,
+      data: tbdexMsg,
       message: {
         protocol: aliceProtocolDefinition.protocol,
         protocolPath: 'RFQ',
         schema: aliceProtocolDefinition.types.RFQ.schema,
-        recipient:
-          'did:ion:EiB1rtmnzpHDkTgVPkx9wUbS_OrtF5yIJEpICsZlsHq86g:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJhdXRoeiIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJ2UGlPYTVtMXhzQXI3NUVVN2pDVE9PeU9tYk5ocjEwNHVoUkR5YnBfcmM0IiwieSI6InlqMzdUT0RiQjUwbkVtZnFfb3JNVEpDM2lHNXh5Wk9LaXBhbGFzWW85NW8ifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6Ikpzb25XZWJLZXkyMDIwIn0seyJpZCI6ImVuYyIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiI1NGxqSXhiSFlBYjdtVnF0S2x3YmdBTEJCOUQwLUJiN1loVG9rNnJSZkdFIiwieSI6IjRqam80RDFzbHY5b3BGeTlDVWVtbGV2TklDYXRjV2huR1d6Q1NIa0VlbXMifSwicHVycG9zZXMiOlsia2V5QWdyZWVtZW50Il0sInR5cGUiOiJKc29uV2ViS2V5MjAyMCJ9XSwic2VydmljZXMiOlt7ImlkIjoiZHduIiwic2VydmljZUVuZHBvaW50Ijp7Im1lc3NhZ2VBdXRob3JpemF0aW9uS2V5cyI6WyIjYXV0aHoiXSwibm9kZXMiOlsiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd241IiwiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd24zIl0sInJlY29yZEVuY3J5cHRpb25LZXlzIjpbIiNlbmMiXX0sInR5cGUiOiJEZWNlbnRyYWxpemVkV2ViTm9kZSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQzdMVjc1QkFRVkpaaDh3ZFpOZkk2LUlNTzJ3Vm5UTWk4SVlPUUt4aHpmbncifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUFuRE9PalVzVkFUbE5uS3RxbUl4dzVKUDZocFUtSWpqWHItdWJMN1RFWTRRIiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlCZEk0VEFEUUdZSVRnMHlQR2ZMS1U1X2lYQndicWlfQ2FkaElkRThxWkNuQSJ9fQ',
-        // recipient: pfiDid,
+        recipient: pfiDid,
       },
     });
+    console.log(status.code + ' ' + status.detail);
 
-    if (200 <= status.code && status.code <= 299) {
-      console.log(status.code + ' ' + status.detail);
-    } else {
-      console.log(status.code + ' ' + status.detail);
-      alert('Error creating RFQ (Code $(status.code)');
-    }
-
-    record?.send(
-      'did:ion:EiB1rtmnzpHDkTgVPkx9wUbS_OrtF5yIJEpICsZlsHq86g:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJhdXRoeiIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJ2UGlPYTVtMXhzQXI3NUVVN2pDVE9PeU9tYk5ocjEwNHVoUkR5YnBfcmM0IiwieSI6InlqMzdUT0RiQjUwbkVtZnFfb3JNVEpDM2lHNXh5Wk9LaXBhbGFzWW85NW8ifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6Ikpzb25XZWJLZXkyMDIwIn0seyJpZCI6ImVuYyIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiI1NGxqSXhiSFlBYjdtVnF0S2x3YmdBTEJCOUQwLUJiN1loVG9rNnJSZkdFIiwieSI6IjRqam80RDFzbHY5b3BGeTlDVWVtbGV2TklDYXRjV2huR1d6Q1NIa0VlbXMifSwicHVycG9zZXMiOlsia2V5QWdyZWVtZW50Il0sInR5cGUiOiJKc29uV2ViS2V5MjAyMCJ9XSwic2VydmljZXMiOlt7ImlkIjoiZHduIiwic2VydmljZUVuZHBvaW50Ijp7Im1lc3NhZ2VBdXRob3JpemF0aW9uS2V5cyI6WyIjYXV0aHoiXSwibm9kZXMiOlsiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd241IiwiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd24zIl0sInJlY29yZEVuY3J5cHRpb25LZXlzIjpbIiNlbmMiXX0sInR5cGUiOiJEZWNlbnRyYWxpemVkV2ViTm9kZSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQzdMVjc1QkFRVkpaaDh3ZFpOZkk2LUlNTzJ3Vm5UTWk4SVlPUUt4aHpmbncifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUFuRE9PalVzVkFUbE5uS3RxbUl4dzVKUDZocFUtSWpqWHItdWJMN1RFWTRRIiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlCZEk0VEFEUUdZSVRnMHlQR2ZMS1U1X2lYQndicWlfQ2FkaElkRThxWkNuQSJ9fQ'
-    );
+    const { status: sendStatus } = await record?.send(pfiDid);
+    console.log(sendStatus.code + ' ' + sendStatus.detail);
   };
 
   return (

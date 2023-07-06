@@ -1,14 +1,14 @@
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/solid';
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
-import { ThreadData } from '../threads/ThreadManager';
-import { PaymentInstructions } from '@tbd54566975/tbdex';
+import { RecordThread } from '../threads/Thread';
+import { PaymentInstructions, TbDEXMessage } from '@tbd54566975/tbdex';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
 type QuoteCardProps = {
-  threadData: ThreadData;
+  quoteMsg?: TbDEXMessage<'quote'>;
   baseCurrency: string;
   quoteCurrency: string;
   handleAction: () => void;
@@ -90,12 +90,15 @@ function getPaymentInstructions(paymentInstructions?: PaymentInstructions) {
 
 //TODO: maybe get rid of the pending status when a quote comes back
 export function QuoteCard({
-  threadData,
+  quoteMsg,
   baseCurrency,
   quoteCurrency,
   handleAction,
 }: QuoteCardProps) {
-  const quote = threadData?.quote;
+  const quote = quoteMsg?.body;
+  if (!quote) {
+    return null;
+  }
   return (
     <div className="overflow-hidden bg-neutral-900 shadow sm:rounded-lg">
       <div className="px-4 py-6 sm:px-6 flex items-center justify-between">
@@ -111,7 +114,7 @@ export function QuoteCard({
           </div>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-red-500">
             Expires in{' '}
-            {dayjs(quote?.body.expiryTime).fromNow(true) ??
+            {dayjs(quote.expiryTime).fromNow(true) ??
               'No description available'}
           </p>
         </div>
@@ -130,22 +133,21 @@ export function QuoteCard({
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Total fee</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {quote?.body.totalFee} {quoteCurrency}
+              {quote.totalFee} {quoteCurrency}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Amount</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {quote?.body.amount} {baseCurrency}
+              {quote.amount} {baseCurrency}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">
               Payment Instructions
             </dt>
-            {getPaymentInstructions(quote?.body.paymentInstructions) !==
-            null ? (
-              getPaymentInstructions(quote?.body.paymentInstructions)
+            {getPaymentInstructions(quote.paymentInstructions) !== null ? (
+              getPaymentInstructions(quote.paymentInstructions)
             ) : (
               <p className="text-gray-400">No additional instructions</p>
             )}

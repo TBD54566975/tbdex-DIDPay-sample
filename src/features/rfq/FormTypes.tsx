@@ -1,4 +1,5 @@
 import { PaymentMethodKind } from '@tbd54566975/tbdex';
+import currency from 'currency.js';
 
 // TODO: get rid of this file!!
 
@@ -39,6 +40,9 @@ export type Issuer = {
   id: string;
   name: string;
 };
+
+export const BTC = (value: currency.Any) =>
+  currency(value, { precision: 8, symbol: '' });
 
 enum Currency {
   USD = '$',

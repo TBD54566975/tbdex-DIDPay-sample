@@ -33,6 +33,7 @@ function classNames(...classes: string[]) {
 
 export function HistoryPage() {
   const { web5, profile } = useWeb5Context();
+  // TODO: poll instead of using thread manager
   let threadManager: ThreadManager = new ThreadManager(web5);
   const keys = threadManager.getCompletedOrFailedStatusKeys();
 

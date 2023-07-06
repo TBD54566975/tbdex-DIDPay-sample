@@ -10,10 +10,23 @@ import {
 } from '@tbd54566975/tbdex';
 import moment from 'moment';
 
-function generateUniqueId(): string {
+export function generateUniqueId(): string {
   const timestamp: number = new Date().getTime();
   const randomId: string = Math.random().toString(36).substr(2, 9);
   return `${timestamp}-${randomId}`;
+}
+
+export function getCurrentTimestamp() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
 }
 
 function generateRandomTimestamp(

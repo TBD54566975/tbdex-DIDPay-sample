@@ -6,6 +6,7 @@ import {
 import { Offering, PaymentMethodKind } from '@tbd54566975/tbdex';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import currency from 'currency.js';
 
 dayjs.extend(relativeTime);
 
@@ -18,12 +19,13 @@ function getRate(
   quoteCurrency: string,
   baseCurrency: string
 ) {
-  return `1 ${quoteCurrency} / ${unitPrice} ${baseCurrency}`;
+  return `1 ${quoteCurrency} / ${currency(unitPrice).format()} ${baseCurrency}`;
 }
 
 // TODO: add a back button
 export function OfferingCard({ offering, handleAction }: CardProps) {
   let kyc = 'No KYC requirements';
+  // TODO: figure out what kyc json should look like
   if (false) {
     kyc = JSON.parse(offering.kycRequirements);
   }
@@ -64,20 +66,22 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Minimum order</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {offering.min} {offering.quoteCurrency}
+              {currency(offering.min).format()} {offering.quoteCurrency}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Maximum order</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {offering.max} {offering.quoteCurrency}
+              {currency(offering.max).format()} {offering.quoteCurrency}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Base fee</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
               {offering.baseFee
-                ? `${offering.baseFee} ${offering.quoteCurrency}`
+                ? `${currency(offering.baseFee).format()} ${
+                    offering.quoteCurrency
+                  }`
                 : 'No base fee'}
             </dd>
           </div>
@@ -117,7 +121,9 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                     </div>
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
                       {payin.fee?.flatFee
-                        ? `${payin.fee.flatFee} ${offering.quoteCurrency} fee`
+                        ? `${currency(payin.fee.flatFee).format()} ${
+                            offering.quoteCurrency
+                          } fee`
                         : 'No flat fee'}
                     </div>
                   </li>
@@ -154,7 +160,9 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                     </div>
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
                       {payout.fee?.flatFee
-                        ? `${payout.fee.flatFee} ${offering.quoteCurrency} fee`
+                        ? `${currency(payout.fee.flatFee).format()} ${
+                            offering.quoteCurrency
+                          } fee`
                         : 'No flat fee'}
                     </div>
                   </li>

@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect, useRef } from 'react';
 import { Combobox, Dialog, Transition } from '@headlessui/react';
-import { Offering } from '@tbd54566975/tbdex';
+import { Offering, pfiProtocolDefinition } from '@tbd54566975/tbdex';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { useNavigate } from 'react-router-dom';
 import { useWeb5Context } from '../../context/Web5Context';
@@ -17,7 +17,10 @@ export function OfferingsSearch() {
 
   const handleComboboxChange = (offering: Offering) => {
     const selectedOffering = [offering];
-    navigate('/offerings', { state: { offerings: selectedOffering } });
+    // TODO: this pfiDid should be hardcoded?
+    navigate('/offerings', {
+      state: { offerings: selectedOffering, pfiDid: pfiDid },
+    });
     setOpen(false);
   };
 
@@ -53,17 +56,20 @@ export function OfferingsSearch() {
         });
 
   async function getOfferings() {
-    console.log('DO I EVEN GET HERE');
-    // TODO: replace with pfiDid
+    // TODO: replace with pfiDid and change schema for offerings
     const { records } = await web5.dwn.records.query({
-      // from: pfiDid,
-      from: 'did:ion:EiB1rtmnzpHDkTgVPkx9wUbS_OrtF5yIJEpICsZlsHq86g:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJhdXRoeiIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJ2UGlPYTVtMXhzQXI3NUVVN2pDVE9PeU9tYk5ocjEwNHVoUkR5YnBfcmM0IiwieSI6InlqMzdUT0RiQjUwbkVtZnFfb3JNVEpDM2lHNXh5Wk9LaXBhbGFzWW85NW8ifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6Ikpzb25XZWJLZXkyMDIwIn0seyJpZCI6ImVuYyIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiI1NGxqSXhiSFlBYjdtVnF0S2x3YmdBTEJCOUQwLUJiN1loVG9rNnJSZkdFIiwieSI6IjRqam80RDFzbHY5b3BGeTlDVWVtbGV2TklDYXRjV2huR1d6Q1NIa0VlbXMifSwicHVycG9zZXMiOlsia2V5QWdyZWVtZW50Il0sInR5cGUiOiJKc29uV2ViS2V5MjAyMCJ9XSwic2VydmljZXMiOlt7ImlkIjoiZHduIiwic2VydmljZUVuZHBvaW50Ijp7Im1lc3NhZ2VBdXRob3JpemF0aW9uS2V5cyI6WyIjYXV0aHoiXSwibm9kZXMiOlsiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd241IiwiaHR0cHM6Ly9kd24udGJkZGV2Lm9yZy9kd24zIl0sInJlY29yZEVuY3J5cHRpb25LZXlzIjpbIiNlbmMiXX0sInR5cGUiOiJEZWNlbnRyYWxpemVkV2ViTm9kZSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQzdMVjc1QkFRVkpaaDh3ZFpOZkk2LUlNTzJ3Vm5UTWk4SVlPUUt4aHpmbncifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUFuRE9PalVzVkFUbE5uS3RxbUl4dzVKUDZocFUtSWpqWHItdWJMN1RFWTRRIiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlCZEk0VEFEUUdZSVRnMHlQR2ZMS1U1X2lYQndicWlfQ2FkaElkRThxWkNuQSJ9fQ',
+      from: pfiDid,
+      // from: 'did:ion:EiDsG3SPOsxzuol9pDzxbN5DNm3qT1Kb8-yH_esKDSr27Q:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJhdXRoeiIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJIOWV3M29DZGduQmVJc2gxeFJBWEthRnA3elhOM1Z3R0xGZ2tKejY3NVFzIiwieSI6InJmTzZlbEYzOGppdU5CcmttSUZaNVp0RGtzWm9aakpDZVE0TlFJYk85bmcifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6Ikpzb25XZWJLZXkyMDIwIn0seyJpZCI6ImVuYyIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJYR0JfT1c3Ry1IbFZEa1NrVGp5aWNhX2ptcFJ0YVJEUHRmRTAtcmFwS2pnIiwieSI6IjVUYXVsc0hoa0FRT3NYVXpYSFAxd2lCTUdoM0FHYkNLYkxVUUlGTHExd28ifSwicHVycG9zZXMiOlsia2V5QWdyZWVtZW50Il0sInR5cGUiOiJKc29uV2ViS2V5MjAyMCJ9XSwic2VydmljZXMiOlt7ImlkIjoiZHduIiwic2VydmljZUVuZHBvaW50Ijp7Im1lc3NhZ2VBdXRob3JpemF0aW9uS2V5cyI6WyIjYXV0aHoiXSwibm9kZXMiOlsiaHR0cDovL2xvY2FsaG9zdDo5MDAwIl0sInJlY29yZEVuY3J5cHRpb25LZXlzIjpbIiNlbmMiXX0sInR5cGUiOiJEZWNlbnRyYWxpemVkV2ViTm9kZSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQTJYNWVtV0xMb0xkSWlCcTdfUVhLZFVLemUybEEzeXlrVW9aTjhHYkczTUEifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUNyVzQwcFhWR3RialI5T2drNmdXbFN2ZU83YlA3QXc3UU9jQ0FrN0xWS2J3IiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlDQ245NE1LQVVVc2dTNjNkdlpCdWZEbkZxUkluMWgxaURMSEtaQzItdmRFUSJ9fQ',
       message: {
         filter: {
-          schema: 'https://tbdex.io/schemas/offering',
+          schema: 'https://tbd.website/resources/tbdex/Offering',
         },
       },
     });
+
+    if (records) {
+      console.log(JSON.stringify(await records[0].data.json()));
+    }
 
     if (Array.isArray(records)) {
       const offerings = await Promise.all(
@@ -72,7 +78,9 @@ export function OfferingsSearch() {
           return tbdexMsg;
         }) ?? []
       );
-      navigate('/offerings', { state: { offerings: offerings } });
+      navigate('/offerings', {
+        state: { offerings: offerings, pfiDid: pfiDid },
+      });
     } else {
       // Handle the case where records is not an array
       // throw an error, log a warning
@@ -119,8 +127,13 @@ export function OfferingsSearch() {
             readOnly
           />
 
-          <span className="absolute inset-y-0 right-3 flex items-center text-gray-400">
+          {/* <span className="absolute inset-y-0 right-3 flex items-center text-gray-400">
             <span className="hidden lg:inline-block">⌘K</span>
+          </span> */}
+          <span className="absolute inset-y-0 right-3 flex items-center text-gray-400">
+            <kbd className="hidden lg:inline-block inline-flex items-center rounded border border-gray-500 px-1 font-sans text-xs text-gray-500">
+              ⌘K
+            </kbd>
           </span>
         </div>
       </div>
@@ -156,7 +169,7 @@ export function OfferingsSearch() {
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <Dialog.Panel className="mx-auto max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-neutral-900 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
+                  <Dialog.Panel className="mx-auto max-w-xl transform divide-y divide-gray-400 overflow-hidden rounded-xl bg-neutral-900 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
                     <Combobox
                       onChange={(offering: Offering) =>
                         handleComboboxChange(offering)

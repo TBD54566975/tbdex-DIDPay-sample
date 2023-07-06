@@ -2,6 +2,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Web5 } from '@tbd54566975/web5';
 import { Profile, ProfileApi } from '@tbd54566975/web5-user-agent';
 import { CircularProgress } from '@mui/material';
+import {
+  TbDEXMessage,
+  OrderStatus,
+  Status,
+  aliceProtocolDefinition,
+} from '@tbd54566975/tbdex';
 
 interface Web5ContextType {
   web5: Web5;
@@ -22,6 +28,8 @@ export const Web5ContextProvider = ({ children }: Props) => {
       const profileApi = new ProfileApi();
       const profile = await profileApi.getProfile(did);
       if (!profile) return;
+
+      await configureProtocol(web5);
 
       setContextValue({ web5, profile });
     };
@@ -48,3 +56,34 @@ export const useWeb5Context = () => {
 
   return context;
 };
+
+async function configureProtocol(web5: Web5) {
+  const { protocols, status } = await web5.dwn.protocols.query({
+    message: {
+      filter: {
+        protocol: aliceProtocolDefinition.protocol,
+      },
+    },
+  });
+
+  if (status.code !== 200) {
+    alert('Failed to query protocols. check console');
+    console.error('Failed to query protocols', status);
+    return;
+  }
+
+  // protocol already exists
+  if (protocols.length > 0) {
+    console.log('protocol already exists', protocols[0]);
+    return;
+  }
+
+  // create protocol
+  const { status: configureStatus } = await web5.dwn.protocols.configure({
+    message: {
+      definition: aliceProtocolDefinition,
+    },
+  });
+
+  console.log('configure protocol status', configureStatus);
+}
