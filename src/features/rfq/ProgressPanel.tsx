@@ -1,8 +1,11 @@
-import { Step } from './FormTypes';
-
 type ProgressPanelProps = {
   steps: Step[];
   currentStep: number;
+};
+
+export type Step = {
+  name: string;
+  status: 'complete' | 'current' | 'upcoming';
 };
 
 export function ProgressPanel({ steps, currentStep }: ProgressPanelProps) {

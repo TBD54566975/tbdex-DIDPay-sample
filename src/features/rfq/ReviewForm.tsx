@@ -1,19 +1,17 @@
 import { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import {
-  ExchangeFormData,
-  PaymentFormData,
-  VcFormData,
-  paymentMethodKindToString,
-} from './FormTypes';
+import { SelectVcFormData } from './SelectVcForm';
+import { ExchangeFormData } from './ExchangeForm';
+import { PaymentFormData } from './PaymentForm';
+import { paymentMethodKindToString } from './FormTypes';
 
 type ReviewFormProps = {
   exchangeData: ExchangeFormData;
   paymentData: PaymentFormData;
-  vcData: VcFormData;
-  onSubmit: () => void;
-  onBack: () => void;
+  vcData: SelectVcFormData;
+  onSubmit: (formData: any) => void;
+  onBack: (formData: any) => void;
 };
 
 export function ReviewForm({
@@ -24,11 +22,11 @@ export function ReviewForm({
   onBack,
 }: ReviewFormProps) {
   const handleNext = () => {
-    onSubmit();
+    onSubmit(undefined);
   };
 
   const handleBack = () => {
-    onBack();
+    onBack(undefined);
   };
 
   return (

@@ -3,26 +3,6 @@ import currency from 'currency.js';
 
 // TODO: get rid of this file!!
 
-export type VcFormData = {
-  credential: string;
-};
-
-export type ExchangeFormData = {
-  amount: string;
-};
-
-export type PaymentFormData = {
-  payinInstrument: PaymentMethodKind;
-  payoutInstrument: PaymentMethodKind;
-};
-
-export type FormData = ExchangeFormData | PaymentFormData | VcFormData;
-
-export type Step = {
-  name: string;
-  status: 'complete' | 'current' | 'upcoming';
-};
-
 export type PaymentInstrument = {
   name: 'Debit Card' | 'Bitcoin Address';
 };

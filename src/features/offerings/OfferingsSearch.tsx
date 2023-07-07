@@ -57,9 +57,8 @@ export function OfferingsSearch() {
 
   async function getOfferings() {
     // TODO: replace with pfiDid and change schema for offerings
-    const { records } = await web5.dwn.records.query({
+    const { records = [] } = await web5.dwn.records.query({
       from: pfiDid,
-      // from: 'did:ion:EiDsG3SPOsxzuol9pDzxbN5DNm3qT1Kb8-yH_esKDSr27Q:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJhdXRoeiIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJIOWV3M29DZGduQmVJc2gxeFJBWEthRnA3elhOM1Z3R0xGZ2tKejY3NVFzIiwieSI6InJmTzZlbEYzOGppdU5CcmttSUZaNVp0RGtzWm9aakpDZVE0TlFJYk85bmcifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6Ikpzb25XZWJLZXkyMDIwIn0seyJpZCI6ImVuYyIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJYR0JfT1c3Ry1IbFZEa1NrVGp5aWNhX2ptcFJ0YVJEUHRmRTAtcmFwS2pnIiwieSI6IjVUYXVsc0hoa0FRT3NYVXpYSFAxd2lCTUdoM0FHYkNLYkxVUUlGTHExd28ifSwicHVycG9zZXMiOlsia2V5QWdyZWVtZW50Il0sInR5cGUiOiJKc29uV2ViS2V5MjAyMCJ9XSwic2VydmljZXMiOlt7ImlkIjoiZHduIiwic2VydmljZUVuZHBvaW50Ijp7Im1lc3NhZ2VBdXRob3JpemF0aW9uS2V5cyI6WyIjYXV0aHoiXSwibm9kZXMiOlsiaHR0cDovL2xvY2FsaG9zdDo5MDAwIl0sInJlY29yZEVuY3J5cHRpb25LZXlzIjpbIiNlbmMiXX0sInR5cGUiOiJEZWNlbnRyYWxpemVkV2ViTm9kZSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQTJYNWVtV0xMb0xkSWlCcTdfUVhLZFVLemUybEEzeXlrVW9aTjhHYkczTUEifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUNyVzQwcFhWR3RialI5T2drNmdXbFN2ZU83YlA3QXc3UU9jQ0FrN0xWS2J3IiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlDQ245NE1LQVVVc2dTNjNkdlpCdWZEbkZxUkluMWgxaURMSEtaQzItdmRFUSJ9fQ',
       message: {
         filter: {
           schema: 'https://tbd.website/resources/tbdex/Offering',
@@ -67,24 +66,16 @@ export function OfferingsSearch() {
       },
     });
 
-    if (records) {
-      console.log(JSON.stringify(await records[0].data.json()));
+    const offerings = [];
+    for (let record of records) {
+      const offering = await record.data.json();
+      offerings.push(offering);
     }
 
-    if (Array.isArray(records)) {
-      const offerings = await Promise.all(
-        records.map(async (record) => {
-          const tbdexMsg = await record.data.json();
-          return tbdexMsg;
-        }) ?? []
-      );
+    if (offerings) {
       navigate('/offerings', {
         state: { offerings: offerings, pfiDid: pfiDid },
       });
-    } else {
-      // Handle the case where records is not an array
-      // throw an error, log a warning
-      alert('RECORDS IS NOT AN ARRAY');
     }
   }
 

@@ -13,11 +13,6 @@ import {
   aliceProtocolDefinition,
 } from '@tbd54566975/tbdex';
 
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import { generateUniqueId, getCurrentTimestamp } from '../FakeObjects';
-dayjs.extend(relativeTime);
-
 export function ThreadsPage() {
   const [threadMap, setThreadMap] = useState<{ [key: string]: RecordThread }>(
     {}
@@ -46,7 +41,7 @@ export function ThreadsPage() {
   async function init() {
     let threads: { [key: string]: RecordThread } = {};
 
-    const { records: rfqRecords } = await web5.dwn.records.query({
+    const { records = [] } = await web5.dwn.records.query({
       message: {
         filter: {
           schema: aliceProtocolDefinition.types.RFQ.schema,
@@ -54,22 +49,17 @@ export function ThreadsPage() {
       },
     });
 
-    rfqRecords?.forEach(async (rfqRecord) => {
-      const rfqMsg = (await rfqRecord.data.json()) as TbDEXMessage<'rfq'>;
+    for (let record of records) {
+      const rfqMsg = (await record.data.json()) as TbDEXMessage<'rfq'>;
       if (rfqMsg.type === 'rfq') {
         const threadId = rfqMsg.threadId;
-        threads[threadId] = { rfq: rfqRecord, orderStatuses: [] };
-        console.log(rfqMsg);
-        setThreadMap(threads);
+        threads[threadId] = { rfq: record, orderStatuses: [] };
       }
-    });
-
+    }
+    setThreadMap(threads);
     setLoading(false);
   }
 
-  // TODO: optimize polling, currently every second
-  // TODO: issue where rfqs come and go
-  // TODO: may need to query right after rfq sends and user sent home
   useEffect(() => {
     const fetchData = async () => {
       await init();

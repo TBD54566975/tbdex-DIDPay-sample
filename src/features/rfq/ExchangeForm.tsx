@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react';
-import { ExchangeFormData, getCurrencySymbol, BTC } from './FormTypes';
+import { getCurrencySymbol, BTC } from './FormTypes';
 import { Offering } from '@tbd54566975/tbdex';
 import currency from 'currency.js';
 
@@ -7,6 +7,10 @@ type PriceInputProps = {
   offering: Offering;
   counterUnits: string;
   onChange: (newValue: string) => void;
+};
+
+export type ExchangeFormData = {
+  amount: string;
 };
 
 type ExchangeFormProps = {

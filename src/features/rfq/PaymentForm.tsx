@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { PaymentFormData, paymentMethodKindToString } from './FormTypes';
+import { paymentMethodKindToString } from './FormTypes';
 import { Offering, PaymentMethodKind, PaymentMethod } from '@tbd54566975/tbdex';
 
 function classNames(...classes: string[]) {
@@ -13,6 +13,11 @@ type PaymentDropdownProps = {
   paymentMethods: PaymentMethod[];
   paymentMethodKind: PaymentMethodKind;
   onChange: (newValue: PaymentMethodKind) => void;
+};
+
+export type PaymentFormData = {
+  payinInstrument: PaymentMethodKind;
+  payoutInstrument: PaymentMethodKind;
 };
 
 type PaymentFormProps = {

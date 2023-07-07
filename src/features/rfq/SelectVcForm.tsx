@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { VcFormData, Credential, credentials } from './FormTypes';
+import { Credential, credentials } from './FormTypes';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -13,10 +13,14 @@ type VcDropdownProps = {
   onChange: (newValue: string) => void;
 };
 
+export type SelectVcFormData = {
+  credential: string;
+};
+
 type VcFormProps = {
-  vcData: VcFormData;
-  onSubmit: (formData: VcFormData) => void;
-  onBack: (formData: VcFormData) => void;
+  vcData: SelectVcFormData;
+  onSubmit: (formData: SelectVcFormData) => void;
+  onBack: (formData: SelectVcFormData) => void;
 };
 
 function VcDropdown({ header, value, onChange }: VcDropdownProps) {
@@ -141,19 +145,18 @@ function VcDropdown({ header, value, onChange }: VcDropdownProps) {
   );
 }
 
-// TODO: if user doesn't have vc, put a vc issuing form in the modal
-export function VcForm({ vcData, onSubmit, onBack }: VcFormProps) {
+export function SelectVcForm({ vcData, onSubmit, onBack }: VcFormProps) {
   const [credential, setCredential] = useState(vcData.credential);
 
   const handleNext = () => {
-    const formData: VcFormData = {
+    const formData: SelectVcFormData = {
       credential,
     };
     onSubmit(formData);
   };
 
   const handleBack = () => {
-    const formData: VcFormData = {
+    const formData: SelectVcFormData = {
       credential,
     };
     onBack(formData);
