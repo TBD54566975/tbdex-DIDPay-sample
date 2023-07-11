@@ -25,12 +25,6 @@ function getRate(
 
 // TODO: add a back button
 export function OfferingCard({ offering, handleAction }: CardProps) {
-  let kyc = 'No KYC requirements';
-  // TODO: figure out what kyc json should look like
-  if (false) {
-    // kyc = JSON.parse(offering.kycRequirements);
-  }
-
   return (
     <div className="overflow-hidden bg-neutral-900 shadow rounded-lg">
       <div className="px-4 py-6 sm:px-6 flex items-center justify-between">
@@ -86,14 +80,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                 : 'No base fee'}
             </dd>
           </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt className="text-sm font-medium text-gray-300">
-              KYC requirements
-            </dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {kyc}
-            </dd>
-          </div>
+
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium leading-6 text-gray-300">
               Payin methods

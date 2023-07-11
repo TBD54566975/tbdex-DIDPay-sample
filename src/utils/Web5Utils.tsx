@@ -187,24 +187,27 @@ export const createRfq = async (
   web5: Web5,
   profileDid: string,
   pfiDid: string,
-  offering: Offering,
+  offeringId: string,
   amount: string,
   kycProof: string,
   payinInstrument: string,
   payoutInstrument: string
 ) => {
-  console.log('tbdex offering id: ' + offering.id);
   console.log(payoutInstrument);
   const amountInCents = currency(amount).multiply(100).value.toString();
+  const payinKind =
+    PaymentMethodKind[payinInstrument as keyof typeof PaymentMethodKind];
+  const payoutKind =
+    PaymentMethodKind[payoutInstrument as keyof typeof PaymentMethodKind];
   const rfq: Rfq = {
-    offeringId: offering.id,
+    offeringId: offeringId,
     amountCents: amountInCents,
     kycProof: kycProof,
     payinMethod: {
-      kind: PaymentMethodKind.DEBIT_CARD,
+      kind: payinKind,
     },
     payoutMethod: {
-      kind: PaymentMethodKind.BTC_ADDRESS,
+      kind: payoutKind,
       paymentDetails: { btcAddress: '32PAofRVZLF3jY9x5P9qc8cc9QBY8pMivK' },
     },
   };

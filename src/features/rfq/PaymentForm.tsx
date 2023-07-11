@@ -10,41 +10,44 @@ function classNames(...classes: string[]) {
 type PaymentDropdownProps = {
   header: string;
   paymentMethods: PaymentMethod[];
-  paymentMethodKind: string;
-  onChange: (newValue: PaymentMethodKind) => void;
+  onChange: (newValue: SelectedPaymentMethodData) => void;
 };
 
-export type PaymentFormData = {
-  payinInstrument: string;
-  payoutInstrument: string;
+export type SelectedPaymentMethodData = {
+  kind: string;
+  details?: any;
 };
 
 type PaymentFormProps = {
   offering: Offering;
-  paymentData: PaymentFormData;
-  onSubmit: (formData: PaymentFormData) => void;
-  onBack: (formData: PaymentFormData) => void;
+  setSelectedPayinData: (selectedPayinData: SelectedPaymentMethodData) => void;
+  setSelectedPayoutData: (
+    selectedPayoutData: SelectedPaymentMethodData
+  ) => void;
+  onSubmit: (formData: SelectedPaymentMethodData) => void;
+  onBack: (formData: SelectedPaymentMethodData) => void;
 };
 
 function PaymentDropdown({
   header,
   paymentMethods,
-  paymentMethodKind,
   onChange,
 }: PaymentDropdownProps) {
-  const [selected, setSelected] = useState(
-    paymentMethods.find((method) => method.kind === paymentMethodKind)?.kind ||
-      paymentMethods[0].kind
-  );
+  const [selectedMethod, setSelectedMethod] = useState(paymentMethods[0]);
 
-  const handleSelectItem = (paymentMethodKind: PaymentMethodKind) => {
-    setSelected(paymentMethodKind);
-    onChange(paymentMethodKind);
+  const handleSelectItem = (paymentMethod: PaymentMethod) => {
+    setSelectedMethod(paymentMethod);
+    onChange(paymentMethod);
   };
+
+  const schema = selectedMethod.requiredPaymentDetails;
 
   return (
     <div>
-      <Listbox value={selected} onChange={handleSelectItem}>
+      <Listbox
+        value={selectedMethod}
+        onChange={(paymentMethod) => handleSelectItem(paymentMethod)}
+      >
         {({ open }) => (
           <>
             <Listbox.Label className="block text-sm font-medium leading-6 text-white">
@@ -53,7 +56,9 @@ function PaymentDropdown({
             <div className="relative mt-2">
               <Listbox.Button className="relative w-full cursor-default rounded-md bg-neutral-900 py-1.5 pl-3 pr-10 text-left text-white shadow-sm ring-1 ring-inset ring-transparent focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 <span className="flex items-center">
-                  <span className="ml-3 block truncate">{selected}</span>
+                  <span className="ml-3 block truncate">
+                    {selectedMethod.kind}
+                  </span>
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                   <ChevronUpDownIcon
@@ -124,31 +129,25 @@ function PaymentDropdown({
 
 export function PaymentForm({
   offering,
-  paymentData,
+  setSelectedPayinData,
+  setSelectedPayoutData,
   onSubmit,
   onBack,
 }: PaymentFormProps) {
-  const [payinInstrument, setPayinInstrument] = useState(
-    paymentData.payinInstrument
-  );
-  const [payoutInstrument, setPayoutInstrument] = useState(
-    paymentData.payoutInstrument
-  );
-
   const handleNext = () => {
-    const formData: PaymentFormData = {
-      payinInstrument,
-      payoutInstrument,
-    };
-    onSubmit(formData);
+    // const formData: SelectedPaymentMethodData = {
+    //   payinInstrument,
+    //   payoutInstrument,
+    // };
+    onSubmit(undefined as any);
   };
 
   const handleBack = () => {
-    const formData: PaymentFormData = {
-      payinInstrument,
-      payoutInstrument,
-    };
-    onBack(formData);
+    // const formData: PaymentFormData = {
+    //   payinInstrument,
+    //   payoutInstrument,
+    // };
+    onBack(undefined as any);
   };
 
   return (
@@ -158,8 +157,7 @@ export function PaymentForm({
           <PaymentDropdown
             header="Pay-in instrument"
             paymentMethods={offering.payinMethods}
-            paymentMethodKind={payinInstrument}
-            onChange={setPayinInstrument}
+            onChange={setSelectedPayinData}
           ></PaymentDropdown>
         </div>
 
@@ -167,8 +165,7 @@ export function PaymentForm({
           <PaymentDropdown
             header="Pay-out instrument"
             paymentMethods={offering.payoutMethods}
-            paymentMethodKind={payoutInstrument}
-            onChange={setPayoutInstrument}
+            onChange={setSelectedPayoutData}
           ></PaymentDropdown>
         </div>
       </div>

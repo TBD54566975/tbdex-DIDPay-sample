@@ -5,7 +5,7 @@ import { ReviewForm } from './ReviewForm';
 import { CreateVcForm } from './CreateVcForm';
 import { SelectVcForm, SelectVcFormData } from './SelectVcForm';
 import { ExchangeForm, ExchangeFormData } from './ExchangeForm';
-import { PaymentForm, PaymentFormData } from './PaymentForm';
+import { PaymentForm, SelectedPaymentMethodData } from './PaymentForm';
 import { Offering } from '@tbd54566975/tbdex';
 import { Encoder } from '@tbd54566975/dwn-sdk-js';
 import { getVcs, createRfq } from '../../utils/Web5Utils';
@@ -28,10 +28,16 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
   const [exchangeData, setExchangeData] = useState<ExchangeFormData>({
     amount: '',
   });
-  const [paymentData, setPaymentData] = useState<PaymentFormData>({
-    payinInstrument: offering.payinMethods[0].kind,
-    payoutInstrument: offering.payoutMethods[0].kind,
-  });
+  const [selectedPayinData, setSelectedPayinData] =
+    useState<SelectedPaymentMethodData>({
+      kind: 'undefined',
+      details: undefined,
+    });
+  const [selectedPayoutData, setSelectedPayoutData] =
+    useState<SelectedPaymentMethodData>({
+      kind: 'undefined',
+      details: undefined,
+    });
   const [vcData, setVcData] = useState<SelectVcFormData>({
     credential: credentials[0].issuer.name,
   });
@@ -95,11 +101,11 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
         web5,
         profile.id,
         pfiDid,
-        offering,
+        offering.id,
         exchangeData.amount,
         kycProof,
-        paymentData.payinInstrument,
-        paymentData.payoutInstrument
+        paymentData.payinMethods,
+        paymentData.payoutMethods
       );
       onClose(true);
     }
@@ -159,7 +165,8 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
                   {step === 1 && (
                     <PaymentForm
                       offering={offering}
-                      paymentData={paymentData}
+                      setSelectedPayinData={setSelectedPayinData}
+                      setSelectedPayoutData={setSelectedPayoutData}
                       onSubmit={handleNextStep}
                       onBack={handlePreviousStep}
                     />

@@ -25,7 +25,7 @@ export function VerifiableCredentialsPage() {
         {credentials.map((credential) => (
           <li
             key={credential.id}
-            className="overflow-hidden rounded-xl border border-gray-100"
+            className="overflow-hidden rounded-xl border border-transparent"
           >
             <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-neutral-900 p-6">
               <div className="text-sm font-medium leading-6 text-yellow-300">
@@ -85,7 +85,7 @@ export function VerifiableCredentialsPage() {
                 </Transition>
               </Menu>
             </div>
-            <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6 bg-neutral-950">
+            <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6 bg-neutral-900">
               <div className="flex justify-between gap-x-4 py-3">
                 <dt className="text-white">Type</dt>
                 <dd className="text-gray-700">
