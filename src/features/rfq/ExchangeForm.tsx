@@ -21,9 +21,11 @@ type ExchangeFormProps = {
 
 function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
   // Extracting base currency and counter currency from the pair
-  const parsedUnitPrice = parseFloat(offering.unitPrice.replace(/,/g, ''));
-  const parsedMin = parseFloat(offering.min);
-  const parsedMax = parseFloat(offering.max);
+  const parsedUnitPrice = parseFloat(
+    offering.unitPriceDollars.replace(/,/g, '')
+  );
+  const parsedMin = parseFloat(offering.minDollars);
+  const parsedMax = parseFloat(offering.minDollars);
 
   const [isAmountOutsideRange, setIsAmountOutsideRange] = useState(false);
   const [convertedUnits, setConvertedUnits] = useState(
@@ -112,10 +114,10 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
       {counterUnits !== '' && isAmountOutsideRange ? (
         <p className="mt-2 text-sm text-red-600" id="email-error">
           {parseFloat(counterUnits) < parsedMin
-            ? `Minimum order is ${currency(offering.min).format()}`
+            ? `Minimum order is ${currency(offering.minDollars).format()}`
             : parseFloat(counterUnits) > parsedMax
             ? `Maximum order is 
-              ${currency(offering.max).format()}`
+              ${currency(offering.maxDollars).format()}`
             : null}
         </p>
       ) : null}
@@ -159,8 +161,8 @@ export function ExchangeForm({
   onSubmit,
 }: ExchangeFormProps) {
   const [amount, setAmount] = useState(exchangeData.amount);
-  const parsedMin = parseFloat(offering.min);
-  const parsedMax = parseFloat(offering.max);
+  const parsedMin = parseFloat(offering.minDollars);
+  const parsedMax = parseFloat(offering.maxDollars);
 
   const handleInputChange = (amount: string) => {
     setAmount(amount);

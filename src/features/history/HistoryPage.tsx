@@ -39,14 +39,7 @@ export function HistoryPage() {
 
   function getThreadStatusString(contextId: string): string {
     const status = threadManager.getThreadStatus(contextId);
-
-    if (status === Status.COMPLETED) {
-      return 'Completed';
-    } else if (status === Status.FAILED) {
-      return 'Failed';
-    } else {
-      return 'Pending';
-    }
+    return 'TODO';
   }
 
   return (

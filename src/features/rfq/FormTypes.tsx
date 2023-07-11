@@ -36,18 +36,6 @@ export function getCurrencySymbol(ticker: string): string {
   return currency || '';
 }
 
-export function paymentMethodKindToString(
-  paymentMethodKind: PaymentMethodKind
-) {
-  if (paymentMethodKind === PaymentMethodKind.BITCOIN_ADDRESS) {
-    return 'Bitcoin Address';
-  } else if (paymentMethodKind === PaymentMethodKind.DEBIT_CARD) {
-    return 'Debit Card';
-  } else if (paymentMethodKind === PaymentMethodKind.SQUARE_PAY) {
-    return 'Square Pay';
-  }
-}
-
 export const credentials: Credential[] = [
   {
     id: 'https://tbd.xyz/credentials/3733',

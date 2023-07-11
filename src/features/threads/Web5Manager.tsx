@@ -125,9 +125,9 @@ export class ThreadManager {
 
       for (const statuses of threadData?.orderStatuses ?? []) {
         const orderStatus = statuses.body as OrderStatus;
-        if (orderStatus.orderStatus !== Status.PENDING) {
-          keysWithCompletedOrFailed.push(contextId);
-        }
+        // if (orderStatus.orderStatus !== Status.PENDING) {
+        //   keysWithCompletedOrFailed.push(contextId);
+        // }
       }
     }
 
@@ -146,13 +146,14 @@ export class ThreadManager {
   public getThreadStatus(contextId: string) {
     const threadData = this.getThread(contextId);
 
-    for (const message of threadData?.orderStatuses ?? []) {
-      const orderStatus = message.body as OrderStatus;
-      if (orderStatus.orderStatus !== Status.PENDING) {
-        return orderStatus.orderStatus;
-      }
-    }
-    return Status.PENDING;
+    // for (const message of threadData?.orderStatuses ?? []) {
+    //   const orderStatus = message.body as OrderStatus;
+    //   if (orderStatus.orderStatus !== Status.PENDING) {
+    //     return orderStatus.orderStatus;
+    //   }
+    // }
+    // return Status.PENDING;
+    return 'FIX';
   }
 
   // Useful for displaying threads in home page of DIDPay

@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { ProgressPanel, Step } from './ProgressPanel';
+import { ProgressPanel, Step, steps } from './ProgressPanel';
 import { ReviewForm } from './ReviewForm';
 import { CreateVcForm } from './CreateVcForm';
 import { SelectVcForm, SelectVcFormData } from './SelectVcForm';
@@ -8,7 +8,7 @@ import { ExchangeForm, ExchangeFormData } from './ExchangeForm';
 import { PaymentForm, PaymentFormData } from './PaymentForm';
 import { Offering } from '@tbd54566975/tbdex';
 import { Encoder } from '@tbd54566975/dwn-sdk-js';
-import { getVcs, createRfq } from '../Web5Utils';
+import { getVcs, createRfq } from '../../utils/Web5Utils';
 import { useWeb5Context } from '../../context/Web5Context';
 import { credentials } from './FormTypes';
 import { PEXv2 } from '@sphereon/pex';
@@ -79,13 +79,6 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
   //   const { presentation } = pex.presentationFrom(pdFromOffering, vcs);
   // } else {
   // }
-
-  const steps: Step[] = [
-    { name: 'Exchange', status: 'complete' },
-    { name: 'Payments', status: 'current' },
-    { name: 'Select VCs', status: 'upcoming' },
-    { name: 'Review', status: 'upcoming' },
-  ];
 
   const handleNextStep = (formData: any) => {
     if (step === 0) {

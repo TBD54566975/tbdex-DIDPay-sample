@@ -3,10 +3,11 @@ import {
   CodeBracketIcon,
   CreditCardIcon,
 } from '@heroicons/react/20/solid';
-import { Offering, PaymentMethodKind } from '@tbd54566975/tbdex';
+import { Offering } from '@tbd54566975/tbdex';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import currency from 'currency.js';
+import { formatPaymentMethod } from '../../utils/TbdexUtils';
 
 dayjs.extend(relativeTime);
 
@@ -27,7 +28,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
   let kyc = 'No KYC requirements';
   // TODO: figure out what kyc json should look like
   if (false) {
-    kyc = JSON.parse(offering.kycRequirements);
+    // kyc = JSON.parse(offering.kycRequirements);
   }
 
   return (
@@ -57,7 +58,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
             <dt className="text-sm font-medium text-gray-300">Exchange rate</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
               {getRate(
-                offering.unitPrice,
+                offering.unitPriceDollars,
                 offering.baseCurrency,
                 offering.quoteCurrency
               )}
@@ -66,20 +67,20 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Minimum order</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {currency(offering.min).format()} {offering.quoteCurrency}
+              {currency(offering.minDollars).format()} {offering.quoteCurrency}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Maximum order</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {currency(offering.max).format()} {offering.quoteCurrency}
+              {currency(offering.maxDollars).format()} {offering.quoteCurrency}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Base fee</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {offering.baseFee
-                ? `${currency(offering.baseFee).format()} ${
+              {offering.baseFeeDollars
+                ? `${currency(offering.baseFeeDollars).format()} ${
                     offering.quoteCurrency
                   }`
                 : 'No base fee'}
@@ -111,11 +112,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                       />
                       <div className="ml-4 flex min-w-0 flex-1 gap-2">
                         <span className="truncate font-medium text-gray-400">
-                          {payin.kind === PaymentMethodKind.DEBIT_CARD
-                            ? 'Debit Card'
-                            : payin.kind === PaymentMethodKind.BITCOIN_ADDRESS
-                            ? 'Bitcoin Address'
-                            : 'Square Pay'}
+                          {formatPaymentMethod(payin.kind)}
                         </span>
                       </div>
                     </div>
@@ -150,11 +147,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                       />
                       <div className="ml-4 flex min-w-0 flex-1 gap-2">
                         <span className="truncate font-medium text-gray-400">
-                          {payout.kind === PaymentMethodKind.DEBIT_CARD
-                            ? 'Debit Card'
-                            : payout.kind === PaymentMethodKind.BITCOIN_ADDRESS
-                            ? 'Bitcoin Address'
-                            : 'Square Pay'}
+                          {formatPaymentMethod(payout.kind)}
                         </span>
                       </div>
                     </div>

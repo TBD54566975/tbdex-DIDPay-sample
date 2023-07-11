@@ -1,10 +1,11 @@
 import { Fragment, useState, useEffect, useRef } from 'react';
 import { Combobox, Dialog, Transition } from '@headlessui/react';
-import { Offering, pfiProtocolDefinition } from '@tbd54566975/tbdex';
+import { Offering } from '@tbd54566975/tbdex';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { useNavigate } from 'react-router-dom';
 import { useWeb5Context } from '../../context/Web5Context';
 import { fakeOfferings } from '../FakeObjects';
+import { getOfferings } from '../../utils/Web5Utils';
 
 export function OfferingsSearch() {
   const [pfiDid, setPfiDid] = useState('');
@@ -30,10 +31,15 @@ export function OfferingsSearch() {
     setPfiDid(value);
   };
 
-  const handleEnter = () => {
+  const handleEnter = async () => {
     // only query dwn if pfiDid starts with did:ion:
     if (/^did:ion:/.test(pfiDid)) {
-      getOfferings();
+      const offerings = await getOfferings(web5, pfiDid);
+      if (offerings) {
+        navigate('/offerings', {
+          state: { offerings: offerings, pfiDid: pfiDid },
+        });
+      }
       setOpen(false);
     } else {
     }
@@ -54,30 +60,6 @@ export function OfferingsSearch() {
 
           return baseCurrency || quoteCurrency;
         });
-
-  async function getOfferings() {
-    // TODO: replace with pfiDid and change schema for offerings
-    const { records = [] } = await web5.dwn.records.query({
-      from: pfiDid,
-      message: {
-        filter: {
-          schema: 'https://tbd.website/resources/tbdex/Offering',
-        },
-      },
-    });
-
-    const offerings = [];
-    for (let record of records) {
-      const offering = await record.data.json();
-      offerings.push(offering);
-    }
-
-    if (offerings) {
-      navigate('/offerings', {
-        state: { offerings: offerings, pfiDid: pfiDid },
-      });
-    }
-  }
 
   function getRate(
     unitPrice: string,
@@ -191,7 +173,7 @@ export function OfferingsSearch() {
                         >
                           {filteredOfferings.map((offering) => {
                             const rate = getRate(
-                              offering.unitPrice,
+                              offering.unitPriceDollars,
                               offering.baseCurrency,
                               offering.quoteCurrency
                             );

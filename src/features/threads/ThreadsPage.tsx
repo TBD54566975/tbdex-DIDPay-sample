@@ -3,15 +3,7 @@ import { RecordThread } from './Thread';
 import { useWeb5Context } from '../../context/Web5Context';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { Thread } from './Thread';
-import {
-  Offering,
-  OrderStatus,
-  Quote,
-  Rfq,
-  Status,
-  TbDEXMessage,
-  aliceProtocolDefinition,
-} from '@tbd54566975/tbdex';
+import { getThreads } from '../../utils/Web5Utils';
 
 export function ThreadsPage() {
   const [threadMap, setThreadMap] = useState<{ [key: string]: RecordThread }>(
@@ -19,8 +11,7 @@ export function ThreadsPage() {
   );
   const [loading, setLoading] = useState(true);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
-
-  const { web5, profile } = useWeb5Context();
+  const { web5 } = useWeb5Context();
 
   // launches the search command pallete
   const handleDiscoverOfferings = () => {
@@ -38,33 +29,13 @@ export function ThreadsPage() {
     }
   };
 
-  async function init() {
-    let threads: { [key: string]: RecordThread } = {};
-
-    const { records = [] } = await web5.dwn.records.query({
-      message: {
-        filter: {
-          schema: aliceProtocolDefinition.types.RFQ.schema,
-        },
-      },
-    });
-
-    for (let record of records) {
-      const rfqMsg = (await record.data.json()) as TbDEXMessage<'rfq'>;
-      if (rfqMsg.type === 'rfq') {
-        const threadId = rfqMsg.threadId;
-        threads[threadId] = { rfq: record, orderStatuses: [] };
-      }
-    }
-    setThreadMap(threads);
-    setLoading(false);
-  }
-
   useEffect(() => {
-    const fetchData = async () => {
-      await init();
+    const init = async () => {
+      const threads = await getThreads(web5);
+      setThreadMap(threads);
+      setLoading(false);
     };
-    fetchData();
+    init();
   }, []);
 
   if (loading) {

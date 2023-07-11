@@ -4,7 +4,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { SelectVcFormData } from './SelectVcForm';
 import { ExchangeFormData } from './ExchangeForm';
 import { PaymentFormData } from './PaymentForm';
-import { paymentMethodKindToString } from './FormTypes';
+import { formatPaymentMethod } from '../../utils/TbdexUtils';
 
 type ReviewFormProps = {
   exchangeData: ExchangeFormData;
@@ -54,7 +54,7 @@ export function ReviewForm({
               {Object.entries(paymentData).map(([key, value]) => (
                 <div key={key}>
                   <span>{key}: </span>
-                  <span>{paymentMethodKindToString(value)}</span>
+                  <span>{formatPaymentMethod(value)}</span>
                 </div>
               ))}{' '}
             </p>
