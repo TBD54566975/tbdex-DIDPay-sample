@@ -37,7 +37,9 @@ function PaymentDropdown({
 
   const handleSelectItem = (paymentMethod: PaymentMethod) => {
     setSelectedMethod(paymentMethod);
-    onChange(paymentMethod);
+    console.log('payment method hoe!', paymentMethod)
+
+    // onChange(paymentMethod);
   };
 
   const schema = selectedMethod.requiredPaymentDetails;
@@ -85,7 +87,7 @@ function PaymentDropdown({
                           'relative cursor-default select-none py-2 pl-3 pr-9'
                         )
                       }
-                      value={method.kind}
+                      value={method}
                     >
                       {({ selected, active }) => (
                         <>
