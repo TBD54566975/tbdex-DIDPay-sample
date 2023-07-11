@@ -66,14 +66,14 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
     },
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setVcs(await getVcs(web5));
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setVcs(await getVcs(web5));
+  //   };
+  //   fetchData();
+  // }, []);
 
-  const pex = new PEXv2();
+  // const pex = new PEXv2();
   // const { kycRequirements: pdJwt } = offering;
   // const [_header, payload, _signature] = pdJwt.split('.');
   // const pdFromOffering = Encoder.base64UrlToObject(payload);
@@ -91,8 +91,9 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
       const exchangeFormData = formData as ExchangeFormData;
       setExchangeData(exchangeFormData);
     } else if (step === 1) {
-      const paymentFormData = formData as PaymentFormData;
-      setPaymentData(paymentFormData);
+      console.log('hi')
+      // const paymentFormData = formData as PaymentFormData;
+      // setPaymentData(paymentFormData);
     } else if (step === 2) {
       const vcFormData = formData as SelectVcFormData;
       setVcData(vcFormData);
@@ -104,8 +105,8 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
         offering.id,
         exchangeData.amount,
         kycProof,
-        paymentData.payinMethods,
-        paymentData.payoutMethods
+        undefined as any,
+        undefined as any,
       );
       onClose(true);
     }
@@ -115,8 +116,9 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
 
   const handlePreviousStep = (formData: any) => {
     if (step === 1) {
-      const paymentFormData = formData as PaymentFormData;
-      setPaymentData(paymentFormData);
+      console.log('hi step 1 previous step handler')
+      // const paymentFormData = formData as PaymentFormData;
+      // setPaymentData(paymentFormData);
     } else if (step === 2) {
       const vcFormData = formData as SelectVcFormData;
       setVcData(vcFormData);
@@ -187,7 +189,7 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
                   {step === 3 && (
                     <ReviewForm
                       exchangeData={exchangeData}
-                      paymentData={paymentData}
+                      paymentData={{}}
                       vcData={vcData}
                       onSubmit={handleNextStep}
                       onBack={handlePreviousStep}

@@ -3,12 +3,12 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { SelectVcFormData } from './SelectVcForm';
 import { ExchangeFormData } from './ExchangeForm';
-import { PaymentFormData } from './PaymentForm';
+import { SelectedPaymentMethodData } from './PaymentForm';
 import { formatPaymentMethod } from '../../utils/TbdexUtils';
 
 type ReviewFormProps = {
   exchangeData: ExchangeFormData;
-  paymentData: PaymentFormData;
+  paymentData: Partial<SelectedPaymentMethodData>;
   vcData: SelectVcFormData;
   onSubmit: (formData: any) => void;
   onBack: (formData: any) => void;
