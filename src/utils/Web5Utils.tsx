@@ -14,27 +14,51 @@ import { Record } from '@tbd54566975/web5/dist/types/record'
  * queries DWN for VCs
  * @returns an array of VCs
  */
+// export async function getVcs(web5: Web5) {
+//   const { records = [], status } = await web5.dwn.records.query({
+//     message: {
+//       filter: {
+//         schema: 'https://www.w3.org/2018/credentials/v1',
+//       },
+//     },
+//   })
+
+//   if (status.code !== 200) {
+//     throw new Error('Failed to fetch VCs')
+//   }
+
+//   const vcs = []
+//   for (const record of records) {
+//     const vc = await record.data.text()
+//     console.log(vc)
+//     vcs.push(vc)
+//   }
+
+//   return vcs
+// }
+
 export async function getVcs(web5: Web5) {
-  const { records = [], status } = await web5.dwn.records.query({
+  const { records, status } = await web5.dwn.records.query({
     message: {
       filter: {
-        schema: 'https://www.w3.org/2018/credentials/v1',
-      },
-    },
+        dataFormat: 'application/vc+ld+json'
+      }
+    }
   })
 
   if (status.code !== 200) {
-    throw new Error('Failed to fetch VCs')
+    alert('UH OH spaghettios. check console for error')
+    console.error(`(${status.code}) -> ${status.detail}`)
+
+    return
   }
 
-  const vcs = []
+  const vcJwts = []
   for (const record of records) {
     const vc = await record.data.text()
-    console.log(vc)
-    vcs.push(vc)
+    vcJwts.push(vc)
   }
-
-  return vcs
+  return vcJwts
 }
 
 export async function getThreads(web5: Web5) {
@@ -124,6 +148,8 @@ async function getRfqOffering(web5: Web5, pfiDid: string, offeringId: string) {
     console.log('FIX ME')
   }
 }
+
+
 
 export const threadInit = async (
   web5: Web5,

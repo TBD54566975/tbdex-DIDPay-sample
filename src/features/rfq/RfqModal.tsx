@@ -64,29 +64,6 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
           paymentDetails: payoutDetails
         }
       })
-
-      const { records, status } = await web5.dwn.records.query({
-        message: {
-          filter: {
-            dataFormat: 'application/vc+ld+json'
-          }
-        }
-      })
-
-      if (status.code !== 200) {
-        alert('UH OH spaghettios. check console for error')
-        console.error(`(${status.code}) -> ${status.detail}`)
-
-        return
-      }
-
-      const vcJwts = []
-      for (const record of records) {
-        const vc = await record.data.text()
-        vcJwts.push(vc)
-      }
-
-      setVcs(vcJwts)
     } else if (step === 2) {
       // const vcFormData = formData as SelectVcFormData
       // setVcData(vcFormData)
@@ -100,14 +77,6 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
   }
     
   const handlePreviousStep = () => {
-    if (step === 1) {
-      console.log('hi step 1 previous step handler')
-      // const paymentFormData = formData as PaymentFormData;
-      // setPaymentData(paymentFormData);
-    } else if (step === 2) {
-      // const vcFormData = formData as SelectVcFormData
-      // setVcData(vcFormData)
-    }
     setStep((prevStep) => prevStep - 1)
   }
 
@@ -155,8 +124,6 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
                   )}
                   {step === 2 && (
                     <CreateVcForm
-                      vcs={vcs}
-                      kycRequirements={offering.kycRequirements}
                       onNext={handleNextStep}
                       onBack={handlePreviousStep}
                     />

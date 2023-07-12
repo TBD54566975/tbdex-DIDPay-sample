@@ -1,6 +1,6 @@
 import type { PresentationDefinitionV2 } from '@tbd54566975/tbdex'
 
-import React from 'react'
+import React, { useContext } from 'react'
 import validator from '@rjsf/validator-ajv8'
 
 import { PEXv2 } from '@sphereon/pex'
@@ -8,6 +8,10 @@ import { JSONPath } from '@astronautlabs/jsonpath'
 import { useState, useEffect } from 'react'
 
 import { JsonSchemaForm } from '../../components/JsonSchemaForm'
+import { getVcs } from '../../utils/Web5Utils'
+import { RfqContext } from '../../context/RfqContext'
+import { useWeb5Context } from '../../context/Web5Context'
+
 
 /**
  * TODO:
@@ -20,21 +24,23 @@ import { JsonSchemaForm } from '../../components/JsonSchemaForm'
 const pex = new PEXv2()
 
 type CreateVcFormProps = {
-  vcs: string[];
-  kycRequirements: PresentationDefinitionV2;
   onNext: (formData: any) => void;
   onBack: (formData: any) => void;
 };
 
 export function CreateVcForm(props: CreateVcFormProps) {
+  const { web5 } = useWeb5Context()
+
   const [formData, setFormData] = useState<any>({})
   const [vcFormSchema, setVcFormSchema] = useState<any>(undefined)
   const [fieldNameToJsonPathMap, setFieldNameToJsonPathMap] = useState(undefined)
 
+  const { offering, vcs, setVcs } = useContext(RfqContext)
+  const kycRequirements = offering.kycRequirements
+
 
   const handleNext = () => {
     const vc = createVc(formData, fieldNameToJsonPathMap)
-    
     
     props.onNext(formData)
   }
@@ -49,10 +55,17 @@ export function CreateVcForm(props: CreateVcFormProps) {
   }
 
   useEffect(() => {
-    if (props.vcs.length > 0) {
-      const selectedVcs = pex.selectFrom(props.kycRequirements, props.vcs)
+
+    const init = async () => {
+      const vcs = await getVcs(web5)
+      setVcs(vcs)
+    }
+    init()
+    
+    if (vcs.length > 0) {
+      const selectedVcs = pex.selectFrom(kycRequirements, vcs)
     } else {
-      const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(props.kycRequirements)
+      const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(kycRequirements)
       console.log(fieldNameToJsonPathMap, jsonSchema)
       
       

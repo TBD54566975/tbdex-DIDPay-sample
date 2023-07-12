@@ -26,7 +26,9 @@ export const RfqContext = React.createContext({
   payoutDetails: undefined,
   setPayoutDetails: undefined,
   vcs: undefined,
-  setVcs: undefined
+  setVcs: undefined,
+  kycProof: undefined,
+  setKycProof: undefined
 })
 
 // TODO: in progress 
@@ -46,9 +48,8 @@ export const RfqProvider = ({ children, offering }) => {
   const [payoutDetails, setPayoutDetails] = useState({})
 
   const [vcs, setVcs] = useState([])
-  
-  const [paymentMethod, setPaymentMethod] = useState('')
-  const [credentials, setCredentials] = useState({})
+  const [kycProof, setKycProof] = useState([])
+
 
   return (
     <RfqContext.Provider
@@ -69,7 +70,9 @@ export const RfqProvider = ({ children, offering }) => {
         payoutDetails,
         setPayoutDetails,
         vcs,
-        setVcs
+        setVcs,
+        kycProof,
+        setKycProof
       }}
     >
       {children}
