@@ -20,8 +20,9 @@ export function QuoteItem({ quoteMsg, offering }: QuoteItemProps) {
   const yolo = false
   const baseCurrency = offering?.baseCurrency.currencyCode
   const quoteCurrency = offering?.quoteCurrency.currencyCode
-  const baseUnits = currency(quoteMsg?.body.base.amountSubunits).divide(100).value.toString()
-  const quoteUnits = currency(quoteMsg?.body.quote.amountSubunits).divide(100).value.toString()
+
+  const baseUnits = currency(quoteMsg?.body.base.amountSubunits, { fromCents: true }).value.toString()
+  const quoteUnits = currency(quoteMsg?.body.quote.amountSubunits, { fromCents: true }).value.toString()
   return (
     <li key={quoteMsg?.id} className="relative flex gap-x-4">
       <div

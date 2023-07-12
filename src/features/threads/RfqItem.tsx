@@ -18,7 +18,7 @@ type RfqItemProps = {
 };
 
 export function RfqItem({ rfqMsg, quote, offering }: RfqItemProps) {
-  const amount = currency(rfqMsg.body.quoteAmountSubunits).divide(100).value.toString()
+  const amount = currency(rfqMsg.body.quoteAmountSubunits, { fromCents: true }).value.toString()
   const baseCurrency = offering?.baseCurrency.currencyCode
   const quoteCurrency = offering?.quoteCurrency.currencyCode
   return (

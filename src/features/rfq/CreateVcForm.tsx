@@ -38,7 +38,6 @@ export function CreateVcForm(props: CreateVcFormProps) {
   const { offering, vcs, setVcs } = useContext(RfqContext)
   const kycRequirements = offering.kycRequirements
 
-
   const handleNext = () => {
     const vc = createVc(formData, fieldNameToJsonPathMap)
     

@@ -220,7 +220,7 @@ export const createRfq = async (
   payinKind: string,
   payoutKind: string
 ) => {
-  const amountInCents = currency(amount).multiply(100).value.toString()
+  const amountInCents = currency(amount).intValue.toString()
   const rfq: Rfq = {
     offeringId: offeringId,
     quoteAmountSubunits: amountInCents,

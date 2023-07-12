@@ -10,8 +10,8 @@ type ExchangeFormProps = {
 export function SelectAmountForm(props: ExchangeFormProps) {
   const { offering, quoteAmount, setQuoteAmount} = useContext(RfqContext)
 
-  const minQuoteUnits = currency(offering.quoteCurrency.minSubunit).divide(100).value
-  const maxQuoteUnits = currency(offering.quoteCurrency.maxSubunit).divide(100).value
+  const minQuoteUnits = currency(offering.quoteCurrency.minSubunit, { fromCents: true }).value
+  const maxQuoteUnits = currency(offering.quoteCurrency.maxSubunit, { fromCents: true }).value
 
   const handleNext = () => {
     const parsedAmount = parseFloat(quoteAmount)

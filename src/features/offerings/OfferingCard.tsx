@@ -23,8 +23,8 @@ function getRate(
 export function OfferingCard({ offering, handleAction }: CardProps) {
 
   const quoteCurrency = offering.quoteCurrency.currencyCode
-  const quoteMinUnits = currency(offering.quoteCurrency.minSubunit).divide(100).format()
-  const quoteMaxUnits = currency(offering.quoteCurrency.maxSubunit).divide(100).format()
+  const quoteMinUnits = currency(offering.quoteCurrency.minSubunit, { fromCents: true }).format()
+  const quoteMaxUnits = currency(offering.quoteCurrency.maxSubunit, { fromCents: true }).format()
 
   console.log(offering)
 
@@ -98,7 +98,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                     </div>
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
                       {payin.feeSubunits
-                        ? `${currency(payin.feeSubunits).divide(100).format()} ${
+                        ? `${currency(payin.feeSubunits, { fromCents: true }).format()} ${
                           quoteCurrency
                         } fee`
                         : 'No flat fee'}
@@ -133,7 +133,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                     </div>
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
                       {payout.feeSubunits
-                        ? `${currency(payout.feeSubunits).divide(100).format()} ${
+                        ? `${currency(payout.feeSubunits, { fromCents: true }).format()} ${
                           quoteCurrency
                         } fee`
                         : 'No flat fee'}
