@@ -3,6 +3,7 @@ import { RfqModal } from '../rfq/RfqModal'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { OfferingCard } from './OfferingCard'
 import { Offering } from '@tbd54566975/tbdex'
+import { RfqProvider } from '../../context/RfqContext'
 
 export function OfferingsPage() {
   const [rfqModalOpen, setRfqModalOpen] = useState(false)
@@ -43,12 +44,15 @@ export function OfferingsPage() {
           </div>
         ))}
       {rfqModalOpen && selectedOffering && (
-        <RfqModal
-          offering={selectedOffering}
-          pfiDid={pfiDid}
-          isOpen={rfqModalOpen}
-          onClose={handleModalClose}
-        />
+        <RfqProvider offering={selectedOffering}>
+          <RfqModal
+            offering={selectedOffering}
+            pfiDid={pfiDid}
+            isOpen={rfqModalOpen}
+            onClose={handleModalClose}
+          />
+        </RfqProvider>
+        
       )}
     </div>
   )

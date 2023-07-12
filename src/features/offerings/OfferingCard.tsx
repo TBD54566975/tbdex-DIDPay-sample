@@ -4,7 +4,6 @@ import { Offering } from '@tbd54566975/tbdex'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import currency from 'currency.js'
-import { formatPaymentMethod } from '../../utils/TbdexUtils'
 
 dayjs.extend(relativeTime)
 
@@ -22,6 +21,13 @@ function getRate(
 
 // TODO: add a back button
 export function OfferingCard({ offering, handleAction }: CardProps) {
+
+  const quoteCurrency = offering.quoteCurrency.currencyCode
+  const quoteMinUnits = currency(offering.quoteCurrency.minSubunit).divide(100).format()
+  const quoteMaxUnits = currency(offering.quoteCurrency.maxSubunit).divide(100).format()
+
+  console.log(offering)
+
   return (
     <div className="overflow-hidden bg-neutral-900 shadow rounded-lg">
       <div className="px-4 py-6 sm:px-6 flex items-center justify-between">
@@ -49,32 +55,22 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
             <dt className="text-sm font-medium text-gray-300">Exchange rate</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
               {getRate(
-                offering.unitPriceDollars,
-                offering.baseCurrency,
-                offering.quoteCurrency
+                offering.quoteUnitsPerBaseUnit,
+                offering.baseCurrency.currencyCode,
+                offering.quoteCurrency.currencyCode
               )}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Minimum order</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {currency(offering.minDollars).format()} {offering.quoteCurrency}
+              {quoteMinUnits} {quoteCurrency}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Maximum order</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {currency(offering.maxDollars).format()} {offering.quoteCurrency}
-            </dd>
-          </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt className="text-sm font-medium text-gray-300">Base fee</dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {offering.baseFeeDollars
-                ? `${currency(offering.baseFeeDollars).format()} ${
-                  offering.quoteCurrency
-                }`
-                : 'No base fee'}
+              {quoteMaxUnits} {quoteCurrency}
             </dd>
           </div>
 
@@ -96,14 +92,14 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                       />
                       <div className="ml-4 flex min-w-0 flex-1 gap-2">
                         <span className="truncate font-medium text-gray-400">
-                          {formatPaymentMethod(payin.kind)}
+                          {payin.kind}
                         </span>
                       </div>
                     </div>
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
-                      {payin.fee?.flatFee
-                        ? `${currency(payin.fee.flatFee).format()} ${
-                          offering.quoteCurrency
+                      {payin.feeSubunits
+                        ? `${currency(payin.feeSubunits).divide(100).format()} ${
+                          quoteCurrency
                         } fee`
                         : 'No flat fee'}
                     </div>
@@ -131,14 +127,14 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                       />
                       <div className="ml-4 flex min-w-0 flex-1 gap-2">
                         <span className="truncate font-medium text-gray-400">
-                          {formatPaymentMethod(payout.kind)}
+                          {payout.kind}
                         </span>
                       </div>
                     </div>
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
-                      {payout.fee?.flatFee
-                        ? `${currency(payout.fee.flatFee).format()} ${
-                          offering.quoteCurrency
+                      {payout.feeSubunits
+                        ? `${currency(payout.feeSubunits).divide(100).format()} ${
+                          quoteCurrency
                         } fee`
                         : 'No flat fee'}
                     </div>

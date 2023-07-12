@@ -51,11 +51,11 @@ export function OfferingsSearch() {
     query === ''
       ? []
       : fakeOfferings.filter((offering: Offering) => {
-        const baseCurrency = offering.baseCurrency
+        const baseCurrency = offering.baseCurrency.currencyCode
           .toLowerCase()
           .includes(query.toLowerCase())
 
-        const quoteCurrency = offering.quoteCurrency
+        const quoteCurrency = offering.quoteCurrency.currencyCode
           .toLowerCase()
           .includes(query.toLowerCase())
 
@@ -174,9 +174,9 @@ export function OfferingsSearch() {
                         >
                           {filteredOfferings.map((offering) => {
                             const rate = getRate(
-                              offering.unitPriceDollars,
-                              offering.baseCurrency,
-                              offering.quoteCurrency
+                              offering.quoteUnitsPerBaseUnit,
+                              offering.baseCurrency.currencyCode,
+                              offering.quoteCurrency.currencyCode
                             )
 
                             return (

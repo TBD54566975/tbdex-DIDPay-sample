@@ -1,41 +1,35 @@
 import validator from '@rjsf/validator-ajv8'
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useContext, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
-import { Offering, PaymentMethodKind, PaymentMethod, PaymentMethodResponse } from '@tbd54566975/tbdex'
+import { PaymentMethod } from '@tbd54566975/tbdex'
 
 import { JsonSchemaForm } from '../../components/JsonSchemaForm'
+import { RfqContext } from '../../context/RfqContext'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
 type PaymentFormProps = {
-  offering: Offering;
-  selectedPayinMethod: PaymentMethod;
-  selectedPayoutMethod: PaymentMethod;
-  selectedPayinKind: string;
-  selectedPayoutKind: string;
-  payinDetails: any;
-  payoutDetails: any;
-  setSelectedPayinMethod: (pm: PaymentMethod) => void;
-  setSelectedPayoutMethod: (pm: PaymentMethod) => void;
-  setSelectedPayinKind: (kind: string) => void;
-  setSelectedPayoutKind: (kind: string) => void;
-  setPayinDetails: (details: any) => void;
-  setPayoutDetails: (details: any) => void;
-  onSubmit: () => void;
-  onBack: (formData: SelectedPaymentMethodData) => void;
+  onNext: () => void;
+  onBack: () => void;
 };
 
-export function PaymentForm(props: PaymentFormProps) {  
-  const handleNext = () => {
-    props.onSubmit()
-  }
-
-  const handleBack = () => {
-    props.onBack(undefined as any)
-  }
+export function SelectPaymentMethodsForm(props: PaymentFormProps) {  
+  const {
+    offering,
+    selectedPayinMethod,
+    setSelectedPayinMethod,
+    selectedPayoutMethod,
+    setSelectedPayoutMethod,
+    setSelectedPayinKind,
+    payinDetails,
+    setPayinDetails,
+    setSelectedPayoutKind,
+    payoutDetails,
+    setPayoutDetails
+  } = useContext(RfqContext)
 
   return (
     <>
@@ -43,24 +37,24 @@ export function PaymentForm(props: PaymentFormProps) {
         <div className="mt-8">
           <PaymentDropdown
             header="Pay-in instrument"
-            selectedPaymentMethod={props.selectedPayinMethod}
-            setSelectedPaymentMethod={props.setSelectedPayinMethod}
-            setSelectedPaymentKind={props.setSelectedPayinKind}
-            paymentDetails={props.payinDetails}
-            setPaymentDetails={props.setPayinDetails}
-            paymentMethods={props.offering.payinMethods}
+            selectedPaymentMethod={selectedPayinMethod}
+            setSelectedPaymentMethod={setSelectedPayinMethod}
+            setSelectedPaymentKind={setSelectedPayinKind}
+            paymentDetails={payinDetails}
+            setPaymentDetails={setPayinDetails}
+            paymentMethods={offering.payinMethods}
           ></PaymentDropdown>
         </div>
 
         <div className="mt-4">
           <PaymentDropdown
             header="Pay-out instrument"
-            selectedPaymentMethod={props.selectedPayoutMethod}
-            setSelectedPaymentMethod={props.setSelectedPayoutMethod}
-            setSelectedPaymentKind={props.setSelectedPayoutKind}
-            paymentDetails={props.payoutDetails}
-            setPaymentDetails={props.setPayoutDetails}
-            paymentMethods={props.offering.payoutMethods}
+            selectedPaymentMethod={selectedPayoutMethod}
+            setSelectedPaymentMethod={setSelectedPayoutMethod}
+            setSelectedPaymentKind={setSelectedPayoutKind}
+            paymentDetails={payoutDetails}
+            setPaymentDetails={setPayoutDetails}
+            paymentMethods={offering.payoutMethods}
           ></PaymentDropdown>
         </div>
       </div>
@@ -68,14 +62,14 @@ export function PaymentForm(props: PaymentFormProps) {
         <button
           type="button"
           className="text-sm font-semibold leading-6 text-white"
-          onClick={handleBack}
+          onClick={props.onBack}
         >
           Back
         </button>
         <button
           type="submit"
           className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-          onClick={handleNext}
+          onClick={props.onNext}
         >
           Next
         </button>
@@ -95,6 +89,7 @@ type PaymentDropdownProps = {
 };
 
 function PaymentDropdown(props: PaymentDropdownProps) {
+
   const handleSelectItem = (paymentMethod: PaymentMethod) => {
     props.setSelectedPaymentMethod(paymentMethod)
     props.setSelectedPaymentKind(paymentMethod.kind)
@@ -194,8 +189,3 @@ function PaymentDropdown(props: PaymentDropdownProps) {
     </div>
   )
 }
-
-export type SelectedPaymentMethodData = {
-  payinMethod: PaymentMethodResponse
-  payoutMethod: PaymentMethodResponse
-};

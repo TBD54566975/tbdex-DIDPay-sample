@@ -1,6 +1,7 @@
 import React from 'react'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { Offering, TbDEXMessage } from '@tbd54566975/tbdex'
+import currency from 'currency.js'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
@@ -17,7 +18,10 @@ type QuoteItemProps = {
 
 export function QuoteItem({ quoteMsg, offering }: QuoteItemProps) {
   const yolo = false
-  
+  const baseCurrency = offering?.baseCurrency.currencyCode
+  const quoteCurrency = offering?.quoteCurrency.currencyCode
+  const baseUnits = currency(quoteMsg?.body.base.amountSubunits).divide(100).value.toString()
+  const quoteUnits = currency(quoteMsg?.body.quote.amountSubunits).divide(100).value.toString()
   return (
     <li key={quoteMsg?.id} className="relative flex gap-x-4">
       <div
@@ -41,11 +45,11 @@ export function QuoteItem({ quoteMsg, offering }: QuoteItemProps) {
       <p className="flex-auto py-0.5 text-xs leading-5 text-gray-500">
         {'PFI offered '}
         <span className="font-medium text-gray-300">
-          {quoteMsg?.body.amountCents + ' ' + offering?.baseCurrency}
+          {baseUnits + ' ' + baseCurrency}
         </span>{' '}
         for{' '}
         <span className="font-medium text-gray-300">
-          {quoteMsg?.body.totalFeeCents + ' ' + offering?.quoteCurrency}
+          {quoteUnits + ' ' + quoteCurrency}
         </span>
         .
       </p>

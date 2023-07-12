@@ -24,11 +24,11 @@ export function QuoteCard({ quoteMsg, offering, onClick }: QuoteCardProps) {
         <div>
           <div className="flex items-center">
             <h3 className="text-base font-semibold leading-7 text-gray-300">
-              {offering?.quoteCurrency}
+              {offering?.quoteCurrency.currencyCode}
             </h3>
             <ArrowsRightLeftIcon className="h-5 w-5 text-gray-400 ml-1 mr-1" />
             <h3 className="text-base font-semibold leading-7 text-gray-300">
-              {offering?.baseCurrency}
+              {offering?.baseCurrency.currencyCode}
             </h3>
           </div>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-red-500">
@@ -52,13 +52,13 @@ export function QuoteCard({ quoteMsg, offering, onClick }: QuoteCardProps) {
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Total fee</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {quote.totalFeeCents} {offering?.quoteCurrency}
+              {quote.quote.amountSubunits} {offering?.quoteCurrency.currencyCode}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Amount</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {quote.amountCents} {offering?.baseCurrency}
+              {quote.base.amountSubunits} {offering?.baseCurrency.currencyCode}
             </dd>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">

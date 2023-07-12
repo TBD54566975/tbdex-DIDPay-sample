@@ -22,7 +22,7 @@ const pex = new PEXv2()
 type CreateVcFormProps = {
   vcs: string[];
   kycRequirements: PresentationDefinitionV2;
-  onSubmit: (formData: any) => void;
+  onNext: (formData: any) => void;
   onBack: (formData: any) => void;
 };
 
@@ -36,7 +36,7 @@ export function CreateVcForm(props: CreateVcFormProps) {
     const vc = createVc(formData, fieldNameToJsonPathMap)
     
     
-    // props.onSubmit(formData)
+    props.onNext(formData)
   }
 
   const handleBack = (formData: any) => {

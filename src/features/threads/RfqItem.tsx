@@ -1,9 +1,9 @@
 import React from 'react'
 import { Offering, TbDEXMessage } from '@tbd54566975/tbdex'
 import { Record } from '@tbd54566975/web5/dist/types/record'
+import currency from 'currency.js'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import currency from 'currency.js'
 
 dayjs.extend(relativeTime)
 
@@ -18,7 +18,9 @@ type RfqItemProps = {
 };
 
 export function RfqItem({ rfqMsg, quote, offering }: RfqItemProps) {
-  const amount = currency(rfqMsg.body.amountCents).divide(100).value.toString()
+  const amount = currency(rfqMsg.body.quoteAmountSubunits).divide(100).value.toString()
+  const baseCurrency = offering?.baseCurrency.currencyCode
+  const quoteCurrency = offering?.quoteCurrency.currencyCode
   return (
     <li key={rfqMsg.id} className="relative flex gap-x-4">
       <div
@@ -35,10 +37,10 @@ export function RfqItem({ rfqMsg, quote, offering }: RfqItemProps) {
       <p className="flex-auto py-0.5 text-xs leading-5 text-gray-500">
         {'You requested '}
         <span className="font-medium text-gray-300">
-          {offering?.baseCurrency}
+          {baseCurrency}
         </span>
         {' for '}
-        <span className="font-medium text-gray-300">{`${amount} ${offering?.quoteCurrency}`}</span>
+        <span className="font-medium text-gray-300">{`${amount} ${quoteCurrency}`}</span>
         .
       </p>
       <div className="flex-none py-0.5 text-xs leading-5 text-gray-500">

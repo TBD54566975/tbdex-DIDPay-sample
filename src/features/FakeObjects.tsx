@@ -4,7 +4,6 @@ import {
   Offering,
   Rfq,
   Quote,
-  PaymentMethodKind,
   OrderStatus,
   Status,
 } from '@tbd54566975/tbdex'
@@ -27,52 +26,6 @@ export function getCurrentTimestamp() {
   const milliseconds = String(now.getMilliseconds()).padStart(3, '0')
 
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`
-}
-
-function generateRandomTimestamp(
-  minTimestamp: string,
-  maxTimestamp: string
-): string {
-  const minTime = moment(minTimestamp)
-  const maxTime = moment(maxTimestamp)
-  const duration = maxTime.diff(minTime)
-  const randomDuration = Math.random() * duration
-  const randomTimestamp = minTime
-    .clone()
-    .add(randomDuration, 'milliseconds')
-    .format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ')
-
-  return randomTimestamp
-}
-
-const minTimestamp = '2023-01-01T00:00:00.000Z'
-const maxTimestamp = '2023-12-31T23:59:59.999Z'
-
-const kycRequirements = {
-  comment: 'Note: VP, OIDC, DIDComm, or CHAPI outer wrapper would be here.',
-  presentation_definition: {
-    id: '32f54163-7166-48f1-93d8-ff217bdb0653',
-    input_descriptors: [
-      {
-        id: 'wa_driver_license',
-        name: 'Washington State Business License',
-        purpose:
-          'We can only allow licensed Washington State business representatives into the WA Business Conference',
-        constraints: {
-          fields: [
-            {
-              path: [
-                '$.credentialSubject.dateOfBirth',
-                '$.credentialSubject.dob',
-                '$.vc.credentialSubject.dateOfBirth',
-                '$.vc.credentialSubject.dob',
-              ],
-            },
-          ],
-        },
-      },
-    ],
-  },
 }
 
 export const fakeOfferings: Offering[] = [

@@ -1,4 +1,3 @@
-import { PaymentMethodKind } from '@tbd54566975/tbdex'
 import currency from 'currency.js'
 
 // TODO: get rid of this file!!

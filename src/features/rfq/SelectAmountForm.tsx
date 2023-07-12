@@ -1,35 +1,74 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useContext, useState } from 'react'
 import { getCurrencySymbol, BTC } from './FormTypes'
-import { Offering } from '@tbd54566975/tbdex'
 import currency from 'currency.js'
+import { RfqContext } from '../../context/RfqContext'
+
+type ExchangeFormProps = {
+  onNext: () => void;
+};
+
+export function SelectAmountForm(props: ExchangeFormProps) {
+  const { offering, quoteAmount, setQuoteAmount} = useContext(RfqContext)
+
+  const minQuoteUnits = currency(offering.quoteCurrency.minSubunit).divide(100).value
+  const maxQuoteUnits = currency(offering.quoteCurrency.maxSubunit).divide(100).value
+
+  const handleNext = () => {
+    const parsedAmount = parseFloat(quoteAmount)
+    if (isNaN(parsedAmount)) {
+      // Return or handle the case when the amount is not a valid number
+      return
+    }
+
+    const isAmountOutsideRange = parsedAmount < minQuoteUnits || parsedAmount > maxQuoteUnits
+    if (!isAmountOutsideRange) {
+      props.onNext()
+    }
+  }
+
+  return (
+    <>
+      <div className="mt-8 mb-8 pl-8 pr-8">
+        <div className="mt-8">
+          <PriceInput
+            quoteAmountUnits={quoteAmount}
+            onChange={e => setQuoteAmount(e)}
+          />{' '}
+        </div>
+      </div>
+      <div className="mt-12 pl-8 pr-8 flex items-center justify-end gap-x-6">
+        <button
+          type="submit"
+          className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+          onClick={handleNext}
+        >
+          Next
+        </button>
+      </div>
+    </>
+  )
+}
 
 type PriceInputProps = {
-  offering: Offering;
-  counterUnits: string;
+  quoteAmountUnits: string;
   onChange: (newValue: string) => void;
 };
 
-export type ExchangeFormData = {
-  amount: string;
-};
-
-type ExchangeFormProps = {
-  offering: Offering;
-  exchangeData: ExchangeFormData;
-  onSubmit: (formData: ExchangeFormData) => void;
-};
-
-function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
+function PriceInput(props: PriceInputProps) {
   // Extracting base currency and counter currency from the pair
+
+  const { offering } = useContext(RfqContext)
+
+
   const parsedUnitPrice = parseFloat(
-    offering.unitPriceDollars.replace(/,/g, '')
+    offering.quoteUnitsPerBaseUnit.replace(/,/g, '')
   )
-  const parsedMin = parseFloat(offering.minDollars)
-  const parsedMax = parseFloat(offering.minDollars)
+  const minQuoteUnits = currency(offering.quoteCurrency.minSubunit).divide(100)
+  const maxQuoteUnits = currency(offering.quoteCurrency.maxSubunit).divide(100)
 
   const [isAmountOutsideRange, setIsAmountOutsideRange] = useState(false)
   const [convertedUnits, setConvertedUnits] = useState(
-    convertToBaseUnits(counterUnits)
+    convertToBaseUnits(props.quoteAmountUnits)
   )
 
   function convertToBaseUnits(counterUnits: string) {
@@ -65,7 +104,7 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
 
   const handleCounterUnitsChange = (counterUnits: string) => {
     const formattedCounterUnits = formatUnits(counterUnits, 2)
-    onChange(formattedCounterUnits)
+    props.onChange(formattedCounterUnits)
 
     // change decimal point based on what currency it is
     const formattedBaseUnits = formatUnits(
@@ -76,7 +115,7 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
 
     const parsedAmount = parseFloat(formattedCounterUnits)
     setIsAmountOutsideRange(
-      parsedAmount < parsedMin || parsedAmount > parsedMax
+      parsedAmount < minQuoteUnits.value || parsedAmount > maxQuoteUnits.value
     )
   }
 
@@ -92,7 +131,7 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
       <div className="relative mt-2 rounded-md shadow-sm">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <span className="text-gray-500 sm:text-sm">
-            {getCurrencySymbol(offering.quoteCurrency)}
+            {getCurrencySymbol(offering.quoteCurrency.currencyCode)}
           </span>
         </div>
         <input
@@ -102,22 +141,22 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
           className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-white bg-neutral-900 ring-1 ring-inset ring-transparent placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           placeholder="0.00"
           aria-describedby="price-currency"
-          value={counterUnits}
+          value={props.quoteAmountUnits}
           onChange={(e) => handleCounterUnitsChange(e.target.value)}
         />
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <span className="text-gray-500 sm:text-sm" id="price-currency">
-            {offering.quoteCurrency}
+            {offering.quoteCurrency.currencyCode}
           </span>
         </div>
       </div>
-      {counterUnits !== '' && isAmountOutsideRange ? (
+      {props.quoteAmountUnits !== '' && isAmountOutsideRange ? (
         <p className="mt-2 text-sm text-red-600" id="email-error">
-          {parseFloat(counterUnits) < parsedMin
-            ? `Minimum order is ${currency(offering.minDollars).format()}`
-            : parseFloat(counterUnits) > parsedMax
+          {parseFloat(props.quoteAmountUnits) < minQuoteUnits.value
+            ? `Minimum order is ${minQuoteUnits.format()}`
+            : parseFloat(props.quoteAmountUnits) > maxQuoteUnits.value
               ? `Maximum order is 
-              ${currency(offering.maxDollars).format()}`
+              ${maxQuoteUnits.format()}`
               : null}
         </p>
       ) : null}
@@ -131,7 +170,7 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
       <div className="relative mt-2 rounded-md shadow-sm">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <span className="text-gray-500 sm:text-sm">
-            {getCurrencySymbol(offering.baseCurrency)}
+            {getCurrencySymbol(offering.baseCurrency.currencyCode)}
           </span>
         </div>
         <input
@@ -143,69 +182,14 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
           aria-describedby="price-currency"
           value={convertedUnits}
           readOnly
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => props.onChange(e.target.value)}
         />
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <span className="text-gray-500 sm:text-sm" id="price-currency">
-            {offering.baseCurrency}
+            {offering.baseCurrency.currencyCode}
           </span>
         </div>
       </div>
     </div>
-  )
-}
-
-export function ExchangeForm({
-  offering,
-  exchangeData,
-  onSubmit,
-}: ExchangeFormProps) {
-  const [amount, setAmount] = useState(exchangeData.amount)
-  const parsedMin = parseFloat(offering.minDollars)
-  const parsedMax = parseFloat(offering.maxDollars)
-
-  const handleInputChange = (amount: string) => {
-    setAmount(amount)
-  }
-
-  const handleNext = () => {
-    const parsedAmount = parseFloat(amount)
-
-    if (isNaN(parsedAmount)) {
-      // Return or handle the case when the amount is not a valid number
-      return
-    }
-
-    const isAmountOutsideRange = parsedAmount < parsedMin || parsedAmount > parsedMax
-    
-    if (!isAmountOutsideRange) {
-      const formData: ExchangeFormData = {
-        amount: parsedAmount.toString(),
-      }
-      onSubmit(formData)
-    }
-  }
-
-  return (
-    <>
-      <div className="mt-8 mb-8 pl-8 pr-8">
-        <div className="mt-8">
-          <PriceInput
-            offering={offering}
-            counterUnits={amount}
-            onChange={handleInputChange}
-          />{' '}
-        </div>
-      </div>
-      <div className="mt-12 pl-8 pr-8 flex items-center justify-end gap-x-6">
-        <button
-          type="submit"
-          className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-          onClick={handleNext}
-        >
-          Next
-        </button>
-      </div>
-    </>
   )
 }

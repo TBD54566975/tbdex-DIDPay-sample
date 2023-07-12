@@ -2,7 +2,6 @@ import {
   aliceProtocolDefinition,
   createMessage,
   Offering,
-  PaymentMethodKind,
   Rfq,
   TbDEXMessage,
 } from '@tbd54566975/tbdex'
@@ -192,18 +191,13 @@ export const createRfq = async (
   offeringId: string,
   amount: string,
   kycProof: string,
-  payinInstrument: string,
-  payoutInstrument: string
+  payinKind: string,
+  payoutKind: string
 ) => {
-  console.log(payoutInstrument)
   const amountInCents = currency(amount).multiply(100).value.toString()
-  const payinKind =
-    PaymentMethodKind[payinInstrument as keyof typeof PaymentMethodKind]
-  const payoutKind =
-    PaymentMethodKind[payoutInstrument as keyof typeof PaymentMethodKind]
   const rfq: Rfq = {
     offeringId: offeringId,
-    amountCents: amountInCents,
+    quoteAmountSubunits: amountInCents,
     kycProof: kycProof,
     payinMethod: {
       kind: payinKind,
