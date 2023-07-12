@@ -1,13 +1,13 @@
-import { Status } from '@tbd54566975/tbdex';
-import { ChevronRightIcon } from '@heroicons/react/20/solid';
-import { Link } from 'react-router-dom';
-import { useWeb5Context } from '../../context/Web5Context';
-import { ThreadManager } from '../threads/Web5Manager';
+import React, { Status } from '@tbd54566975/tbdex'
+import { ChevronRightIcon } from '@heroicons/react/20/solid'
+import { Link } from 'react-router-dom'
+import { useWeb5Context } from '../../context/Web5Context'
+import { ThreadManager } from '../threads/Web5Manager'
 
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 type StatusText = {
   [key: string]: string;
@@ -20,33 +20,33 @@ const statusIndicator: StatusIndicator = {
   Completed: 'text-green-400 bg-green-400/10',
   Pending: 'text-gray-400 bg-gray-400/10',
   Failed: 'text-rose-400 bg-rose-400/10',
-};
+}
 const statusText: StatusText = {
   Completed: 'text-green-400 bg-green-400/10 ring-gray-400/20',
   Pending: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
   Failed: 'text-rose-400 bg-rose-400/10 ring-gray-400/20',
-};
+}
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(' ')
 }
 
 export function HistoryPage() {
-  const { web5, profile } = useWeb5Context();
+  const { web5, profile } = useWeb5Context()
   // TODO: poll instead of using thread manager
-  let threadManager: ThreadManager = new ThreadManager(web5);
-  const keys = threadManager.getCompletedOrFailedStatusKeys();
+  const threadManager: ThreadManager = new ThreadManager(web5)
+  const keys = threadManager.getCompletedOrFailedStatusKeys()
 
   function getThreadStatusString(contextId: string): string {
-    const status = threadManager.getThreadStatus(contextId);
-    return 'TODO';
+    const status = threadManager.getThreadStatus(contextId)
+    return 'TODO'
   }
 
   return (
     <>
       <ul className="divide-y divide-white/20">
         {keys.map((contextId) => {
-          const message = threadManager.getLatestThreadMessage(contextId);
+          const message = threadManager.getLatestThreadMessage(contextId)
           if (message) {
             return (
               <li
@@ -97,11 +97,11 @@ export function HistoryPage() {
                   aria-hidden="true"
                 />
               </li>
-            );
+            )
           }
-          return null;
+          return null
         })}
       </ul>
     </>
-  );
+  )
 }

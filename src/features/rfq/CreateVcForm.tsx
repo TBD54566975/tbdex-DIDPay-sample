@@ -1,100 +1,139 @@
-import { useState } from 'react';
-import { RJSFSchema, FieldProps, RegistryFieldsType } from '@rjsf/utils';
-import validator from '@rjsf/validator-ajv8';
-import Form, { ThemeProps, withTheme } from '@rjsf/core';
-import React from 'react';
+import type { PresentationDefinitionV2 } from '@tbd54566975/tbdex'
+
+import React from 'react'
+import validator from '@rjsf/validator-ajv8'
+
+import { PEXv2 } from '@sphereon/pex'
+import { JSONPath } from '@astronautlabs/jsonpath'
+import { useState, useEffect } from 'react'
+
+import { JsonSchemaForm } from '../../components/JsonSchemaForm'
+
+/**
+ * TODO:
+ * 1. Get all existing VCs (DONE)
+ * 2. Eval kycRequirements
+ * 3. if no kyc cred present, render form
+ * 4. if kyc cred present, render dropdown
+ */
+
+const pex = new PEXv2()
 
 type CreateVcFormProps = {
-  schema: RJSFSchema;
+  vcs: string[];
+  kycRequirements: PresentationDefinitionV2;
   onSubmit: (formData: any) => void;
   onBack: (formData: any) => void;
 };
 
-class VcStringFieldTemplate extends React.Component<FieldProps> {
-  render() {
-    return (
-      <>
-        <div key={this.props.name}>
-          <label className="block text-sm font-medium leading-6 text-white">
-            {this.props.name}
-          </label>
+export function CreateVcForm(props: CreateVcFormProps) {
+  const [formData, setFormData] = useState<any>({})
+  const [vcFormSchema, setVcFormSchema] = useState<any>(undefined)
+  const [fieldNameToJsonPathMap, setFieldNameToJsonPathMap] = useState(undefined)
 
-          <input
-            type="text"
-            id={'element.content.key'}
-            className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-white bg-neutral-900 ring-1 ring-inset ring-transparent placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            placeholder={`Enter ${this.props.name}`}
-            onChange={(event) => this.props.onChange(event.target.value)}
-          />
-        </div>
-      </>
-    );
-  }
-}
-
-const vcFieldTemplate: RegistryFieldsType = {
-  StringField: VcStringFieldTemplate,
-};
-
-const ThemeObject: ThemeProps = { fields: vcFieldTemplate };
-const VcCreationForm = withTheme(ThemeObject);
-
-const uiSchema = {
-  'ui:submitButtonOptions': {
-    norender: true,
-  },
-};
-
-export function CreateVcForm({ schema, onSubmit, onBack }: CreateVcFormProps) {
-  const [formData, setFormData] = useState<any>(undefined);
 
   const handleNext = () => {
-    // const formData: PaymentFormData = {
-    //   PaymentMethodKind,
-    //   1
-    // };
-    onSubmit(formData);
-  };
+    const vc = createVc(formData, fieldNameToJsonPathMap)
+    
+    
+    // props.onSubmit(formData)
+  }
 
   const handleBack = (formData: any) => {
-    // const formData: PaymentFormData = {
-    //   credential,
-    // };
-    onBack(undefined);
-  };
+    props.onBack(undefined)
+  }
 
   const handleOnChange = (e: any) => {
-    console.log(e.formData);
-    setFormData(e.formData);
-  };
+    console.log(e.formData)
+    setFormData(e.formData)
+  }
+
+  useEffect(() => {
+    if (props.vcs.length > 0) {
+      const selectedVcs = pex.selectFrom(props.kycRequirements, props.vcs)
+    } else {
+      const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(props.kycRequirements)
+      console.log(fieldNameToJsonPathMap, jsonSchema)
+      
+      
+      setVcFormSchema(jsonSchema)
+      setFieldNameToJsonPathMap(fieldNameToJsonPathMap)
+    }
+  }, [])
 
   return (
     <div className="mt-4 mb-8 pl-8 pr-8">
       <div className=" text-black">
-        <VcCreationForm
-          schema={schema}
-          uiSchema={uiSchema}
-          formData={formData}
-          validator={validator}
-          onChange={handleOnChange}
-        />
+        {vcFormSchema ? 
+          <JsonSchemaForm 
+            schema={vcFormSchema}
+            validator={validator}
+            formData={formData}
+            onChange={e => setFormData(e.formData)}/> :
+          <></>
+        }
       </div>
       <div className="mt-12 pl-8 pr-8 flex items-center justify-end gap-x-6">
         <button
           type="button"
           className="text-sm font-semibold leading-6 text-white"
-          onClick={handleBack}
-        >
+          onClick={handleBack}>
           Back
         </button>
         <button
           type="submit"
           className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-          onClick={handleNext}
-        >
+          onClick={handleNext}>
           Next
         </button>
       </div>
     </div>
-  );
+  )
+}
+
+function createVc(data, fieldNameToJsonPathMap) {
+  const vc = {
+    '@context': [
+      'https://www.w3.org/2018/credentials/v1',
+    ],
+    'id'                : 'in-yo-face-cred',
+    'type'              : ['VerifiableCredential', 'KycCredential'],
+    'issuer'            : 'TODO',
+    'issuanceDate'      : new Date().toISOString(),
+    'credentialSubject': {
+      'id': 'TODO'
+    }
+  }
+  for (const property in data) {
+    const path = fieldNameToJsonPathMap[property]
+    const value = data[property]
+    
+    JSONPath.value(vc.credentialSubject, path, value)
+  }
+
+  return vc
+}
+
+function createJsonSchemaFromPresentationDefinition(pd: PresentationDefinitionV2) {
+  const fieldNameToJsonPathMap = {}
+  const jsonSchema = {
+    '$schema': 'http://json-schema.org/draft-07/schema',
+    'required': [],
+    'additionalProperties': false,
+    'type': 'object',
+    'properties': {}
+  }
+
+  
+  const [ inputDescriptor ] = pd.input_descriptors
+  const { constraints } = inputDescriptor
+
+  for (const field of constraints.fields) {
+    const fieldName = field['name'] || field.path[0]
+    jsonSchema.properties[fieldName] = field.filter
+    
+    fieldNameToJsonPathMap[fieldName] = field.path[0]
+  }
+
+  return { jsonSchema, fieldNameToJsonPathMap }
 }

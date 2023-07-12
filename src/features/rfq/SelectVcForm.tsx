@@ -1,10 +1,10 @@
-import { Fragment, useState } from 'react';
-import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { Credential, credentials } from './FormTypes';
+import React, { Fragment, useState } from 'react'
+import { Listbox, Transition } from '@headlessui/react'
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { Credential, credentials } from './FormTypes'
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(' ')
 }
 
 type VcDropdownProps = {
@@ -27,12 +27,12 @@ function VcDropdown({ header, value, onChange }: VcDropdownProps) {
   const [selected, setSelected] = useState(
     credentials.find((credential) => credential.issuer.name === value) ||
       credentials[0]
-  );
+  )
 
   const handleSelectItem = (selectedItem: Credential) => {
-    setSelected(selectedItem);
-    onChange(selectedItem.issuer.name);
-  };
+    setSelected(selectedItem)
+    onChange(selectedItem.issuer.name)
+  }
 
   return (
     <div>
@@ -142,25 +142,25 @@ function VcDropdown({ header, value, onChange }: VcDropdownProps) {
         )}
       </Listbox>
     </div>
-  );
+  )
 }
 
 export function SelectVcForm({ vcData, onSubmit, onBack }: VcFormProps) {
-  const [credential, setCredential] = useState(vcData.credential);
+  const [credential, setCredential] = useState(vcData.credential)
 
   const handleNext = () => {
     const formData: SelectVcFormData = {
       credential,
-    };
-    onSubmit(formData);
-  };
+    }
+    onSubmit(formData)
+  }
 
   const handleBack = () => {
     const formData: SelectVcFormData = {
       credential,
-    };
-    onBack(formData);
-  };
+    }
+    onBack(formData)
+  }
 
   return (
     <>
@@ -190,5 +190,5 @@ export function SelectVcForm({ vcData, onSubmit, onBack }: VcFormProps) {
         </button>
       </div>
     </>
-  );
+  )
 }

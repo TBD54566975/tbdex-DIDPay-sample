@@ -1,35 +1,35 @@
-import { useState } from 'react';
-import { RfqModal } from '../rfq/RfqModal';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { OfferingCard } from './OfferingCard';
-import { Offering } from '@tbd54566975/tbdex';
+import React, { useState } from 'react'
+import { RfqModal } from '../rfq/RfqModal'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { OfferingCard } from './OfferingCard'
+import { Offering } from '@tbd54566975/tbdex'
 
 export function OfferingsPage() {
-  const [rfqModalOpen, setRfqModalOpen] = useState(false);
+  const [rfqModalOpen, setRfqModalOpen] = useState(false)
   const [selectedOffering, setSelectedOffering] = useState<
     Offering | undefined
-  >(); // TODO: fix
+  >() // TODO: fix
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { offerings } = location.state || {};
-  const { pfiDid } = location.state || {};
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { offerings } = location.state || {}
+  const { pfiDid } = location.state || {}
 
   const handleRequestQuote = (offering: Offering) => {
-    setSelectedOffering(offering);
-    setRfqModalOpen(true);
-  };
+    setSelectedOffering(offering)
+    setRfqModalOpen(true)
+  }
 
   const handleModalClose = (hasSubmitted: boolean) => {
-    setRfqModalOpen(false);
+    setRfqModalOpen(false)
     if (hasSubmitted) {
-      navigate('/');
+      navigate('/')
     } else {
-      navigate('/offerings', { state: { offerings, pfiDid } });
+      navigate('/offerings', { state: { offerings, pfiDid } })
     }
-  };
+  }
 
-  console.log(offerings[0]);
+  console.log(offerings[0])
 
   return (
     <div>
@@ -51,5 +51,5 @@ export function OfferingsPage() {
         />
       )}
     </div>
-  );
+  )
 }

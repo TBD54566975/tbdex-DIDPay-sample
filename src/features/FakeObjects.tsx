@@ -7,46 +7,46 @@ import {
   PaymentMethodKind,
   OrderStatus,
   Status,
-} from '@tbd54566975/tbdex';
-import moment from 'moment';
+} from '@tbd54566975/tbdex'
+import moment from 'moment'
 
 export function generateUniqueId(): string {
-  const timestamp: number = new Date().getTime();
-  const randomId: string = Math.random().toString(36).substr(2, 9);
-  return `${timestamp}-${randomId}`;
+  const timestamp: number = new Date().getTime()
+  const randomId: string = Math.random().toString(36).substr(2, 9)
+  return `${timestamp}-${randomId}`
 }
 
 export function getCurrentTimestamp() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  const seconds = String(now.getSeconds()).padStart(2, '0')
+  const milliseconds = String(now.getMilliseconds()).padStart(3, '0')
 
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`
 }
 
 function generateRandomTimestamp(
   minTimestamp: string,
   maxTimestamp: string
 ): string {
-  const minTime = moment(minTimestamp);
-  const maxTime = moment(maxTimestamp);
-  const duration = maxTime.diff(minTime);
-  const randomDuration = Math.random() * duration;
+  const minTime = moment(minTimestamp)
+  const maxTime = moment(maxTimestamp)
+  const duration = maxTime.diff(minTime)
+  const randomDuration = Math.random() * duration
   const randomTimestamp = minTime
     .clone()
     .add(randomDuration, 'milliseconds')
-    .format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ');
+    .format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ')
 
-  return randomTimestamp;
+  return randomTimestamp
 }
 
-const minTimestamp = '2023-01-01T00:00:00.000Z';
-const maxTimestamp = '2023-12-31T23:59:59.999Z';
+const minTimestamp = '2023-01-01T00:00:00.000Z'
+const maxTimestamp = '2023-12-31T23:59:59.999Z'
 
 const kycRequirements = {
   comment: 'Note: VP, OIDC, DIDComm, or CHAPI outer wrapper would be here.',
@@ -73,7 +73,7 @@ const kycRequirements = {
       },
     ],
   },
-};
+}
 
 export const fakeOfferings: Offering[] = [
   // {
@@ -201,7 +201,7 @@ export const fakeOfferings: Offering[] = [
   //   ],
   //   createdTime: generateRandomTimestamp(minTimestamp, maxTimestamp),
   // },
-];
+]
 
 type ThreadData = {
   rfq?: TbDEXMessage<'rfq'>;
@@ -210,7 +210,7 @@ type ThreadData = {
 };
 
 export function populateThreadMap(n: number) {
-  let threadMap = new Map<string, ThreadData>();
+  const threadMap = new Map<string, ThreadData>()
 
   // for (let i = 0; i < n; i++) {
   //   const threadId = generateUniqueId();
@@ -319,5 +319,5 @@ export function populateThreadMap(n: number) {
   //   threadMap.set(generateUniqueId(), message);
   // }
 
-  return threadMap;
+  return threadMap
 }

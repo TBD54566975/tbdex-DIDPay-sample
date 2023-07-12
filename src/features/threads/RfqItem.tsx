@@ -1,13 +1,14 @@
-import { Offering, TbDEXMessage } from '@tbd54566975/tbdex';
-import { Record } from '@tbd54566975/web5/dist/types/record';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import currency from 'currency.js';
+import React from 'react'
+import { Offering, TbDEXMessage } from '@tbd54566975/tbdex'
+import { Record } from '@tbd54566975/web5/dist/types/record'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import currency from 'currency.js'
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(' ')
 }
 
 type RfqItemProps = {
@@ -17,7 +18,7 @@ type RfqItemProps = {
 };
 
 export function RfqItem({ rfqMsg, quote, offering }: RfqItemProps) {
-  const amount = currency(rfqMsg.body.amountCents).divide(100).value.toString();
+  const amount = currency(rfqMsg.body.amountCents).divide(100).value.toString()
   return (
     <li key={rfqMsg.id} className="relative flex gap-x-4">
       <div
@@ -44,5 +45,5 @@ export function RfqItem({ rfqMsg, quote, offering }: RfqItemProps) {
         {dayjs(rfqMsg.createdTime).fromNow(true)} ago
       </div>
     </li>
-  );
+  )
 }

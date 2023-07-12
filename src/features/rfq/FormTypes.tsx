@@ -1,5 +1,5 @@
-import { PaymentMethodKind } from '@tbd54566975/tbdex';
-import currency from 'currency.js';
+import { PaymentMethodKind } from '@tbd54566975/tbdex'
+import currency from 'currency.js'
 
 // TODO: get rid of this file!!
 
@@ -22,7 +22,7 @@ export type Issuer = {
 };
 
 export const BTC = (value: currency.Any) =>
-  currency(value, { precision: 8, symbol: '' });
+  currency(value, { precision: 8, symbol: '' })
 
 enum Currency {
   USD = '$',
@@ -32,8 +32,8 @@ enum Currency {
 }
 
 export function getCurrencySymbol(ticker: string): string {
-  const currency = Currency[ticker as keyof typeof Currency];
-  return currency || '';
+  const currency = Currency[ticker as keyof typeof Currency]
+  return currency || ''
 }
 
 export const credentials: Credential[] = [
@@ -81,4 +81,4 @@ export const credentials: Credential[] = [
     credentialSubject: 'bleh',
     credentialSchema: 'bleh',
   },
-];
+]

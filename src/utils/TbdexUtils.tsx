@@ -1,7 +1,8 @@
-import { Offering, PaymentInstructions } from '@tbd54566975/tbdex';
+import React from 'react'
+import { Offering, PaymentInstructions } from '@tbd54566975/tbdex'
 
 export function formatPaymentMethod(paymentMethod: string): string {
-  return paymentMethod;
+  return paymentMethod
   //   const formattedString = paymentMethod
   //     .toLowerCase()
   //     .replace(/_/g, ' ')
@@ -13,11 +14,11 @@ export function formatPaymentMethod(paymentMethod: string): string {
 export function getPaymentInstructions(
   paymentInstructions?: PaymentInstructions
 ) {
-  const instructions: JSX.Element[] = [];
+  const instructions: JSX.Element[] = []
 
   if (paymentInstructions) {
     if (paymentInstructions.payin) {
-      const payin = paymentInstructions.payin;
+      const payin = paymentInstructions.payin
       if (payin.instruction && payin.link) {
         instructions.push(
           <dd
@@ -27,7 +28,7 @@ export function getPaymentInstructions(
             {payin.instruction}:{' '}
             <span className="text-indigo-600">{payin.link}</span>
           </dd>
-        );
+        )
       } else if (payin.instruction) {
         instructions.push(
           <dd
@@ -36,7 +37,7 @@ export function getPaymentInstructions(
           >
             {payin.instruction}
           </dd>
-        );
+        )
       } else if (payin.link) {
         instructions.push(
           <dd
@@ -45,12 +46,12 @@ export function getPaymentInstructions(
           >
             <span className="text-indigo-600">{payin.link}</span>
           </dd>
-        );
+        )
       }
     }
 
     if (paymentInstructions.payout) {
-      const payout = paymentInstructions.payout;
+      const payout = paymentInstructions.payout
       if (payout.instruction && payout.link) {
         instructions.push(
           <dd
@@ -60,7 +61,7 @@ export function getPaymentInstructions(
             {payout.instruction}:{' '}
             <span className="text-indigo-600">{payout.link}</span>
           </dd>
-        );
+        )
       } else if (payout.instruction) {
         instructions.push(
           <dd
@@ -69,7 +70,7 @@ export function getPaymentInstructions(
           >
             {payout.instruction}
           </dd>
-        );
+        )
       } else if (payout.link) {
         instructions.push(
           <dd
@@ -78,10 +79,10 @@ export function getPaymentInstructions(
           >
             <span className="text-indigo-600">{payout.link}</span>
           </dd>
-        );
+        )
       }
     }
   }
 
-  return instructions.length > 0 ? <div>{instructions}</div> : null;
+  return instructions.length > 0 ? <div>{instructions}</div> : null
 }

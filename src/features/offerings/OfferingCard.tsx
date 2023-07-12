@@ -1,15 +1,12 @@
-import {
-  ChevronRightIcon,
-  CodeBracketIcon,
-  CreditCardIcon,
-} from '@heroicons/react/20/solid';
-import { Offering } from '@tbd54566975/tbdex';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import currency from 'currency.js';
-import { formatPaymentMethod } from '../../utils/TbdexUtils';
+import React from 'react'
+import { ChevronRightIcon, CodeBracketIcon, CreditCardIcon, } from '@heroicons/react/20/solid'
+import { Offering } from '@tbd54566975/tbdex'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import currency from 'currency.js'
+import { formatPaymentMethod } from '../../utils/TbdexUtils'
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 type CardProps = {
   offering: Offering;
@@ -20,7 +17,7 @@ function getRate(
   quoteCurrency: string,
   baseCurrency: string
 ) {
-  return `1 ${quoteCurrency} / ${currency(unitPrice).format()} ${baseCurrency}`;
+  return `1 ${quoteCurrency} / ${currency(unitPrice).format()} ${baseCurrency}`
 }
 
 // TODO: add a back button
@@ -75,8 +72,8 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
               {offering.baseFeeDollars
                 ? `${currency(offering.baseFeeDollars).format()} ${
-                    offering.quoteCurrency
-                  }`
+                  offering.quoteCurrency
+                }`
                 : 'No base fee'}
             </dd>
           </div>
@@ -106,8 +103,8 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
                       {payin.fee?.flatFee
                         ? `${currency(payin.fee.flatFee).format()} ${
-                            offering.quoteCurrency
-                          } fee`
+                          offering.quoteCurrency
+                        } fee`
                         : 'No flat fee'}
                     </div>
                   </li>
@@ -141,8 +138,8 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
                       {payout.fee?.flatFee
                         ? `${currency(payout.fee.flatFee).format()} ${
-                            offering.quoteCurrency
-                          } fee`
+                          offering.quoteCurrency
+                        } fee`
                         : 'No flat fee'}
                     </div>
                   </li>
@@ -153,5 +150,5 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
         </dl>
       </div>
     </div>
-  );
+  )
 }

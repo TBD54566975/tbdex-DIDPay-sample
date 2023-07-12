@@ -1,12 +1,13 @@
-import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import { Offering, TbDEXMessage } from '@tbd54566975/tbdex';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import React from 'react'
+import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import { Offering, TbDEXMessage } from '@tbd54566975/tbdex'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(' ')
 }
 
 type QuoteItemProps = {
@@ -15,18 +16,20 @@ type QuoteItemProps = {
 };
 
 export function QuoteItem({ quoteMsg, offering }: QuoteItemProps) {
+  const yolo = false
+  
   return (
     <li key={quoteMsg?.id} className="relative flex gap-x-4">
       <div
         className={classNames(
-          false ? 'h-6' : '-bottom-6',
+          yolo ? 'h-6' : '-bottom-6',
           'absolute left-0 top-0 flex w-6 justify-center'
         )}
       >
         <div className="w-px bg-yellow-300" />
       </div>
       <div className="relative flex h-6 w-6 flex-none items-center justify-center bg-neutral-900">
-        {false ? (
+        {yolo ? (
           <CheckCircleIcon
             className="h-6 w-6 text-yellow-300"
             aria-hidden="true"
@@ -53,5 +56,5 @@ export function QuoteItem({ quoteMsg, offering }: QuoteItemProps) {
         {dayjs(quoteMsg?.createdTime).fromNow(true)} ago
       </time>
     </li>
-  );
+  )
 }

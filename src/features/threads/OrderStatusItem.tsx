@@ -1,7 +1,8 @@
-import { ClockIcon } from '@heroicons/react/24/solid';
+import React from 'react'
+import { ClockIcon } from '@heroicons/react/24/solid'
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(' ')
 }
 
 type OrderStatusItemProps = {
@@ -43,5 +44,5 @@ export function OrderStatusItem({
         {dayjs(orderStatus.createdTime).fromNow(true)} ago
       </div> */}
     </li>
-  );
+  )
 }

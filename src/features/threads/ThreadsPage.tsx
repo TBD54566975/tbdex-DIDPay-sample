@@ -1,17 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
-import { RecordThread } from './Thread';
-import { useWeb5Context } from '../../context/Web5Context';
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import { Thread } from './Thread';
-import { getThreads } from '../../utils/Web5Utils';
+import React, { useState, useEffect, useRef } from 'react'
+import { RecordThread } from './Thread'
+import { useWeb5Context } from '../../context/Web5Context'
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { Thread } from './Thread'
+import { getThreads } from '../../utils/Web5Utils'
 
 export function ThreadsPage() {
   const [threadMap, setThreadMap] = useState<{ [key: string]: RecordThread }>(
     {}
-  );
-  const [loading, setLoading] = useState(true);
-  const searchButtonRef = useRef<HTMLButtonElement>(null);
-  const { web5 } = useWeb5Context();
+  )
+  const [loading, setLoading] = useState(true)
+  const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const { web5 } = useWeb5Context()
 
   // launches the search command pallete
   const handleDiscoverOfferings = () => {
@@ -24,19 +24,19 @@ export function ThreadsPage() {
         ctrlKey: true,
         bubbles: true,
         cancelable: true,
-      });
-      searchButtonRef.current.dispatchEvent(keydown);
+      })
+      searchButtonRef.current.dispatchEvent(keydown)
     }
-  };
+  }
 
   useEffect(() => {
     const init = async () => {
-      const threads = await getThreads(web5);
-      setThreadMap(threads);
-      setLoading(false);
-    };
-    init();
-  }, []);
+      const threads = await getThreads(web5)
+      setThreadMap(threads)
+      setLoading(false)
+    }
+    init()
+  }, [])
 
   if (loading) {
     return (
@@ -61,7 +61,7 @@ export function ThreadsPage() {
           <span className="sr-only">Loading...</span>
         </div>
       </div>
-    );
+    )
     // Render a loading state or placeholder content
   }
 
@@ -106,5 +106,5 @@ export function ThreadsPage() {
         )}
       </ul>
     </div>
-  );
+  )
 }

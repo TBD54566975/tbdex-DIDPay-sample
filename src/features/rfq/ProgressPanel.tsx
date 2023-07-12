@@ -1,3 +1,5 @@
+import React from 'react'
+
 type ProgressPanelProps = {
   steps: Step[];
   currentStep: number;
@@ -13,7 +15,7 @@ export const steps: Step[] = [
   { name: 'Payments', status: 'current' },
   { name: 'Select VCs', status: 'upcoming' },
   { name: 'Review', status: 'upcoming' },
-];
+]
 
 export function ProgressPanel({ steps, currentStep }: ProgressPanelProps) {
   return (
@@ -23,11 +25,11 @@ export function ProgressPanel({ steps, currentStep }: ProgressPanelProps) {
       </p>
       <ol className="ml-8 flex items-center space-x-5">
         {steps.map((step, index) => {
-          let status = 'upcoming';
+          let status = 'upcoming'
           if (index < currentStep) {
-            status = 'complete';
+            status = 'complete'
           } else if (index === currentStep) {
-            status = 'current';
+            status = 'current'
           }
 
           return (
@@ -59,9 +61,9 @@ export function ProgressPanel({ steps, currentStep }: ProgressPanelProps) {
                 </div>
               )}
             </li>
-          );
+          )
         })}
       </ol>
     </nav>
-  );
+  )
 }

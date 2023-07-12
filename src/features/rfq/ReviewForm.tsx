@@ -1,10 +1,10 @@
-import { Fragment, useState } from 'react';
-import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { SelectVcFormData } from './SelectVcForm';
-import { ExchangeFormData } from './ExchangeForm';
-import { SelectedPaymentMethodData } from './PaymentForm';
-import { formatPaymentMethod } from '../../utils/TbdexUtils';
+import React, { Fragment, useState } from 'react'
+import { Listbox, Transition } from '@headlessui/react'
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { SelectVcFormData } from './SelectVcForm'
+import { ExchangeFormData } from './ExchangeForm'
+import { SelectedPaymentMethodData } from './SelectPaymentMethodsForm'
+import { formatPaymentMethod } from '../../utils/TbdexUtils'
 
 type ReviewFormProps = {
   exchangeData: ExchangeFormData;
@@ -22,12 +22,12 @@ export function ReviewForm({
   onBack,
 }: ReviewFormProps) {
   const handleNext = () => {
-    onSubmit(undefined);
-  };
+    onSubmit(undefined)
+  }
 
   const handleBack = () => {
-    onBack(undefined);
-  };
+    onBack(undefined)
+  }
 
   return (
     <>
@@ -54,7 +54,7 @@ export function ReviewForm({
               {Object.entries(paymentData).map(([key, value]) => (
                 <div key={key}>
                   <span>{key}: </span>
-                  <span>{formatPaymentMethod(value)}</span>
+                  <span>peepeepoopoo</span>
                 </div>
               ))}{' '}
             </p>
@@ -93,5 +93,5 @@ export function ReviewForm({
         </button>
       </div>
     </>
-  );
+  )
 }

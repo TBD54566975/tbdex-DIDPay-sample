@@ -1,17 +1,17 @@
-import { Fragment, useState } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
+import React, { Fragment, useState } from 'react'
+import { Dialog, Transition } from '@headlessui/react'
 import {
   Bars3Icon,
   ArrowPathIcon,
   UsersIcon,
   XMarkIcon,
   HomeIcon,
-} from '@heroicons/react/24/outline';
-import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useWeb5Context } from '../../../context/Web5Context';
-import { OfferingsSearch } from '../../offerings/OfferingsSearch';
-import { default as leftBracket } from './left-bracket-light.svg';
-import { default as rightBracket } from './right-bracket-light.svg';
+} from '@heroicons/react/24/outline'
+import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useWeb5Context } from '../../../context/Web5Context'
+import { OfferingsSearch } from '../../offerings/OfferingsSearch'
+import { default as leftBracket } from './left-bracket-light.svg'
+import { default as rightBracket } from './right-bracket-light.svg'
 
 let navigation = [
   {
@@ -32,37 +32,37 @@ let navigation = [
     icon: ArrowPathIcon,
     current: false,
   },
-];
+]
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(' ')
 }
 
 export function RootPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentOption, setCurrentOption] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [currentOption, setCurrentOption] = useState('')
 
-  const { profile, web5 } = useWeb5Context();
-  const location = useLocation();
+  const { profile, web5 } = useWeb5Context()
+  const location = useLocation()
 
-  const did = profile.did.id;
+  const did = profile.did.id
 
   const handleSidebarItemClick = (index: number) => {
     const updatedNavigation = navigation.map((item, i) => ({
       ...item,
       current: i === index,
-    }));
-    navigation = updatedNavigation;
+    }))
+    navigation = updatedNavigation
 
     if (index === -1) {
-      setCurrentOption(''); // Set header to empty string
+      setCurrentOption('') // Set header to empty string
     } else {
-      console.log(navigation[index].name);
-      setCurrentOption(navigation[index].name);
+      console.log(navigation[index].name)
+      setCurrentOption(navigation[index].name)
     }
 
-    setSidebarOpen(false);
-  };
+    setSidebarOpen(false)
+  }
 
   return (
     <>
@@ -272,5 +272,5 @@ export function RootPage() {
         </main>
       </div>
     </>
-  );
+  )
 }

@@ -1,8 +1,8 @@
-import { Fragment } from 'react';
-import { Menu, Transition } from '@headlessui/react';
-import { EllipsisHorizontalIcon, PlusIcon } from '@heroicons/react/20/solid';
-import { Link } from 'react-router-dom';
-import { Credential, credentials } from '../rfq/FormTypes';
+import React, { Fragment } from 'react'
+import { Menu, Transition } from '@headlessui/react'
+import { EllipsisHorizontalIcon, PlusIcon } from '@heroicons/react/20/solid'
+import { Link } from 'react-router-dom'
+import { Credential, credentials } from '../rfq/FormTypes'
 
 type Statuses = {
   [key: string]: string;
@@ -12,10 +12,10 @@ const statuses: Statuses = {
   green: 'text-green-700 bg-green-400/10 ring-green-600/20',
   gray: 'text-gray-600 bg-gray-400/10 ring-gray-500/10',
   red: 'text-red-700 bg-rose-400/10 ring-red-600/10',
-};
+}
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(' ')
 }
 
 export function VerifiableCredentialsPage() {
@@ -123,5 +123,5 @@ export function VerifiableCredentialsPage() {
         <PlusIcon className="h-8 w-8" aria-hidden="true" />
       </button>
     </div>
-  );
+  )
 }

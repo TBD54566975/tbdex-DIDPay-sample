@@ -1,15 +1,12 @@
-import { ArrowsRightLeftIcon } from '@heroicons/react/24/solid';
-import { ChevronRightIcon } from '@heroicons/react/20/solid';
-import { getPaymentInstructions } from '../../utils/TbdexUtils';
-import {
-  Offering,
-  PaymentInstructions,
-  TbDEXMessage,
-} from '@tbd54566975/tbdex';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import React from 'react'
+import { ArrowsRightLeftIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon } from '@heroicons/react/20/solid'
+import { getPaymentInstructions } from '../../utils/TbdexUtils'
+import { Offering, PaymentInstructions, TbDEXMessage } from '@tbd54566975/tbdex'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 type QuoteCardProps = {
   quoteMsg?: TbDEXMessage<'quote'>;
@@ -19,7 +16,7 @@ type QuoteCardProps = {
 
 //TODO: maybe get rid of the pending status when a quote comes back
 export function QuoteCard({ quoteMsg, offering, onClick }: QuoteCardProps) {
-  const quote = quoteMsg?.body;
+  const quote = quoteMsg?.body
 
   return !quote ? null : (
     <div className="overflow-hidden bg-neutral-900 shadow sm:rounded-lg">
@@ -77,5 +74,5 @@ export function QuoteCard({ quoteMsg, offering, onClick }: QuoteCardProps) {
         </dl>
       </div>
     </div>
-  );
+  )
 }

@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
-import { Offering, TbDEXMessage } from '@tbd54566975/tbdex';
-import { Record } from '@tbd54566975/web5/dist/types/record';
-import { useWeb5Context } from '../../context/Web5Context';
-import { pollThread } from '../../utils/Web5Utils';
-import { RfqItem } from './RfqItem';
-import { QuoteItem } from './QuoteItem';
-import { OrderStatusItem } from './OrderStatusItem';
-import { QuoteCard } from '../quotes/QuoteCard';
+import React, { useEffect, useState } from 'react'
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
+import { Offering, TbDEXMessage } from '@tbd54566975/tbdex'
+import { Record } from '@tbd54566975/web5/dist/types/record'
+import { useWeb5Context } from '../../context/Web5Context'
+import { pollThread } from '../../utils/Web5Utils'
+import { RfqItem } from './RfqItem'
+import { QuoteItem } from './QuoteItem'
+import { OrderStatusItem } from './OrderStatusItem'
+import { QuoteCard } from '../quotes/QuoteCard'
 
 export type RecordThread = {
   rfq?: Record;
@@ -23,16 +23,16 @@ export function Thread({ props }: ThreadProps) {
   const [recordThread, setRecordThread] = useState<RecordThread>({
     rfq: props.rfq,
     orderStatuses: [],
-  });
-  const [offering, setOffering] = useState<Offering>();
-  const [rfqMsg, setRfqMsg] = useState<TbDEXMessage<'rfq'>>();
-  const [quoteMsg, setQuoteMsg] = useState<TbDEXMessage<'quote'>>();
-  const { web5 } = useWeb5Context();
+  })
+  const [offering, setOffering] = useState<Offering>()
+  const [rfqMsg, setRfqMsg] = useState<TbDEXMessage<'rfq'>>()
+  const [quoteMsg, setQuoteMsg] = useState<TbDEXMessage<'quote'>>()
+  const { web5 } = useWeb5Context()
 
   const handlePay = () => {
-    const url = quoteMsg?.body.paymentInstructions?.payin?.link || '';
-    window.open(url, '_blank', 'noreferrer');
-  };
+    const url = quoteMsg?.body.paymentInstructions?.payin?.link || ''
+    window.open(url, '_blank', 'noreferrer')
+  }
 
   useEffect(() => {
     // threadInit(web5, recordThread, setOffering, setRfqMsg);
@@ -45,9 +45,9 @@ export function Thread({ props }: ThreadProps) {
         setRfqMsg,
         setQuoteMsg,
         interval
-      );
-    }, 1000);
-  }, []); // state var can go here to restart the interval
+      )
+    }, 1000)
+  }, []) // state var can go here to restart the interval
 
   return !rfqMsg ? null : (
     <>
@@ -64,6 +64,7 @@ export function Thread({ props }: ThreadProps) {
         )}
         {recordThread.orderStatuses.map((orderStatus, index) => (
           <OrderStatusItem
+            key={orderStatus.id}
             id={orderStatus.id}
             index={index}
             lastIndex={recordThread.orderStatuses.length - 1}
@@ -84,5 +85,5 @@ export function Thread({ props }: ThreadProps) {
         </div>
       )}
     </>
-  );
+  )
 }

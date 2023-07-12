@@ -3,11 +3,11 @@ const { JSONPath } = require('@astronautlabs/jsonpath')
 function createJsonSchemaFromPresentationDefinition(pd) {
   const fieldNameToJsonPathMap = {}
   const jsonSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "required": [],
-    "additionalProperties": false,
-    "type": "object",
-    "properties": {}
+    '$schema': 'http://json-schema.org/draft-07/schema',
+    'required': [],
+    'additionalProperties': false,
+    'type': 'object',
+    'properties': {}
   }
 
   
@@ -133,16 +133,16 @@ const pd = {
 }
 
 console.log('\n------------- PRESENTATION DEFINITION -------------\n')
-console.log(JSON.stringify(pd, null, 2));
+console.log(JSON.stringify(pd, null, 2))
 
 
 const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(pd)
 
-console.log('\n------------- JSON SCHEMA -------------\n');
-console.log(JSON.stringify(jsonSchema, null, 2));
+console.log('\n------------- JSON SCHEMA -------------\n')
+console.log(JSON.stringify(jsonSchema, null, 2))
 
-console.log('\n------------- FIELD NAME -> JSON PATH MAP -------------\n');
-console.log(JSON.stringify(fieldNameToJsonPathMap, null, 2));
+console.log('\n------------- FIELD NAME -> JSON PATH MAP -------------\n')
+console.log(JSON.stringify(fieldNameToJsonPathMap, null, 2))
 
 const formDataExample = {
   'First Name': 'Ephraim',
@@ -155,10 +155,10 @@ const formDataExample = {
   'Zip Code': '78724'
 }
 
-console.log('\n------------- FORM DATA EXAMPLE -------------\n');
-console.log(JSON.stringify(formDataExample, null, 2));
+console.log('\n------------- FORM DATA EXAMPLE -------------\n')
+console.log(JSON.stringify(formDataExample, null, 2))
 
 const vc = createVc(formDataExample, fieldNameToJsonPathMap)
 
-console.log('\n------------- VC -------------\n');
-console.log(JSON.stringify(vc, null, 2));
+console.log('\n------------- VC -------------\n')
+console.log(JSON.stringify(vc, null, 2))

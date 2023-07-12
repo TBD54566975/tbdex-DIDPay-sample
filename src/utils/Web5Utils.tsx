@@ -5,11 +5,11 @@ import {
   PaymentMethodKind,
   Rfq,
   TbDEXMessage,
-} from '@tbd54566975/tbdex';
-import { Web5 } from '@tbd54566975/web5';
-import currency from 'currency.js';
-import { RecordThread } from '../features/threads/Thread';
-import { Record } from '@tbd54566975/web5/dist/types/record';
+} from '@tbd54566975/tbdex'
+import { Web5 } from '@tbd54566975/web5'
+import currency from 'currency.js'
+import { RecordThread } from '../features/threads/Thread'
+import { Record } from '@tbd54566975/web5/dist/types/record'
 
 /**
  * queries DWN for VCs
@@ -22,24 +22,24 @@ export async function getVcs(web5: Web5) {
         schema: 'https://www.w3.org/2018/credentials/v1',
       },
     },
-  });
+  })
 
   if (status.code !== 200) {
-    throw new Error('Failed to fetch VCs');
+    throw new Error('Failed to fetch VCs')
   }
 
-  const vcs = [];
-  for (let record of records) {
-    const vc = await record.data.text();
-    console.log(vc);
-    vcs.push(vc);
+  const vcs = []
+  for (const record of records) {
+    const vc = await record.data.text()
+    console.log(vc)
+    vcs.push(vc)
   }
 
-  return vcs;
+  return vcs
 }
 
 export async function getThreads(web5: Web5) {
-  const threads: { [key: string]: RecordThread } = {};
+  const threads: { [key: string]: RecordThread } = {}
 
   const { records = [] } = await web5.dwn.records.query({
     message: {
@@ -47,16 +47,16 @@ export async function getThreads(web5: Web5) {
         schema: aliceProtocolDefinition.types.RFQ.schema,
       },
     },
-  });
+  })
 
-  for (let record of records) {
-    const rfqMsg = (await record.data.json()) as TbDEXMessage<'rfq'>;
+  for (const record of records) {
+    const rfqMsg = (await record.data.json()) as TbDEXMessage<'rfq'>
     if (rfqMsg.type === 'rfq') {
-      const threadId = rfqMsg.threadId;
-      threads[threadId] = { rfq: record, orderStatuses: [] };
+      const threadId = rfqMsg.threadId
+      threads[threadId] = { rfq: record, orderStatuses: [] }
     }
   }
-  return threads;
+  return threads
 }
 
 export async function getOfferings(web5: Web5, pfiDid: string) {
@@ -67,15 +67,15 @@ export async function getOfferings(web5: Web5, pfiDid: string) {
         schema: 'https://tbd.website/resources/tbdex/Offering',
       },
     },
-  });
+  })
 
-  const offerings = [];
-  for (let record of records) {
-    const offering = await record.data.json();
-    offerings.push(offering);
+  const offerings = []
+  for (const record of records) {
+    const offering = await record.data.json()
+    offerings.push(offering)
   }
 
-  return offerings;
+  return offerings
 }
 
 export async function getChildRecords(
@@ -92,16 +92,16 @@ export async function getChildRecords(
             parentId: record.id,
           },
         },
-      });
+      })
 
       if (records) {
-        return records;
+        return records
       }
     } catch (error) {
       // console.log('No child for record: ' + record.id);
     }
   }
-  return undefined;
+  return undefined
 }
 
 async function getRfqOffering(web5: Web5, pfiDid: string, offeringId: string) {
@@ -113,15 +113,17 @@ async function getRfqOffering(web5: Web5, pfiDid: string, offeringId: string) {
           schema: 'https://tbd.website/resources/tbdex/Offering',
         },
       },
-    });
+    })
 
-    for (let record of records) {
-      const offering = await record.data.json();
+    for (const record of records) {
+      const offering = await record.data.json()
       if (offering.id === offeringId) {
-        return offering;
+        return offering
       }
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log('FIX ME')
+  }
 }
 
 export const threadInit = async (
@@ -132,16 +134,16 @@ export const threadInit = async (
     React.SetStateAction<TbDEXMessage<'rfq'> | undefined>
   >
 ) => {
-  const rfqMsg = (await recordThread.rfq?.data.json()) as TbDEXMessage<'rfq'>;
-  setRfqMsg(rfqMsg);
+  const rfqMsg = (await recordThread.rfq?.data.json()) as TbDEXMessage<'rfq'>
+  setRfqMsg(rfqMsg)
 
   const offering = await getRfqOffering(
     web5,
     rfqMsg.to,
     rfqMsg.body.offeringId
-  );
-  setOffering(offering);
-};
+  )
+  setOffering(offering)
+}
 
 export const pollThread = async (
   web5: Web5,
@@ -157,31 +159,31 @@ export const pollThread = async (
   interval: NodeJS.Timer
 ) => {
   // TODO: take out of pollThread
-  const rfqMsg = (await recordThread.rfq?.data.json()) as TbDEXMessage<'rfq'>;
-  setRfqMsg(rfqMsg);
+  const rfqMsg = (await recordThread.rfq?.data.json()) as TbDEXMessage<'rfq'>
+  setRfqMsg(rfqMsg)
 
   const offering = await getRfqOffering(
     web5,
     rfqMsg.to,
     rfqMsg.body.offeringId
-  );
-  setOffering(offering);
+  )
+  setOffering(offering)
 
   if (!recordThread.quote) {
-    const records = await getChildRecords(web5, rfqMsg.to, recordThread.rfq);
+    const records = await getChildRecords(web5, rfqMsg.to, recordThread.rfq)
     if (records && records[0]) {
-      setRecordThread({ ...recordThread, quote: records[0] });
-      setQuoteMsg((await records[0].data.json()) as TbDEXMessage<'quote'>);
+      setRecordThread({ ...recordThread, quote: records[0] })
+      setQuoteMsg((await records[0].data.json()) as TbDEXMessage<'quote'>)
     }
   } else if (recordThread.orderStatuses.length < 2) {
-    const records = await getChildRecords(web5, rfqMsg.to, recordThread.quote);
+    const records = await getChildRecords(web5, rfqMsg.to, recordThread.quote)
     if (records) {
-      setRecordThread({ ...recordThread, orderStatuses: records });
+      setRecordThread({ ...recordThread, orderStatuses: records })
     }
   } else {
-    clearInterval(interval);
+    clearInterval(interval)
   }
-};
+}
 
 export const createRfq = async (
   web5: Web5,
@@ -193,12 +195,12 @@ export const createRfq = async (
   payinInstrument: string,
   payoutInstrument: string
 ) => {
-  console.log(payoutInstrument);
-  const amountInCents = currency(amount).multiply(100).value.toString();
+  console.log(payoutInstrument)
+  const amountInCents = currency(amount).multiply(100).value.toString()
   const payinKind =
-    PaymentMethodKind[payinInstrument as keyof typeof PaymentMethodKind];
+    PaymentMethodKind[payinInstrument as keyof typeof PaymentMethodKind]
   const payoutKind =
-    PaymentMethodKind[payoutInstrument as keyof typeof PaymentMethodKind];
+    PaymentMethodKind[payoutInstrument as keyof typeof PaymentMethodKind]
   const rfq: Rfq = {
     offeringId: offeringId,
     amountCents: amountInCents,
@@ -210,16 +212,16 @@ export const createRfq = async (
       kind: payoutKind,
       paymentDetails: { btcAddress: '32PAofRVZLF3jY9x5P9qc8cc9QBY8pMivK' },
     },
-  };
+  }
 
   const tbdexMsg = createMessage({
     to: pfiDid,
     from: profileDid,
     type: 'rfq',
     body: rfq,
-  });
+  })
 
-  console.log(tbdexMsg);
+  console.log(tbdexMsg)
 
   const { record, status } = await web5.dwn.records.write({
     data: tbdexMsg,
@@ -229,9 +231,12 @@ export const createRfq = async (
       schema: aliceProtocolDefinition.types.RFQ.schema,
       recipient: pfiDid,
     },
-  });
-  console.log(status.code + ' ' + status.detail);
+  })
+  
+  console.log(status.code + ' ' + status.detail)
 
-  const { status: sendStatus } = await record?.send(pfiDid);
-  console.log(sendStatus.code + ' ' + sendStatus.detail);
-};
+  if (record) {
+    const { status: sendStatus } = await record.send(pfiDid)
+    console.log(sendStatus.code + ' ' + sendStatus.detail)
+  }
+}

@@ -1,7 +1,7 @@
-import { Fragment, useState } from 'react';
-import { getCurrencySymbol, BTC } from './FormTypes';
-import { Offering } from '@tbd54566975/tbdex';
-import currency from 'currency.js';
+import React, { Fragment, useState } from 'react'
+import { getCurrencySymbol, BTC } from './FormTypes'
+import { Offering } from '@tbd54566975/tbdex'
+import currency from 'currency.js'
 
 type PriceInputProps = {
   offering: Offering;
@@ -23,21 +23,21 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
   // Extracting base currency and counter currency from the pair
   const parsedUnitPrice = parseFloat(
     offering.unitPriceDollars.replace(/,/g, '')
-  );
-  const parsedMin = parseFloat(offering.minDollars);
-  const parsedMax = parseFloat(offering.minDollars);
+  )
+  const parsedMin = parseFloat(offering.minDollars)
+  const parsedMax = parseFloat(offering.minDollars)
 
-  const [isAmountOutsideRange, setIsAmountOutsideRange] = useState(false);
+  const [isAmountOutsideRange, setIsAmountOutsideRange] = useState(false)
   const [convertedUnits, setConvertedUnits] = useState(
     convertToBaseUnits(counterUnits)
-  );
+  )
 
   function convertToBaseUnits(counterUnits: string) {
     if (counterUnits !== '') {
-      const parsedCounterUnits = parseFloat(counterUnits);
-      return (parsedCounterUnits / parsedUnitPrice).toString();
+      const parsedCounterUnits = parseFloat(counterUnits)
+      return (parsedCounterUnits / parsedUnitPrice).toString()
     } else {
-      return '';
+      return ''
     }
   }
 
@@ -47,38 +47,38 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
     const numericValue = input.replace(/[^\d.]/g, (match, offset) => {
       if (match === '.') {
         // Allow the first decimal point
-        return offset === 0 ? match : '';
+        return offset === 0 ? match : ''
       }
-      return '';
-    });
+      return ''
+    })
 
     // Remove additional decimal points if present
-    const decimalIndex = numericValue.indexOf('.');
+    const decimalIndex = numericValue.indexOf('.')
     if (decimalIndex !== -1) {
-      const afterDecimal = numericValue.slice(decimalIndex + 1);
-      const remainingDecimals = afterDecimal.slice(0, decimalLength);
-      return `${numericValue.slice(0, decimalIndex)}.${remainingDecimals}`;
+      const afterDecimal = numericValue.slice(decimalIndex + 1)
+      const remainingDecimals = afterDecimal.slice(0, decimalLength)
+      return `${numericValue.slice(0, decimalIndex)}.${remainingDecimals}`
     }
 
-    return numericValue;
+    return numericValue
   }
 
   const handleCounterUnitsChange = (counterUnits: string) => {
-    const formattedCounterUnits = formatUnits(counterUnits, 2);
-    onChange(formattedCounterUnits);
+    const formattedCounterUnits = formatUnits(counterUnits, 2)
+    onChange(formattedCounterUnits)
 
     // change decimal point based on what currency it is
     const formattedBaseUnits = formatUnits(
       convertToBaseUnits(formattedCounterUnits),
       8
-    );
-    setConvertedUnits(BTC(formattedBaseUnits).format());
+    )
+    setConvertedUnits(BTC(formattedBaseUnits).format())
 
-    const parsedAmount = parseFloat(formattedCounterUnits);
+    const parsedAmount = parseFloat(formattedCounterUnits)
     setIsAmountOutsideRange(
       parsedAmount < parsedMin || parsedAmount > parsedMax
-    );
-  };
+    )
+  }
 
   return (
     <div>
@@ -116,9 +116,9 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
           {parseFloat(counterUnits) < parsedMin
             ? `Minimum order is ${currency(offering.minDollars).format()}`
             : parseFloat(counterUnits) > parsedMax
-            ? `Maximum order is 
+              ? `Maximum order is 
               ${currency(offering.maxDollars).format()}`
-            : null}
+              : null}
         </p>
       ) : null}
       <label
@@ -152,7 +152,7 @@ function PriceInput({ offering, counterUnits, onChange }: PriceInputProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export function ExchangeForm({
@@ -160,31 +160,31 @@ export function ExchangeForm({
   exchangeData,
   onSubmit,
 }: ExchangeFormProps) {
-  const [amount, setAmount] = useState(exchangeData.amount);
-  const parsedMin = parseFloat(offering.minDollars);
-  const parsedMax = parseFloat(offering.maxDollars);
+  const [amount, setAmount] = useState(exchangeData.amount)
+  const parsedMin = parseFloat(offering.minDollars)
+  const parsedMax = parseFloat(offering.maxDollars)
 
   const handleInputChange = (amount: string) => {
-    setAmount(amount);
-  };
+    setAmount(amount)
+  }
 
   const handleNext = () => {
-    const parsedAmount = parseFloat(amount);
+    const parsedAmount = parseFloat(amount)
 
     if (isNaN(parsedAmount)) {
       // Return or handle the case when the amount is not a valid number
-      return;
+      return
     }
 
-    const isAmountOutsideRange =
-      parsedAmount < parsedMin || parsedAmount > parsedMax;
+    const isAmountOutsideRange = parsedAmount < parsedMin || parsedAmount > parsedMax
+    
     if (!isAmountOutsideRange) {
       const formData: ExchangeFormData = {
         amount: parsedAmount.toString(),
-      };
-      onSubmit(formData);
+      }
+      onSubmit(formData)
     }
-  };
+  }
 
   return (
     <>
@@ -207,5 +207,5 @@ export function ExchangeForm({
         </button>
       </div>
     </>
-  );
+  )
 }

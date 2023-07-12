@@ -1,92 +1,93 @@
-import { Fragment, useState, useEffect, useRef } from 'react';
-import { Combobox, Dialog, Transition } from '@headlessui/react';
-import { Offering } from '@tbd54566975/tbdex';
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import { useNavigate } from 'react-router-dom';
-import { useWeb5Context } from '../../context/Web5Context';
-import { fakeOfferings } from '../FakeObjects';
-import { getOfferings } from '../../utils/Web5Utils';
+import React, { Fragment, useState, useEffect } from 'react'
+import { Combobox, Dialog, Transition } from '@headlessui/react'
+import { Offering } from '@tbd54566975/tbdex'
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { useNavigate } from 'react-router-dom'
+import { useWeb5Context } from '../../context/Web5Context'
+import { fakeOfferings } from '../FakeObjects'
+import { getOfferings } from '../../utils/Web5Utils'
 
 export function OfferingsSearch() {
-  const [pfiDid, setPfiDid] = useState('');
-  const [query, setQuery] = useState('');
-  const [open, setOpen] = useState(false);
+  const [pfiDid, setPfiDid] = useState('')
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
 
-  const { web5, profile } = useWeb5Context();
+  const { web5, profile } = useWeb5Context()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleComboboxChange = (offering: Offering) => {
-    const selectedOffering = [offering];
+    const selectedOffering = [offering]
     // TODO: this pfiDid should be hardcoded?
     navigate('/offerings', {
       state: { offerings: selectedOffering, pfiDid: pfiDid },
-    });
-    setOpen(false);
-  };
+    })
+    setOpen(false)
+  }
 
   const handleInputChange = (event: { target: { value: any } }) => {
-    const value = event.target.value;
-    setQuery(value);
-    setPfiDid(value);
-  };
+    const value = event.target.value
+    setQuery(value)
+    setPfiDid(value)
+  }
 
   const handleEnter = async () => {
     // only query dwn if pfiDid starts with did:ion:
     if (/^did:ion:/.test(pfiDid)) {
-      const offerings = await getOfferings(web5, pfiDid);
+      const offerings = await getOfferings(web5, pfiDid)
       if (offerings) {
         navigate('/offerings', {
           state: { offerings: offerings, pfiDid: pfiDid },
-        });
+        })
       }
-      setOpen(false);
+      setOpen(false)
     } else {
+      console.log('hehe')
     }
-  };
+  }
 
   //TODO: also need to handle searching for pfi by did
   const filteredOfferings =
     query === ''
       ? []
       : fakeOfferings.filter((offering: Offering) => {
-          const baseCurrency = offering.baseCurrency
-            .toLowerCase()
-            .includes(query.toLowerCase());
+        const baseCurrency = offering.baseCurrency
+          .toLowerCase()
+          .includes(query.toLowerCase())
 
-          const quoteCurrency = offering.quoteCurrency
-            .toLowerCase()
-            .includes(query.toLowerCase());
+        const quoteCurrency = offering.quoteCurrency
+          .toLowerCase()
+          .includes(query.toLowerCase())
 
-          return baseCurrency || quoteCurrency;
-        });
+        return baseCurrency || quoteCurrency
+      })
 
   function getRate(
     unitPrice: string,
     quoteCurrency: string,
     baseCurrency: string
   ) {
-    return `1 ${quoteCurrency} / ${unitPrice} ${baseCurrency}`;
+    return `1 ${quoteCurrency} / ${unitPrice} ${baseCurrency}`
   }
 
   function classNames(...classes: (string | boolean)[]) {
-    return classes.filter(Boolean).join(' ');
+    return classes.filter(Boolean).join(' ')
   }
 
   useEffect(() => {
     const handleHotkey = (event: KeyboardEvent) => {
       if (event.key === 'k' && event.metaKey) {
-        event.preventDefault();
-        setOpen((prevOpen) => !prevOpen);
+        event.preventDefault()
+        setOpen((prevOpen) => !prevOpen)
       }
-    };
+    }
 
-    document.addEventListener('keydown', handleHotkey);
+    document.addEventListener('keydown', handleHotkey)
 
     return () => {
-      document.removeEventListener('keydown', handleHotkey);
-    };
-  }, []);
+      document.removeEventListener('keydown', handleHotkey)
+    }
+  }, [])
 
   return (
     <>
@@ -160,7 +161,7 @@ export function OfferingsSearch() {
                           onKeyDown={(event) => {
                             // Listen for enter key
                             if (event.key === 'Enter') {
-                              handleEnter();
+                              handleEnter()
                             }
                           }}
                         />
@@ -176,7 +177,7 @@ export function OfferingsSearch() {
                               offering.unitPriceDollars,
                               offering.baseCurrency,
                               offering.quoteCurrency
-                            );
+                            )
 
                             return (
                               <Combobox.Option
@@ -191,7 +192,7 @@ export function OfferingsSearch() {
                               >
                                 ({offering.description}) {rate}
                               </Combobox.Option>
-                            );
+                            )
                           })}
                         </Combobox.Options>
                       ) : (
@@ -219,5 +220,5 @@ export function OfferingsSearch() {
         </div>
       </div>
     </>
-  );
+  )
 }
