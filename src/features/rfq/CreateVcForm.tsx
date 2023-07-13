@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react'
 
 import { JsonSchemaForm } from '../../components/JsonSchemaForm'
 import { getVcs } from '../../utils/Web5Utils'
+import { createVc } from '../../utils/SsiUtils'
 import { RfqContext } from '../../context/RfqContext'
 import { useWeb5Context } from '../../context/Web5Context'
 
@@ -29,7 +30,7 @@ type CreateVcFormProps = {
 };
 
 export function CreateVcForm(props: CreateVcFormProps) {
-  const { web5 } = useWeb5Context()
+  const { web5, profile } = useWeb5Context()
 
   const [formData, setFormData] = useState<any>({})
   const [vcFormSchema, setVcFormSchema] = useState<any>(undefined)
@@ -39,8 +40,9 @@ export function CreateVcForm(props: CreateVcFormProps) {
   const kycRequirements = offering.kycRequirements
 
   const handleNext = () => {
-    const vc = createVc(formData, fieldNameToJsonPathMap)
-    props.onNext(formData)
+    const vc = createVc(profile.did.id, formData, fieldNameToJsonPathMap)
+    console.log('VC', vc)
+    // props.onNext(formData)
   }
 
   const handleBack = (formData: any) => {
@@ -92,29 +94,6 @@ export function CreateVcForm(props: CreateVcFormProps) {
       </div>
     </div>
   )
-}
-
-function createVc(data, fieldNameToJsonPathMap) {
-  const vc = {
-    '@context': [
-      'https://www.w3.org/2018/credentials/v1',
-    ],
-    'id'                : 'in-yo-face-cred',
-    'type'              : ['VerifiableCredential', 'KycCredential'],
-    'issuer'            : 'TODO',
-    'issuanceDate'      : new Date().toISOString(),
-    'credentialSubject': {
-      'id': 'TODO'
-    }
-  }
-  for (const property in data) {
-    const path = fieldNameToJsonPathMap[property]
-    const value = data[property]
-    
-    JSONPath.value(vc.credentialSubject, path, value)
-  }
-
-  return vc
 }
 
 function createJsonSchemaFromPresentationDefinition(pd: PresentationDefinitionV2) {

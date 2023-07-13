@@ -5,6 +5,7 @@ import { RJSFSchema, FieldProps, RegistryFieldsType } from '@rjsf/utils'
 
 class StringFieldTemplate extends React.Component<FieldProps> {
   render() {
+    console.log(this.props.formData)
     return (
       <>
         <div key={this.props.name}>
