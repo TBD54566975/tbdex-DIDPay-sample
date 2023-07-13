@@ -5,7 +5,6 @@ import { RJSFSchema, FieldProps, RegistryFieldsType } from '@rjsf/utils'
 
 class StringFieldTemplate extends React.Component<FieldProps> {
   render() {
-    console.log(this.props.formData)
     return (
       <>
         <div key={this.props.name}>
@@ -18,6 +17,7 @@ class StringFieldTemplate extends React.Component<FieldProps> {
             id={'element.content.key'}
             className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-white bg-neutral-900 ring-1 ring-inset ring-transparent placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             placeholder={`Enter ${this.props.name}`}
+            value={this.props.formData}
             onChange={(event) => this.props.onChange(event.target.value)}
           />
         </div>

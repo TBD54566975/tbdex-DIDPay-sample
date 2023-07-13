@@ -13,35 +13,9 @@ import { getSubunits } from './CurrencyUtils'
 import { RecordThread } from '../features/threads/Thread'
 import { Record } from '@tbd54566975/web5/dist/types/record'
 
-/**
- * queries DWN for VCs
- * @returns an array of VCs
- */
-// export async function getVcs(web5: Web5) {
-//   const { records = [], status } = await web5.dwn.records.query({
-//     message: {
-//       filter: {
-//         schema: 'https://www.w3.org/2018/credentials/v1',
-//       },
-//     },
-//   })
-
-//   if (status.code !== 200) {
-//     throw new Error('Failed to fetch VCs')
-//   }
-
-//   const vcs = []
-//   for (const record of records) {
-//     const vc = await record.data.text()
-//     console.log(vc)
-//     vcs.push(vc)
-//   }
-
-//   return vcs
-// }
 
 export async function getVcs(web5: Web5) {
-  const { records, status } = await web5.dwn.records.query({
+  const { records, status: vcQueryStatus } = await web5.dwn.records.query({
     message: {
       filter: {
         dataFormat: 'application/vc+ld+json'
@@ -49,19 +23,33 @@ export async function getVcs(web5: Web5) {
     }
   })
 
-  if (status.code !== 200) {
-    alert('UH OH spaghettios. check console for error')
-    console.error(`(${status.code}) -> ${status.detail}`)
-
-    return
+  if (vcQueryStatus.code !== 200) {
+    throw new Error(`failed to get pre-existing VCs. Error: ${JSON.stringify(vcQueryStatus, null, 2)}`)
   }
 
-  const vcJwts = []
+  const vcs = []
+
   for (const record of records) {
     const vc = await record.data.text()
-    vcJwts.push(vc)
+    vcs.push(vc)
   }
-  return vcJwts
+
+  return vcs
+}
+
+export async function storeVc(web5: Web5, vcJwt: string) {
+  const { status } = await web5.dwn.records.write({
+    data    : vcJwt,
+    message : {
+      dataFormat: 'application/vc+ld+json'
+    }
+  })
+
+  if (status.code !== 202) {
+    throw new Error(`failed to write KYC VC to alice dwn. Error: ${JSON.stringify(status, null, 2)}`)
+  }
+
+
 }
 
 export async function getThreads(web5: Web5) {

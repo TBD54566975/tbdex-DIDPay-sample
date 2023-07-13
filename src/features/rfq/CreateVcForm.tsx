@@ -1,5 +1,3 @@
-import type { PresentationDefinitionV2 } from '@tbd54566975/tbdex'
-
 import React, { useContext } from 'react'
 import validator from '@rjsf/validator-ajv8'
 
@@ -8,8 +6,8 @@ import { JSONPath } from '@astronautlabs/jsonpath'
 import { useState, useEffect } from 'react'
 
 import { JsonSchemaForm } from '../../components/JsonSchemaForm'
-import { getVcs } from '../../utils/Web5Utils'
-import { createVc } from '../../utils/SsiUtils'
+import { getVcs, storeVc } from '../../utils/Web5Utils'
+import { createVc, createVp, createJwt, createJsonSchemaFromPresentationDefinition } from '../../utils/SsiUtils'
 import { RfqContext } from '../../context/RfqContext'
 import { useWeb5Context } from '../../context/Web5Context'
 
@@ -17,8 +15,8 @@ import { useWeb5Context } from '../../context/Web5Context'
 /**
  * TODO:
  * 1. Get all existing VCs (DONE)
- * 2. Eval kycRequirements
- * 3. if no kyc cred present, render form
+ * 2. Eval kycRequirements (DONE)
+ * 3. if no kyc cred present, render form (DONE)
  * 4. if kyc cred present, render dropdown
  */
 
@@ -31,17 +29,54 @@ type CreateVcFormProps = {
 
 export function CreateVcForm(props: CreateVcFormProps) {
   const { web5, profile } = useWeb5Context()
+  const { offering, vcs, setVcs, setKycProof } = useContext(RfqContext)
 
-  const [formData, setFormData] = useState<any>({})
+  const [formData, setFormData] = useState<any>({
+    'First Name': 'Ephraim',
+    'Middle Name': 'Bartholomew',
+    'Last Name': 'Winthrop',
+    'DOB': '03/28/1988',
+    'Street Address': '2326 Hieronymous Boschart Boulevard',
+    'City': 'Consequences',
+    'State': 'New Mexico',
+    'Zip Code': '78724',
+    'Country': 'USA'
+  })
+
+
   const [vcFormSchema, setVcFormSchema] = useState<any>(undefined)
   const [fieldNameToJsonPathMap, setFieldNameToJsonPathMap] = useState(undefined)
 
-  const { offering, vcs, setVcs } = useContext(RfqContext)
   const kycRequirements = offering.kycRequirements
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const vc = createVc(profile.did.id, formData, fieldNameToJsonPathMap)
-    console.log('VC', vc)
+    const vcJwt = await createJwt({
+      profile: profile,
+      payload: { vc },
+      issuer: profile.did.id,
+      subject: profile.did.id
+    })
+    
+
+
+    const { verifiableCredential: matchedVcs, value: psub, errors } = pex.evaluateCredentials(offering.kycRequirements, [vcJwt])
+    if (!psub || errors.length > 0) {
+      console.log(psub, errors)
+      
+      throw new Error('no creds match offering\'s kyc requirements')
+    }
+  
+    const vp = createVp({ signerDid: profile.did.id, psub: psub, vcs: matchedVcs })
+    const vpJwt = await createJwt({
+      payload: { vp },
+      issuer: profile.did.id,
+      subject: profile.did.id,
+      profile: profile
+    })
+    
+    setKycProof(vpJwt)
+    storeVc(web5, vcJwt)
     // props.onNext(formData)
   }
 
@@ -52,18 +87,20 @@ export function CreateVcForm(props: CreateVcFormProps) {
   useEffect(() => {
     const init = async () => {
       const vcs = await getVcs(web5)
+      console.log('WEE-SEES', vcs)
+      
       setVcs(vcs)
+
+      return vcs
     }
-    init()
     
-    if (vcs.length > 0) {
-      const selectedVcs = pex.selectFrom(kycRequirements, vcs)
-    } else {
-      const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(kycRequirements)
-      console.log(fieldNameToJsonPathMap, jsonSchema)
-      setVcFormSchema(jsonSchema)
-      setFieldNameToJsonPathMap(fieldNameToJsonPathMap)
-    }
+    init().then((vcs) => {
+      if (vcs.length === 0) {
+        const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(kycRequirements)
+        setVcFormSchema(jsonSchema)
+        setFieldNameToJsonPathMap(fieldNameToJsonPathMap)
+      }
+    })
   }, [])
 
   return (
@@ -74,7 +111,11 @@ export function CreateVcForm(props: CreateVcFormProps) {
             schema={vcFormSchema}
             validator={validator}
             formData={formData}
-            onChange={e => setFormData(e.formData)}/> :
+            onChange={e => { 
+              console.log(formData)
+              setFormData(e.formData)
+            } 
+            } /> :
           <></>
         }
       </div>
@@ -94,31 +135,4 @@ export function CreateVcForm(props: CreateVcFormProps) {
       </div>
     </div>
   )
-}
-
-function createJsonSchemaFromPresentationDefinition(pd: PresentationDefinitionV2) {
-  const fieldNameToJsonPathMap = {}
-  const jsonSchema = {
-    '$schema': 'http://json-schema.org/draft-07/schema',
-    'required': [],
-    'additionalProperties': false,
-    'type': 'object',
-    'properties': {}
-  }
-
-  
-  const [ inputDescriptor ] = pd.input_descriptors
-  const { constraints } = inputDescriptor
-
-  for (const field of constraints.fields) {
-    jsonSchema.properties[field.name] = field.filter
-
-    // if (!field.optional) {
-    //   jsonSchema.required.push(field.name)
-    // }
-    
-    fieldNameToJsonPathMap[field.name] = field.path[0]
-  }
-
-  return { jsonSchema, fieldNameToJsonPathMap }
 }

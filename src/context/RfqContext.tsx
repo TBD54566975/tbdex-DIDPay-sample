@@ -37,7 +37,7 @@ export const RfqProvider = ({ children, offering }) => {
   const [payoutDetails, setPayoutDetails] = useState({})
 
   const [vcs, setVcs] = useState([])
-  const [kycProof, setKycProof] = useState([])
+  const [kycProof, setKycProof] = useState(undefined)
 
   return (
     <RfqContext.Provider
