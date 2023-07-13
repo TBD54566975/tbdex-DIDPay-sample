@@ -9,8 +9,8 @@ module.exports = {
     './src/features/offerings/OfferingsSearch.tsx',
     './src/features/quotes/PaymentModal.tsx',
     './src/features/quotes/QuoteCard.tsx',
-    './src/features/rfq/ExchangeForm.tsx',
-    './src/features/rfq/PaymentForm.tsx',
+    './src/features/rfq/SelectAmountForm.tsx',
+    './src/features/rfq/SelectPaymentMethodsForm.tsx',
     './src/features/rfq/ProgressPanel.tsx',
     './src/features/rfq/ReviewForm.tsx',
     './src/features/rfq/RfqModal.tsx',
@@ -27,4 +27,4 @@ module.exports = {
   },
   plugins: [require('@tailwindcss/forms')],
   darkMode: 'class',
-};
+}

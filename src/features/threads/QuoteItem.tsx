@@ -1,7 +1,7 @@
 import React from 'react'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { Offering, TbDEXMessage } from '@tbd54566975/tbdex'
-import currency from 'currency.js'
+import { BTC, USD } from '../../utils/CurrencyUtils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
@@ -12,17 +12,17 @@ function classNames(...classes: string[]) {
 }
 
 type QuoteItemProps = {
-  quoteMsg?: TbDEXMessage<'quote'>;
+  quote?: TbDEXMessage<'quote'>;
   offering?: Offering;
 };
 
-export function QuoteItem({ quoteMsg, offering }: QuoteItemProps) {
+export function QuoteItem({ quote: quoteMsg, offering }: QuoteItemProps) {
   const yolo = false
   const baseCurrency = offering?.baseCurrency.currencyCode
   const quoteCurrency = offering?.quoteCurrency.currencyCode
 
-  const baseUnits = currency(quoteMsg?.body.base.amountSubunits, { fromCents: true }).value.toString()
-  const quoteUnits = currency(quoteMsg?.body.quote.amountSubunits, { fromCents: true }).value.toString()
+  const baseUnits = BTC(quoteMsg?.body.base.amountSubunits).format()
+  const quoteUnits = USD(quoteMsg?.body.quote.amountSubunits).format()
   return (
     <li key={quoteMsg?.id} className="relative flex gap-x-4">
       <div
@@ -47,11 +47,12 @@ export function QuoteItem({ quoteMsg, offering }: QuoteItemProps) {
         {'PFI offered '}
         <span className="font-medium text-gray-300">
           {baseUnits + ' ' + baseCurrency}
-        </span>{' '}
+        </span>
+        {/* {' '}
         for{' '}
         <span className="font-medium text-gray-300">
           {quoteUnits + ' ' + quoteCurrency}
-        </span>
+        </span> */}
         .
       </p>
       <time

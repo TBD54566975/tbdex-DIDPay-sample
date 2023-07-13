@@ -1,6 +1,5 @@
 import React, { Fragment, useContext, useState } from 'react'
-import { getCurrencySymbol, BTC } from './FormTypes'
-import currency from 'currency.js'
+import { BTC, USD, getCurrencySymbol } from '../../utils/CurrencyUtils'
 import { RfqContext } from '../../context/RfqContext'
 
 type ExchangeFormProps = {
@@ -10,8 +9,8 @@ type ExchangeFormProps = {
 export function SelectAmountForm(props: ExchangeFormProps) {
   const { offering, quoteAmount, setQuoteAmount} = useContext(RfqContext)
 
-  const minQuoteUnits = currency(offering.quoteCurrency.minSubunit, { fromCents: true }).value
-  const maxQuoteUnits = currency(offering.quoteCurrency.maxSubunit, { fromCents: true }).value
+  const minQuoteUnits = USD(offering.quoteCurrency.minSubunit).value
+  const maxQuoteUnits = USD(offering.quoteCurrency.maxSubunit).value
 
   const handleNext = () => {
     const parsedAmount = parseFloat(quoteAmount)
@@ -56,15 +55,13 @@ type PriceInputProps = {
 
 function PriceInput(props: PriceInputProps) {
   // Extracting base currency and counter currency from the pair
-
-  const { offering } = useContext(RfqContext)
-
+  const { offering, setBaseAmount } = useContext(RfqContext)
 
   const parsedUnitPrice = parseFloat(
     offering.quoteUnitsPerBaseUnit.replace(/,/g, '')
   )
-  const minQuoteUnits = currency(offering.quoteCurrency.minSubunit).divide(100)
-  const maxQuoteUnits = currency(offering.quoteCurrency.maxSubunit).divide(100)
+  const minQuoteUnits = USD(offering.quoteCurrency.minSubunit)
+  const maxQuoteUnits = USD(offering.quoteCurrency.maxSubunit)
 
   const [isAmountOutsideRange, setIsAmountOutsideRange] = useState(false)
   const [convertedUnits, setConvertedUnits] = useState(
@@ -74,7 +71,9 @@ function PriceInput(props: PriceInputProps) {
   function convertToBaseUnits(counterUnits: string) {
     if (counterUnits !== '') {
       const parsedCounterUnits = parseFloat(counterUnits)
-      return (parsedCounterUnits / parsedUnitPrice).toString()
+      const baseUnits = (parsedCounterUnits / parsedUnitPrice).toString()
+      setBaseAmount(formatUnits(baseUnits, 8))
+      return baseUnits
     } else {
       return ''
     }
@@ -105,13 +104,7 @@ function PriceInput(props: PriceInputProps) {
   const handleCounterUnitsChange = (counterUnits: string) => {
     const formattedCounterUnits = formatUnits(counterUnits, 2)
     props.onChange(formattedCounterUnits)
-
-    // change decimal point based on what currency it is
-    const formattedBaseUnits = formatUnits(
-      convertToBaseUnits(formattedCounterUnits),
-      8
-    )
-    setConvertedUnits(BTC(formattedBaseUnits).format())
+    setConvertedUnits(convertToBaseUnits(formattedCounterUnits))
 
     const parsedAmount = parseFloat(formattedCounterUnits)
     setIsAmountOutsideRange(
@@ -180,7 +173,7 @@ function PriceInput(props: PriceInputProps) {
           className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-white bg-neutral-900 ring-1 ring-inset ring-transparent placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           placeholder="0.00"
           aria-describedby="price-currency"
-          value={convertedUnits}
+          value={formatUnits(convertedUnits, 8)}
           readOnly
           onChange={(e) => props.onChange(e.target.value)}
         />

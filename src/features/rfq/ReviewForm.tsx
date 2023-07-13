@@ -1,8 +1,11 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useContext } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { CheckIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { SelectVcFormData } from './SelectVcForm'
-import { formatPaymentMethod } from '../../utils/TbdexUtils'
+import { RfqContext } from '../../context/RfqContext'
+import currency from 'currency.js'
+import { CodeBracketIcon, CreditCardIcon, UserCircleIcon } from '@heroicons/react/20/solid'
+// import { formatPaymentMethodKind } from '../../utils/TbdexUtils'
 
 type ReviewFormProps = {
   // exchangeData: ExchangeFormData;
@@ -13,6 +16,27 @@ type ReviewFormProps = {
 };
 
 export function ReviewForm(props: ReviewFormProps) {
+  const {
+    offering,
+    baseAmount,
+    quoteAmount,
+    selectedPayinMethod,
+    setSelectedPayinMethod,
+    payinDetails,
+    setPayinDetails,
+    selectedPayoutMethod,
+    setSelectedPayoutMethod,
+    payoutDetails,
+    setPayoutDetails
+  } = useContext(RfqContext)
+
+  const baseCurrency = offering?.baseCurrency.currencyCode
+  const quoteCurrency = offering?.quoteCurrency.currencyCode
+  const quoteUnits = currency(quoteAmount).format()
+  const baseUnits = currency(baseAmount, { symbol: '', precision: 8}).format()
+  console.log(baseAmount)
+  const estPrice = currency(offering?.quoteUnitsPerBaseUnit).format()
+
   const handleSubmit = () => {
     props.onSubmit()
   }
@@ -23,7 +47,63 @@ export function ReviewForm(props: ReviewFormProps) {
 
   return (
     <>
-      {/* <div className="mt-4 pl-8 pr-8">
+      <div className="lg:col-start-3 lg:row-end-1 ml-7 mr-7 mt-7 mb-7">
+        <h2 className="sr-only">Summary</h2>
+        <div className="rounded-lg bg-neutral-950 shadow-sm">
+          <dl className="flex flex-wrap">
+            <div className="flex-auto pl-6 pt-2 mt-1">
+              <dt className="text-xs font-semibold leading-6 text-gray-500">You pay</dt>
+              <dd className="mt-1 text-base font-semibold leading-6 text-gray-300">{quoteUnits}</dd>
+            </div>
+            <div className="flex-auto pl-6 pt-2 mt-1">
+              <dt className="text-xs font-semibold leading-6 text-gray-500">You get</dt>
+              <dd className="mt-1 mb-3 text-base font-semibold leading-6 text-gray-300">{baseUnits} {baseCurrency}</dd>
+            </div>
+            <div className="mt-1 flex w-full border-t border-gray-50/5 px-6 py-6">
+              <a href="#" className="text-xs font-semibold leading-6 text-gray-500">
+            Est BTC price: {estPrice} 
+              </a>
+            </div>
+            
+            <div className="flex w-full flex-none gap-x-4 px-6">
+              <dt className="flex-none">
+                <CreditCardIcon className="h-6 w-5 text-gray-400" aria-hidden="true" />
+              </dt>
+              <dd className="text-sm leading-6 text-gray-500">**** **** **** 1234</dd>
+            </div>
+            <div className="mt-2 mb-4 flex w-full flex-none gap-x-4 px-6">
+              <dt className="flex-none">
+                <CodeBracketIcon className="h-6 w-5 text-gray-400" aria-hidden="true" />
+              </dt>
+              <dd className="text-sm leading-6 text-gray-500">...8cc9QBY8pMivK</dd>
+            </div>
+          </dl>
+          
+        </div>
+      </div>
+
+
+      <div className="pl-8 pr-8 flex items-center justify-end gap-x-6">
+        <button
+          type="button"
+          className="text-sm font-semibold leading-6 text-white"
+          onClick={handleBack}
+        >
+          Back
+        </button>
+        <button
+          type="submit"
+          className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+          onClick={handleSubmit}
+        >
+          Submit
+        </button>
+      </div>
+    </>
+  )
+}
+
+{/* <div className="mt-4 pl-8 pr-8">
         <div className="pb-2">
           <h2 className="block text-sm font-medium leading-6 text-white">
             Exchange Details
@@ -68,22 +148,3 @@ export function ReviewForm(props: ReviewFormProps) {
           </div>
         </div>
       </div> */}
-      <div className="pl-8 pr-8 flex items-center justify-end gap-x-6">
-        <button
-          type="button"
-          className="text-sm font-semibold leading-6 text-white"
-          onClick={handleBack}
-        >
-          Back
-        </button>
-        <button
-          type="submit"
-          className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
-      </div>
-    </>
-  )
-}

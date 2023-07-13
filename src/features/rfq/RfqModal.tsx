@@ -4,15 +4,14 @@ import { Fragment, useState, createContext } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { Offering, PaymentMethod } from '@tbd54566975/tbdex'
 
-import { credentials } from './FormTypes'
 import { ReviewForm } from './ReviewForm'
 import { SelectPaymentMethodsForm } from './SelectPaymentMethodsForm'
 import { CreateVcForm } from './CreateVcForm'
-import { useWeb5Context } from '../../context/Web5Context'
 import { ProgressPanel, steps } from './ProgressPanel'
 import { SelectAmountForm } from './SelectAmountForm'
 import { createRfq } from '../../utils/Web5Utils'
 import { RfqContext } from '../../context/RfqContext'
+import { useWeb5Context } from '../../context/Web5Context'
 
 type RfqModalProps = {
   offering: Offering;
@@ -23,8 +22,7 @@ type RfqModalProps = {
 
 
 export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
-  const { profile, web5 } = useWeb5Context()
-
+  const { web5, profile } = useWeb5Context()
   const [step, setStep] = useState(0)
   // TODO: these dont need to be here, purely for logging
   const {
@@ -32,19 +30,13 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
     setQuoteAmount,
     selectedPayinMethod,
     setSelectedPayinMethod,
-    selectedPayoutMethod,
-    setSelectedPayoutMethod,
-    selectedPayinKind,
-    setSelectedPayinKind,
     payinDetails,
     setPayinDetails,
-    selectedPayoutKind,
-    setSelectedPayoutKind,
+    selectedPayoutMethod,
+    setSelectedPayoutMethod,
     payoutDetails,
     setPayoutDetails
   } = useContext(RfqContext)  
-
-  const [vcs, setVcs] = useState([])
 
   const handleNextStep = async () => {
     if (step === 0) {
@@ -56,11 +48,11 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
       console.log({
         amount: quoteAmount,
         payinMethod: {
-          kind: selectedPayinKind,
+          kind: selectedPayinMethod.kind,
           paymentDetails: payinDetails
         },
         payoutMethod: {
-          kind: selectedPayoutKind,
+          kind: selectedPayoutMethod.kind,
           paymentDetails: payoutDetails
         }
       })
@@ -71,6 +63,8 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
       
     } else if (step === 3) {
       console.log('step 3 hehe')
+      createRfq(web5, offering, profile.id, pfiDid, quoteAmount, selectedPayinMethod.kind, selectedPayoutMethod.kind)
+      onClose(true)
     }
 
     setStep((prevStep) => prevStep + 1)

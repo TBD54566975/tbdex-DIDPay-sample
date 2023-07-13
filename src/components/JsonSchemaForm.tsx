@@ -8,7 +8,7 @@ class StringFieldTemplate extends React.Component<FieldProps> {
     return (
       <>
         <div key={this.props.name}>
-          <label className="block text-sm font-medium leading-6 text-white">
+          <label className="block text-sm font-medium leading-6 text-white mt-4 mb-2">
             {this.props.name}
           </label>
   
@@ -24,7 +24,19 @@ class StringFieldTemplate extends React.Component<FieldProps> {
     )
   }
 }
-  
+
+function DescriptionFieldTemplate() {
+  return (
+    <></>
+  )
+}
+
+function TitleFieldTemplate() {
+  return (
+    <></>
+  )
+}
+
 const fieldTemplates: RegistryFieldsType = {
   StringField: StringFieldTemplate,
 }
@@ -37,6 +49,10 @@ JsonSchemaForm.defaultProps = {
   uiSchema: {
     'ui:submitButtonOptions': {
       norender: true,
+    },
+    'ui:globalOptions': {
+      label: false,
     }
   },
+  templates: { DescriptionFieldTemplate, TitleFieldTemplate }
 }

@@ -1,14 +1,11 @@
 import React from 'react'
 import { Offering, PaymentInstructions } from '@tbd54566975/tbdex'
 
-export function formatPaymentMethod(paymentMethod: string): string {
-  return paymentMethod
-  //   const formattedString = paymentMethod
-  //     .toLowerCase()
-  //     .replace(/_/g, ' ')
-  //     .replace(/\b\w/g, (match) => match.toUpperCase());
+export function formatPaymentMethodKind(paymentMethod: string): string {
+  let key = paymentMethod.toLowerCase().replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function(key) { return key.toUpperCase()})
+  key = key.replace('Btc', 'BTC ')
 
-  //   return formattedString;
+  return key
 }
 
 export function getPaymentInstructions(
@@ -38,16 +35,17 @@ export function getPaymentInstructions(
             {payin.instruction}
           </dd>
         )
-      } else if (payin.link) {
-        instructions.push(
-          <dd
-            key="payin-link"
-            className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0"
-          >
-            <span className="text-indigo-600">{payin.link}</span>
-          </dd>
-        )
-      }
+      } 
+      // else if (payin.link) {
+      //   instructions.push(
+      //     <dd
+      //       key="payin-link"
+      //       className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0"
+      //     >
+      //       <span className="text-indigo-600">{payin.link}</span>
+      //     </dd>
+      //   )
+      // }
     }
 
     if (paymentInstructions.payout) {
@@ -71,16 +69,17 @@ export function getPaymentInstructions(
             {payout.instruction}
           </dd>
         )
-      } else if (payout.link) {
-        instructions.push(
-          <dd
-            key="payout-link"
-            className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0"
-          >
-            <span className="text-indigo-600">{payout.link}</span>
-          </dd>
-        )
       }
+      //  else if (payout.link) {
+      //   instructions.push(
+      //     <dd
+      //       key="payout-link"
+      //       className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0"
+      //     >
+      //       <span className="text-indigo-600">{payout.link}</span>
+      //     </dd>
+      //   )
+      // }
     }
   }
 

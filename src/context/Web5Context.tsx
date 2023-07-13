@@ -2,12 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Web5 } from '@tbd54566975/web5'
 import { Profile, ProfileApi } from '@tbd54566975/web5-user-agent'
 import { CircularProgress } from '@mui/material'
-import {
-  TbDEXMessage,
-  OrderStatus,
-  Status,
-  aliceProtocolDefinition,
-} from '@tbd54566975/tbdex'
+import { aliceProtocolDefinition } from '@tbd54566975/tbdex'
 
 interface Web5ContextType {
   web5: Web5;
@@ -39,7 +34,11 @@ export const Web5ContextProvider = ({ children }: Props) => {
 
   if (!contextValue) {
     // Display progress indicator until the context value is populated
-    return <CircularProgress />
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </div>
+    )  
   }
 
   return (

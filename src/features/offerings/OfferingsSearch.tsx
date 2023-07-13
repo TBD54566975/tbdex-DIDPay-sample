@@ -156,7 +156,7 @@ export function OfferingsSearch() {
                         />
                         <Combobox.Input
                           className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                          placeholder="Enter a DID or Currency..."
+                          placeholder="Enter a DID..."
                           onChange={handleInputChange}
                           onKeyDown={(event) => {
                             // Listen for enter key

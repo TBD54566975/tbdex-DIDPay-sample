@@ -1,9 +1,10 @@
 import React from 'react'
 import { ChevronRightIcon, CodeBracketIcon, CreditCardIcon, } from '@heroicons/react/20/solid'
 import { Offering } from '@tbd54566975/tbdex'
+import { formatPaymentMethodKind } from '../../utils/TbdexUtils'
+import { USD, getExchangeRate } from '../../utils/CurrencyUtils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import currency from 'currency.js'
 
 dayjs.extend(relativeTime)
 
@@ -11,22 +12,13 @@ type CardProps = {
   offering: Offering;
   handleAction: () => void;
 };
-function getRate(
-  unitPrice: string,
-  quoteCurrency: string,
-  baseCurrency: string
-) {
-  return `1 ${quoteCurrency} / ${currency(unitPrice).format()} ${baseCurrency}`
-}
 
 // TODO: add a back button
 export function OfferingCard({ offering, handleAction }: CardProps) {
 
   const quoteCurrency = offering.quoteCurrency.currencyCode
-  const quoteMinUnits = currency(offering.quoteCurrency.minSubunit, { fromCents: true }).format()
-  const quoteMaxUnits = currency(offering.quoteCurrency.maxSubunit, { fromCents: true }).format()
-
-  console.log(offering)
+  const quoteMinUnits = USD(offering.quoteCurrency.minSubunit).format()
+  const quoteMaxUnits = USD(offering.quoteCurrency.maxSubunit).format()
 
   return (
     <div className="overflow-hidden bg-neutral-900 shadow rounded-lg">
@@ -49,12 +41,12 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
           </div>
         </div>
       </div>
-      <div className="border-t border-gray-100">
-        <dl className="divide-y divide-gray-100">
+      <div className="border-t border-gray-50/5">
+        <dl className="divide-y divide-gray-50/5">
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium text-gray-300">Exchange rate</dt>
             <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-              {getRate(
+              {getExchangeRate(
                 offering.quoteUnitsPerBaseUnit,
                 offering.baseCurrency.currencyCode,
                 offering.quoteCurrency.currencyCode
@@ -79,7 +71,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
               Payin methods
             </dt>
             <dd className="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-              <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
+              <ul className="divide-y divide-gray-100 rounded-md border border-gray-50/5">
                 {offering.payinMethods.map((payin, index) => (
                   <li
                     key={`payin${index}`}
@@ -92,13 +84,13 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                       />
                       <div className="ml-4 flex min-w-0 flex-1 gap-2">
                         <span className="truncate font-medium text-gray-400">
-                          {payin.kind}
+                          {formatPaymentMethodKind(payin.kind)}
                         </span>
                       </div>
                     </div>
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
                       {payin.feeSubunits
-                        ? `${currency(payin.feeSubunits, { fromCents: true }).format()} ${
+                        ? `${USD(payin.feeSubunits).format()} ${
                           quoteCurrency
                         } fee`
                         : 'No flat fee'}
@@ -114,7 +106,7 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
               Payout methods
             </dt>
             <dd className="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-              <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
+              <ul className="divide-y divide-gray-100 rounded-md border border-gray-50/5">
                 {offering.payoutMethods.map((payout, index) => (
                   <li
                     key={`payout${index}`}
@@ -127,13 +119,13 @@ export function OfferingCard({ offering, handleAction }: CardProps) {
                       />
                       <div className="ml-4 flex min-w-0 flex-1 gap-2">
                         <span className="truncate font-medium text-gray-400">
-                          {payout.kind}
+                          {formatPaymentMethodKind(payout.kind)}
                         </span>
                       </div>
                     </div>
                     <div className="ml-4 flex-shrink-0 font-medium text-gray-400 hover:text-indigo-500">
                       {payout.feeSubunits
-                        ? `${currency(payout.feeSubunits, { fromCents: true }).format()} ${
+                        ? `${USD(payout.feeSubunits).format()} ${
                           quoteCurrency
                         } fee`
                         : 'No flat fee'}

@@ -1,7 +1,6 @@
 import React from 'react'
 import { Offering, TbDEXMessage } from '@tbd54566975/tbdex'
-import { Record } from '@tbd54566975/web5/dist/types/record'
-import currency from 'currency.js'
+import { USD } from '../../utils/CurrencyUtils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
@@ -12,17 +11,17 @@ function classNames(...classes: string[]) {
 }
 
 type RfqItemProps = {
-  rfqMsg: TbDEXMessage<'rfq'>;
-  quote?: Record;
+  rfq: TbDEXMessage<'rfq'>;
+  quote?: TbDEXMessage<'quote'>;
   offering?: Offering;
 };
 
-export function RfqItem({ rfqMsg, quote, offering }: RfqItemProps) {
-  const amount = currency(rfqMsg.body.quoteAmountSubunits, { fromCents: true }).value.toString()
+export function RfqItem({ rfq, quote, offering }: RfqItemProps) {
+  const quoteAmount = USD(rfq.body.quoteAmountSubunits).format()
   const baseCurrency = offering?.baseCurrency.currencyCode
   const quoteCurrency = offering?.quoteCurrency.currencyCode
   return (
-    <li key={rfqMsg.id} className="relative flex gap-x-4">
+    <li key={rfq.id} className="relative flex gap-x-4">
       <div
         className={classNames(
           '-bottom-6',
@@ -40,11 +39,11 @@ export function RfqItem({ rfqMsg, quote, offering }: RfqItemProps) {
           {baseCurrency}
         </span>
         {' for '}
-        <span className="font-medium text-gray-300">{`${amount} ${quoteCurrency}`}</span>
+        <span className="font-medium text-gray-300">{`${quoteAmount} ${quoteCurrency}`}</span>
         .
       </p>
       <div className="flex-none py-0.5 text-xs leading-5 text-gray-500">
-        {dayjs(rfqMsg.createdTime).fromNow(true)} ago
+        {dayjs(rfq.createdTime).fromNow(true)} ago
       </div>
     </li>
   )

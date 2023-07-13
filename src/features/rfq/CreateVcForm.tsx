@@ -40,7 +40,6 @@ export function CreateVcForm(props: CreateVcFormProps) {
 
   const handleNext = () => {
     const vc = createVc(formData, fieldNameToJsonPathMap)
-    
     props.onNext(formData)
   }
 
@@ -48,13 +47,7 @@ export function CreateVcForm(props: CreateVcFormProps) {
     props.onBack(undefined)
   }
 
-  const handleOnChange = (e: any) => {
-    console.log(e.formData)
-    setFormData(e.formData)
-  }
-
   useEffect(() => {
-
     const init = async () => {
       const vcs = await getVcs(web5)
       setVcs(vcs)
@@ -66,8 +59,6 @@ export function CreateVcForm(props: CreateVcFormProps) {
     } else {
       const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(kycRequirements)
       console.log(fieldNameToJsonPathMap, jsonSchema)
-      
-      
       setVcFormSchema(jsonSchema)
       setFieldNameToJsonPathMap(fieldNameToJsonPathMap)
     }
@@ -141,10 +132,13 @@ function createJsonSchemaFromPresentationDefinition(pd: PresentationDefinitionV2
   const { constraints } = inputDescriptor
 
   for (const field of constraints.fields) {
-    const fieldName = field['name'] || field.path[0]
-    jsonSchema.properties[fieldName] = field.filter
+    jsonSchema.properties[field.name] = field.filter
+
+    // if (!field.optional) {
+    //   jsonSchema.required.push(field.name)
+    // }
     
-    fieldNameToJsonPathMap[fieldName] = field.path[0]
+    fieldNameToJsonPathMap[field.name] = field.path[0]
   }
 
   return { jsonSchema, fieldNameToJsonPathMap }

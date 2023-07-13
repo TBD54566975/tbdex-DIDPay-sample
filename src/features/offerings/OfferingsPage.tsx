@@ -30,8 +30,6 @@ export function OfferingsPage() {
     }
   }
 
-  console.log(offerings[0])
-
   return (
     <div>
       {offerings &&

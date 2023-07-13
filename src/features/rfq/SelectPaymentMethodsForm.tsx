@@ -1,9 +1,9 @@
 import validator from '@rjsf/validator-ajv8'
-import React, { Fragment, useContext, useState } from 'react'
+import React, { Fragment, useContext } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { PaymentMethod } from '@tbd54566975/tbdex'
-
+import { formatPaymentMethodKind } from '../../utils/TbdexUtils'
 import { JsonSchemaForm } from '../../components/JsonSchemaForm'
 import { RfqContext } from '../../context/RfqContext'
 
@@ -21,12 +21,10 @@ export function SelectPaymentMethodsForm(props: PaymentFormProps) {
     offering,
     selectedPayinMethod,
     setSelectedPayinMethod,
-    selectedPayoutMethod,
-    setSelectedPayoutMethod,
-    setSelectedPayinKind,
     payinDetails,
     setPayinDetails,
-    setSelectedPayoutKind,
+    selectedPayoutMethod,
+    setSelectedPayoutMethod,
     payoutDetails,
     setPayoutDetails
   } = useContext(RfqContext)
@@ -39,7 +37,7 @@ export function SelectPaymentMethodsForm(props: PaymentFormProps) {
             header="Pay-in instrument"
             selectedPaymentMethod={selectedPayinMethod}
             setSelectedPaymentMethod={setSelectedPayinMethod}
-            setSelectedPaymentKind={setSelectedPayinKind}
+            // setSelectedPaymentKind={setSelectedPayinKind}
             paymentDetails={payinDetails}
             setPaymentDetails={setPayinDetails}
             paymentMethods={offering.payinMethods}
@@ -51,7 +49,7 @@ export function SelectPaymentMethodsForm(props: PaymentFormProps) {
             header="Pay-out instrument"
             selectedPaymentMethod={selectedPayoutMethod}
             setSelectedPaymentMethod={setSelectedPayoutMethod}
-            setSelectedPaymentKind={setSelectedPayoutKind}
+            // setSelectedPaymentKind={setSelectedPayoutKind}
             paymentDetails={payoutDetails}
             setPaymentDetails={setPayoutDetails}
             paymentMethods={offering.payoutMethods}
@@ -84,15 +82,12 @@ type PaymentDropdownProps = {
   selectedPaymentMethod: PaymentMethod;
   paymentDetails: Partial<{ [key: string]: any }>
   setSelectedPaymentMethod: (pm: PaymentMethod) => void;
-  setSelectedPaymentKind: (kind: string) => void;
   setPaymentDetails: (pd: any) => void;
 };
 
 function PaymentDropdown(props: PaymentDropdownProps) {
-
   const handleSelectItem = (paymentMethod: PaymentMethod) => {
     props.setSelectedPaymentMethod(paymentMethod)
-    props.setSelectedPaymentKind(paymentMethod.kind)
   }
 
   return (
@@ -110,7 +105,7 @@ function PaymentDropdown(props: PaymentDropdownProps) {
               <Listbox.Button className="relative w-full cursor-default rounded-md bg-neutral-900 py-1.5 pl-3 pr-10 text-left text-white shadow-sm ring-1 ring-inset ring-transparent focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 <span className="flex items-center">
                   <span className="ml-3 block truncate">
-                    {props.selectedPaymentMethod.kind}
+                    {formatPaymentMethodKind(props.selectedPaymentMethod.kind)}
                   </span>
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -128,7 +123,7 @@ function PaymentDropdown(props: PaymentDropdownProps) {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Listbox.Options className="absolute z-10 mt-1 w-full overflow-y-auto rounded-md bg-neutral-900 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                <Listbox.Options className="absolute z-10 mt-1 w-full overflow-y-auto rounded-md bg-neutral-800 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                   {props.paymentMethods.map((method, index) => (
                     <Listbox.Option
                       key={index}
@@ -149,7 +144,7 @@ function PaymentDropdown(props: PaymentDropdownProps) {
                                 'ml-3 block truncate'
                               )}
                             >
-                              {method.kind}
+                              {formatPaymentMethodKind(method.kind)}
                             </span>
                           </div>
 
