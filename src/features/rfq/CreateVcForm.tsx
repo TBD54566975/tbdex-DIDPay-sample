@@ -2,7 +2,6 @@ import React, { useContext } from 'react'
 import validator from '@rjsf/validator-ajv8'
 
 import { PEXv2 } from '@sphereon/pex'
-import { JSONPath } from '@astronautlabs/jsonpath'
 import { useState, useEffect } from 'react'
 
 import { JsonSchemaForm } from '../../components/JsonSchemaForm'

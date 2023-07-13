@@ -7,13 +7,16 @@ type ExchangeFormProps = {
 };
 
 export function SelectAmountForm(props: ExchangeFormProps) {
-  const { offering, quoteAmount, setQuoteAmount} = useContext(RfqContext)
+  const { offering, baseAmount, setBaseAmount, quoteAmount, setQuoteAmount} = useContext(RfqContext)
 
   const minQuoteUnits = USD(offering.quoteCurrency.minSubunit).value
   const maxQuoteUnits = USD(offering.quoteCurrency.maxSubunit).value
 
+  const [currentQuoteAmount, setCurrentQuoteAmount] = useState(quoteAmount)
+  const [currentBaseAmount, setCurrentBaseAmount] = useState(baseAmount)
+
   const handleNext = () => {
-    const parsedAmount = parseFloat(quoteAmount)
+    const parsedAmount = parseFloat(currentQuoteAmount)
     if (isNaN(parsedAmount)) {
       // Return or handle the case when the amount is not a valid number
       return
@@ -21,6 +24,8 @@ export function SelectAmountForm(props: ExchangeFormProps) {
 
     const isAmountOutsideRange = parsedAmount < minQuoteUnits || parsedAmount > maxQuoteUnits
     if (!isAmountOutsideRange) {
+      setQuoteAmount(currentQuoteAmount)
+      setBaseAmount(currentBaseAmount)
       props.onNext()
     }
   }
@@ -30,8 +35,10 @@ export function SelectAmountForm(props: ExchangeFormProps) {
       <div className="mt-8 mb-8 pl-8 pr-8">
         <div className="mt-8">
           <PriceInput
-            quoteAmountUnits={quoteAmount}
-            onChange={e => setQuoteAmount(e)}
+            quoteAmountUnits={currentQuoteAmount}
+            baseAmountUnits={currentBaseAmount}
+            setBaseAmount={setCurrentBaseAmount}
+            onChange={e => setCurrentQuoteAmount(e)}
           />{' '}
         </div>
       </div>
@@ -50,13 +57,16 @@ export function SelectAmountForm(props: ExchangeFormProps) {
 
 type PriceInputProps = {
   quoteAmountUnits: string;
+  baseAmountUnits: string;
+  setBaseAmount: (newValue: string) => void;
   onChange: (newValue: string) => void;
 };
 
 function PriceInput(props: PriceInputProps) {
   // Extracting base currency and counter currency from the pair
-  const { offering, setBaseAmount } = useContext(RfqContext)
-
+  
+  const { offering, baseAmount } = useContext(RfqContext)
+  
   const parsedUnitPrice = parseFloat(
     offering.quoteUnitsPerBaseUnit.replace(/,/g, '')
   )
@@ -72,7 +82,7 @@ function PriceInput(props: PriceInputProps) {
     if (counterUnits !== '') {
       const parsedCounterUnits = parseFloat(counterUnits)
       const baseUnits = (parsedCounterUnits / parsedUnitPrice).toString()
-      setBaseAmount(formatUnits(baseUnits, 8))
+      props.setBaseAmount(formatUnits(baseUnits, 8))
       return baseUnits
     } else {
       return ''
