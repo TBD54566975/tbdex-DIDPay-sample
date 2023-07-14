@@ -9,6 +9,7 @@ import {
 
 import { DateSort } from '@tbd54566975/dwn-sdk-js'
 import { Web5 } from '@tbd54566975/web5'
+import { TbdexThread } from './TbdexThread'
 import { getSubunits } from './CurrencyUtils'
 import { RecordThread } from '../features/threads/Thread'
 import { Record } from '@tbd54566975/web5/dist/types/record'
@@ -50,27 +51,6 @@ export async function storeVc(web5: Web5, vcJwt: string) {
   }
 
 
-}
-
-export async function getThreads(web5: Web5) {
-  const threads: { [key: string]: RecordThread } = {}
-
-  const { records = [] } = await web5.dwn.records.query({
-    message: {
-      filter: {
-        schema: aliceProtocolDefinition.types.RFQ.schema,
-      },
-    },
-  })
-
-  // TODO: filter by dateSort: DateSort.CreatedAscending
-
-  for (const record of records) {
-    const rfqMsg = (await record.data.json()) as TbDEXMessage<'rfq'>
-    const threadId = rfqMsg.threadId
-    threads[threadId] = {  rfqRecord: record, rfq: rfqMsg, orderStatuses: [] }
-  }
-  return threads
 }
 
 export async function getOfferings(web5: Web5, pfiDid: string) {

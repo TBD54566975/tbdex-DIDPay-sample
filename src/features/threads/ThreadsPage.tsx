@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { RecordThread } from './Thread'
+import { TbdexThread } from '../../utils/TbdexThread'
 import { useWeb5Context } from '../../context/Web5Context'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { Thread } from './Thread'
-import { getThreads } from '../../utils/Web5Utils'
+import { getThreads } from '../../utils/TbdexUtils'
 
 export function ThreadsPage() {
-  const [threadMap, setThreadMap] = useState<{ [key: string]: RecordThread }>(
-    {}
-  )
+  const [threads, setThreads] = useState<TbdexThread[]>([])
   const [loading, setLoading] = useState(true)
   const searchButtonRef = useRef<HTMLButtonElement>(null)
   const { web5 } = useWeb5Context()
@@ -32,8 +30,7 @@ export function ThreadsPage() {
   useEffect(() => {
     const init = async () => {
       const threads = await getThreads(web5)
-      console.log(threads)
-      setThreadMap(threads)
+      setThreads(threads)
       setLoading(false)
     }
     init()

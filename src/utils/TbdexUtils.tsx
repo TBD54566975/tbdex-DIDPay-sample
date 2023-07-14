@@ -1,5 +1,9 @@
 import React from 'react'
-import { Offering, PaymentInstructions } from '@tbd54566975/tbdex'
+
+import { Web5 } from '@tbd54566975/web5'
+import { PaymentInstructions, aliceProtocolDefinition } from '@tbd54566975/tbdex'
+
+import { TbdexThread } from './TbdexThread'
 
 export function formatPaymentMethodKind(paymentMethod: string): string {
   let key = paymentMethod.toLowerCase().replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function(key) { return key.toUpperCase()})
@@ -84,4 +88,27 @@ export function getPaymentInstructions(
   }
 
   return instructions.length > 0 ? <div>{instructions}</div> : null
+}
+
+export async function getThreads(web5: Web5) {
+  const threads: TbdexThread[] = []
+
+  const { records = [], status } = await web5.dwn.records.query({
+    message: {
+      filter: {
+        schema: aliceProtocolDefinition.types.RFQ.schema,
+      },
+    },
+  })
+
+  if (status.code !== 200) {
+    throw new Error(`Failed to get tbdex threads. Error: ${JSON.stringify(status, null, 2)}`)
+  }
+
+  for (const record of records) {
+    const tbdexThread = await TbdexThread.fetch(web5, record.contextId)
+    threads.push(tbdexThread)
+  }
+
+  return threads
 }

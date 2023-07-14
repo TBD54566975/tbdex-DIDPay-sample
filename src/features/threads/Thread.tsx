@@ -1,34 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
-import { Offering, TbDEXMessage } from '@tbd54566975/tbdex'
-import { Record } from '@tbd54566975/web5/dist/types/record'
-import { useWeb5Context } from '../../context/Web5Context'
-import { getOfferingFromRfq, threadInit } from '../../utils/Web5Utils'
 import { RfqItem } from './RfqItem'
 import { QuoteItem } from './QuoteItem'
 import { OrderStatusItem } from './OrderStatusItem'
 import { QuoteCard } from '../quotes/QuoteCard'
-
-export type RecordThread = {
-  rfqRecord: Record;
-  rfq?: TbDEXMessage<'rfq'>;
-  quote?: TbDEXMessage<'quote'>;
-  close?: TbDEXMessage<'close'>;
-  orderStatuses: TbDEXMessage<'orderStatus'>[];
-};
+import { TbdexThread } from '../../utils/TbdexThread'
 
 type ThreadProps = {
-  props: RecordThread;
+  tbdexThread: TbdexThread;
 };
 
-export function Thread({ props }: ThreadProps) {
-  const [recordThread, setRecordThread] = useState<RecordThread>({
-    rfqRecord: props.rfqRecord,
-    rfq: props.rfq,
-    orderStatuses: [],
-  })
-  const [offering, setOffering] = useState<Offering>()
-  const { web5 } = useWeb5Context()
+export function Thread(props: ThreadProps) {
 
   const handlePay = () => {
     const url = recordThread.quote?.body.paymentInstructions?.payin?.link || ''
@@ -36,26 +18,17 @@ export function Thread({ props }: ThreadProps) {
   }
 
   useEffect(() => {
-    const rfqq = async () => {
-      const offering = await getOfferingFromRfq(web5, recordThread.rfq)
-      setOffering(offering)
-      await threadInit(web5, recordThread, recordThread.rfq.to, setRecordThread)
-    }
-    
-    rfqq()
-      .then(() => {
-        console.log('hi')
-      })
-      .catch(e => { console.log('ERROR womp womp', e) })
-
-    // threadInit(web5, recordThread, setOffering, setRfqMsg);
-    
+    props.tbdexThread.startPolling()
   }, []) // state var can go here to restart the interval
 
-  return !recordThread.rfq ? <></> : (
+  if (props.tbdexThread.close) {
+    return <></>
+  }
+
+  return (
     <>
       <ul className="space-y-6">
-        {recordThread.rfq && (
+        {props.tbdexThread.rfq && (
           <RfqItem
             rfq={recordThread.rfq}
             quote={recordThread.quote}
