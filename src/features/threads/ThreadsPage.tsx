@@ -32,6 +32,7 @@ export function ThreadsPage() {
   useEffect(() => {
     const init = async () => {
       const threads = await getThreads(web5)
+      console.log(threads)
       setThreadMap(threads)
       setLoading(false)
     }

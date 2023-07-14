@@ -52,9 +52,9 @@ export function ReviewForm(props: ReviewFormProps) {
               <dd className="mt-1 mb-3 text-base font-semibold leading-6 text-gray-300">{baseUnits} {baseCurrency}</dd>
             </div>
             <div className="mt-1 flex w-full border-t border-gray-50/5 px-6 pt-4 pb-2">
-              <a href="#" className="text-sm font-semibold leading-6 text-gray-500">
+              <p className="text-sm font-semibold leading-6 text-gray-500">
             Est BTC price: {estPrice} 
-              </a>
+              </p>
             </div>
             <div className="mb-4 flex w-full flex-none gap-x-4 px-6">
               <dt className="flex-none">

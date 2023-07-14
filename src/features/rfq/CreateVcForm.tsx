@@ -65,6 +65,8 @@ export function CreateVcForm(props: CreateVcFormProps) {
       vcs = selectedVcs
     } 
 
+    console.log(vcs.vc)
+
     const { verifiableCredential: matchedVcs, value: psub, errors } = pex.evaluateCredentials(offering.kycRequirements, vcs)
     if (!psub || errors.length > 0) {
       console.log(psub, errors)
