@@ -1,16 +1,15 @@
-import React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Web5ContextProvider } from './context/Web5Context';
-import { RootPage } from './features/app/root/RootPage';
-import { IndexPage } from './features/app/IndexPage';
-import { VerifiableCredentialsPage } from './features/credentials/VerifiableCredentialsPage';
-import { OfferingsPage } from './features/offerings/OfferingsPage';
-import { QuotesPage } from './features/quotes/QuotesPage';
-import { OrdersPage } from './features/orders/OrdersPage';
-import { ProfilePage } from './features/profile/Profile';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Web5ContextProvider } from './context/Web5Context'
+import { RootPage } from './features/app/root/RootPage'
+import { IndexPage } from './features/app/IndexPage'
+import { VerifiableCredentialsPage } from './features/credentials/VerifiableCredentialsPage'
+import { ThreadsPage } from './features/threads/ThreadsPage'
+import { HistoryPage } from './features/history/HistoryPage'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { OfferingsPage } from './features/offerings/OfferingsPage'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
   {
@@ -19,31 +18,23 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <IndexPage />,
+        element: <ThreadsPage />,
       },
       {
         path: '/verifiablecredentials',
         element: <VerifiableCredentialsPage />,
       },
       {
+        path: '/history',
+        element: <HistoryPage />,
+      },
+      {
         path: '/offerings',
         element: <OfferingsPage />,
       },
-      {
-        path: '/quotes',
-        element: <QuotesPage />,
-      },
-      {
-        path: '/orders',
-        element: <OrdersPage />,
-      },
-      {
-        path: '/profile',
-        element: <ProfilePage />,
-      },
     ],
   },
-]);
+])
 
 export default function App() {
   return (
@@ -52,5 +43,5 @@ export default function App() {
         <RouterProvider router={router} />
       </Web5ContextProvider>
     </QueryClientProvider>
-  );
+  )
 }

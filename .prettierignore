@@ -1,6 +1,0 @@
-CODEOWNERS
-LICENSE
-*.md
-
-**/.git
-**/node_modules

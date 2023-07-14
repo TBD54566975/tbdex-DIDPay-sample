@@ -1,55 +1,57 @@
-import React, { useState } from 'react';
-import { Box, Button, Stack, TextField } from '@mui/material';
-import { useWeb5Context } from '../../context/Web5Context';
-import { OfferingsList, type Offering } from './OfferingsList';
+import React, { useState } from 'react'
+import { RfqModal } from '../rfq/RfqModal'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { OfferingCard } from './OfferingCard'
+import { Offering } from '@tbd54566975/tbdex'
+import { RfqProvider } from '../../context/RfqContext'
 
 export function OfferingsPage() {
-  const [pfiDid, setPfiDid] = useState('');
-  const [offerings, setOfferings] = useState<Offering[]>([]);
+  const [rfqModalOpen, setRfqModalOpen] = useState(false)
+  const [selectedOffering, setSelectedOffering] = useState<
+    Offering | undefined
+  >() // TODO: fix
 
-  const { web5 } = useWeb5Context();
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { offerings } = location.state || {}
+  const { pfiDid } = location.state || {}
 
-  const handlePfiDidChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPfiDid(event.target.value);
-  };
+  const handleRequestQuote = (offering: Offering) => {
+    setSelectedOffering(offering)
+    setRfqModalOpen(true)
+  }
 
-  const handleGetOfferingsClick = async () => {
-    const { records } = await web5.dwn.records.query({
-      from: pfiDid,
-      message: {
-        filter: {
-          schema: 'https://tbdex.io/schemas/offering',
-        },
-      },
-    });
-
-    const offerings = await Promise.all(
-      records?.map(async (r) => {
-        return (await r.data.json()) as Offering;
-      }) ?? []
-    );
-
-    setOfferings(offerings);
-  };
+  const handleModalClose = (hasSubmitted: boolean) => {
+    setRfqModalOpen(false)
+    if (hasSubmitted) {
+      navigate('/')
+    } else {
+      navigate('/offerings', { state: { offerings, pfiDid } })
+    }
+  }
 
   return (
-    <Box>
-      <Stack spacing={1}>
-        <TextField
-          label="PFI DID"
-          value={pfiDid}
-          onChange={handlePfiDidChange}
-          fullWidth
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleGetOfferingsClick}
-        >
-          Get Offerings
-        </Button>
-      </Stack>
-      <OfferingsList offerings={offerings} />
-    </Box>
-  );
+    <div>
+      {offerings &&
+        offerings.map((offering: Offering, index: string) => (
+          <div className="pb-8 pl-4 pr-4" key={index}>
+            <OfferingCard
+              offering={offering}
+              handleAction={() => handleRequestQuote(offering)}
+            ></OfferingCard>
+          </div>
+        ))}
+      {rfqModalOpen && selectedOffering && (
+        <RfqProvider offering={selectedOffering}>
+          <RfqModal
+            offering={selectedOffering}
+            pfiDid={pfiDid}
+            isOpen={rfqModalOpen}
+            onClose={handleModalClose}
+          />
+        </RfqProvider>
+        
+      )}
+    </div>
+  )
 }
