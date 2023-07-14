@@ -73,6 +73,15 @@ export async function createJwt(opts: CreateJwtOpts) {
   return `${headerBase64url}.${payloadBase64url}.${signatureBase64url}`
 }
 
+export function decodeJwt(jwt) {
+  const [encodedHeader, encodedPayload, encodedSignature] = jwt.split('.')
+
+  return {
+    header  : Encoder.base64UrlToObject(encodedHeader),
+    payload : Encoder.base64UrlToObject(encodedPayload),
+    encodedSignature
+  }
+} 
 
 function getSignatureMaterial(profile: Profile) {
   const { keys } = profile.did

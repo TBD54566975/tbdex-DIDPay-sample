@@ -35,22 +35,6 @@ export function Thread({ props }: ThreadProps) {
     window.open(url, '_blank', 'noreferrer')
   }
 
-  // const interval = setInterval(async () => {
-  //   console.log('before data json()')
-  //   console.log((await recordThread.rfq?.data.json()) as TbDEXMessage<'rfq'>)
-  //   console.log('after data json()')
-  //   pollThread(
-  //     web5,
-  //     recordThread,
-  //     setRecordThread,
-  //     setOffering,
-  //     setRfqMsg,
-  //     setQuoteMsg,
-  //     setCloseMsg,
-  //     interval
-  //   )
-  // }, 5000)
-
   useEffect(() => {
     const rfqq = async () => {
       const offering = await getOfferingFromRfq(web5, recordThread.rfq)

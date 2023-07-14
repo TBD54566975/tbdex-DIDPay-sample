@@ -28,6 +28,7 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
   const {
     quoteAmount,
     setQuoteAmount,
+    kycProof,
     selectedPayinMethod,
     setSelectedPayinMethod,
     payinDetails,
@@ -39,31 +40,8 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
   } = useContext(RfqContext)  
 
   const handleNextStep = async () => {
-    if (step === 0) {
-      // const exchangeFormData = formData as ExchangeFormData
-      // setQuoteCurrencyAmount(exchangeFormData.amount)
-      console.log(quoteAmount)
-    } else if (step === 1) {
-      console.log('done with step 1. RFQ so far')
-      console.log({
-        amount: quoteAmount,
-        payinMethod: {
-          kind: selectedPayinMethod.kind,
-          paymentDetails: payinDetails
-        },
-        payoutMethod: {
-          kind: selectedPayoutMethod.kind,
-          paymentDetails: payoutDetails
-        }
-      })
-    } else if (step === 2) {
-      // const vcFormData = formData as SelectVcFormData
-      // setVcData(vcFormData)
-      console.log('step 2 hehe')
-      
-    } else if (step === 3) {
-      console.log('step 3 hehe')
-      createRfq(web5, offering, profile.id, pfiDid, quoteAmount, selectedPayinMethod.kind, selectedPayoutMethod.kind)
+    if (step === 3) {
+      createRfq(web5, offering, profile.id, pfiDid, quoteAmount, kycProof, selectedPayinMethod.kind, selectedPayoutMethod.kind, payoutDetails)
       onClose(true)
     }
 

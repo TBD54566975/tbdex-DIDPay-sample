@@ -1,10 +1,8 @@
 import React, { Fragment, useContext } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
-import { CheckIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
-import { SelectVcFormData } from './SelectVcForm'
+import { CodeBracketIcon, CreditCardIcon } from '@heroicons/react/20/solid'
 import { RfqContext } from '../../context/RfqContext'
+import { shortenAddress } from '../../utils/CurrencyUtils'
 import currency from 'currency.js'
-import { CodeBracketIcon, CreditCardIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 // import { formatPaymentMethodKind } from '../../utils/TbdexUtils'
 
 type ReviewFormProps = {
@@ -20,12 +18,6 @@ export function ReviewForm(props: ReviewFormProps) {
     offering,
     baseAmount,
     quoteAmount,
-    selectedPayinMethod,
-    setSelectedPayinMethod,
-    payinDetails,
-    setPayinDetails,
-    selectedPayoutMethod,
-    setSelectedPayoutMethod,
     payoutDetails,
     setPayoutDetails
   } = useContext(RfqContext)
@@ -34,8 +26,8 @@ export function ReviewForm(props: ReviewFormProps) {
   const quoteCurrency = offering?.quoteCurrency.currencyCode
   const quoteUnits = currency(quoteAmount).format()
   const baseUnits = currency(baseAmount, { symbol: '', precision: 8}).format()
-  console.log(baseAmount)
   const estPrice = currency(offering?.quoteUnitsPerBaseUnit).format()
+  const btcAddress = shortenAddress(payoutDetails.btcAddress)
 
   const handleSubmit = () => {
     props.onSubmit()
@@ -52,30 +44,23 @@ export function ReviewForm(props: ReviewFormProps) {
         <div className="rounded-lg bg-neutral-950 shadow-sm">
           <dl className="flex flex-wrap">
             <div className="flex-auto pl-6 pt-2 mt-1">
-              <dt className="text-xs font-semibold leading-6 text-gray-500">You pay</dt>
+              <dt className="text-sm font-semibold leading-6 text-gray-500">You pay</dt>
               <dd className="mt-1 text-base font-semibold leading-6 text-gray-300">{quoteUnits}</dd>
             </div>
             <div className="flex-auto pl-6 pt-2 mt-1">
-              <dt className="text-xs font-semibold leading-6 text-gray-500">You get</dt>
+              <dt className="text-sm font-semibold leading-6 text-gray-500">You get</dt>
               <dd className="mt-1 mb-3 text-base font-semibold leading-6 text-gray-300">{baseUnits} {baseCurrency}</dd>
             </div>
-            <div className="mt-1 flex w-full border-t border-gray-50/5 px-6 py-6">
-              <a href="#" className="text-xs font-semibold leading-6 text-gray-500">
+            <div className="mt-1 flex w-full border-t border-gray-50/5 px-6 pt-4 pb-2">
+              <a href="#" className="text-sm font-semibold leading-6 text-gray-500">
             Est BTC price: {estPrice} 
               </a>
             </div>
-            
-            <div className="flex w-full flex-none gap-x-4 px-6">
+            <div className="mb-4 flex w-full flex-none gap-x-4 px-6">
               <dt className="flex-none">
-                <CreditCardIcon className="h-6 w-5 text-gray-400" aria-hidden="true" />
+                <CodeBracketIcon className="h-6 w-5 text-gray-500" aria-hidden="true" />
               </dt>
-              <dd className="text-sm leading-6 text-gray-500">**** **** **** 1234</dd>
-            </div>
-            <div className="mt-2 mb-4 flex w-full flex-none gap-x-4 px-6">
-              <dt className="flex-none">
-                <CodeBracketIcon className="h-6 w-5 text-gray-400" aria-hidden="true" />
-              </dt>
-              <dd className="text-sm leading-6 text-gray-500">...8cc9QBY8pMivK</dd>
+              <dd className="text-sm font-semibold leading-6 text-gray-500">{btcAddress}</dd>
             </div>
           </dl>
           

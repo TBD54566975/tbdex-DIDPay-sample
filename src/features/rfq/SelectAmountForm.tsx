@@ -35,10 +35,10 @@ export function SelectAmountForm(props: ExchangeFormProps) {
       <div className="mt-8 mb-8 pl-8 pr-8">
         <div className="mt-8">
           <PriceInput
-            quoteAmountUnits={currentQuoteAmount}
-            baseAmountUnits={currentBaseAmount}
+            currentQuoteAmount={currentQuoteAmount}
+            currentBaseAmount={currentBaseAmount}
             setBaseAmount={setCurrentBaseAmount}
-            onChange={e => setCurrentQuoteAmount(e)}
+            setQuoteAmount={setCurrentQuoteAmount}
           />{' '}
         </div>
       </div>
@@ -56,33 +56,28 @@ export function SelectAmountForm(props: ExchangeFormProps) {
 }
 
 type PriceInputProps = {
-  quoteAmountUnits: string;
-  baseAmountUnits: string;
+  currentQuoteAmount: string;
+  currentBaseAmount: string;
   setBaseAmount: (newValue: string) => void;
-  onChange: (newValue: string) => void;
+  setQuoteAmount: (newValue: string) => void;
 };
 
 function PriceInput(props: PriceInputProps) {
   // Extracting base currency and counter currency from the pair
-  
+  const [isAmountOutsideRange, setIsAmountOutsideRange] = useState(false)
   const { offering, baseAmount } = useContext(RfqContext)
   
+  const minQuoteAmount = USD(offering.quoteCurrency.minSubunit)
+  const maxQuoteAmount = USD(offering.quoteCurrency.maxSubunit)
   const parsedUnitPrice = parseFloat(
     offering.quoteUnitsPerBaseUnit.replace(/,/g, '')
-  )
-  const minQuoteUnits = USD(offering.quoteCurrency.minSubunit)
-  const maxQuoteUnits = USD(offering.quoteCurrency.maxSubunit)
-
-  const [isAmountOutsideRange, setIsAmountOutsideRange] = useState(false)
-  const [convertedUnits, setConvertedUnits] = useState(
-    convertToBaseUnits(props.quoteAmountUnits)
   )
 
   function convertToBaseUnits(counterUnits: string) {
     if (counterUnits !== '') {
       const parsedCounterUnits = parseFloat(counterUnits)
       const baseUnits = (parsedCounterUnits / parsedUnitPrice).toString()
-      props.setBaseAmount(formatUnits(baseUnits, 8))
+      // props.setBaseAmount(formatUnits(baseUnits, 8))
       return baseUnits
     } else {
       return ''
@@ -111,21 +106,21 @@ function PriceInput(props: PriceInputProps) {
     return numericValue
   }
 
-  const handleCounterUnitsChange = (counterUnits: string) => {
+  const handleQuoteAmountChange = (counterUnits: string) => {
     const formattedCounterUnits = formatUnits(counterUnits, 2)
-    props.onChange(formattedCounterUnits)
-    setConvertedUnits(convertToBaseUnits(formattedCounterUnits))
+    props.setQuoteAmount(formattedCounterUnits)
+    props.setBaseAmount(convertToBaseUnits(formattedCounterUnits))
 
     const parsedAmount = parseFloat(formattedCounterUnits)
     setIsAmountOutsideRange(
-      parsedAmount < minQuoteUnits.value || parsedAmount > maxQuoteUnits.value
+      parsedAmount < minQuoteAmount.value || parsedAmount > maxQuoteAmount.value
     )
   }
 
   return (
     <div>
       <label
-        htmlFor="price"
+        htmlFor="send"
         className="block text-sm font-medium leading-6 text-white"
       >
         {'Send'}
@@ -139,13 +134,13 @@ function PriceInput(props: PriceInputProps) {
         </div>
         <input
           type="text"
-          name="price"
-          id="price"
+          name="send"
+          id="send"
           className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-white bg-neutral-900 ring-1 ring-inset ring-transparent placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           placeholder="0.00"
           aria-describedby="price-currency"
-          value={props.quoteAmountUnits}
-          onChange={(e) => handleCounterUnitsChange(e.target.value)}
+          value={props.currentQuoteAmount}
+          onChange={(e) => handleQuoteAmountChange(e.target.value)}
         />
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <span className="text-gray-500 sm:text-sm" id="price-currency">
@@ -153,18 +148,18 @@ function PriceInput(props: PriceInputProps) {
           </span>
         </div>
       </div>
-      {props.quoteAmountUnits !== '' && isAmountOutsideRange ? (
+      {props.currentQuoteAmount !== '' && isAmountOutsideRange ? (
         <p className="mt-2 text-sm text-red-600" id="email-error">
-          {parseFloat(props.quoteAmountUnits) < minQuoteUnits.value
-            ? `Minimum order is ${minQuoteUnits.format()}`
-            : parseFloat(props.quoteAmountUnits) > maxQuoteUnits.value
+          {parseFloat(props.currentQuoteAmount) < minQuoteAmount.value
+            ? `Minimum order is ${minQuoteAmount.format()}`
+            : parseFloat(props.currentQuoteAmount) > maxQuoteAmount.value
               ? `Maximum order is 
-              ${maxQuoteUnits.format()}`
+              ${maxQuoteAmount.format()}`
               : null}
         </p>
       ) : null}
       <label
-        htmlFor="price"
+        htmlFor="receive"
         className="block text-sm font-medium leading-6 text-white mt-5"
       >
         {'Receive'}
@@ -178,14 +173,14 @@ function PriceInput(props: PriceInputProps) {
         </div>
         <input
           type="text"
-          name="price"
-          id="price"
+          name="receive"
+          id="receive"
           className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-white bg-neutral-900 ring-1 ring-inset ring-transparent placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           placeholder="0.00"
           aria-describedby="price-currency"
-          value={formatUnits(convertedUnits, 8)}
+          value={formatUnits(props.currentBaseAmount, 8)}
           readOnly
-          onChange={(e) => props.onChange(e.target.value)}
+          // onChange={(e) => props.onChange(e.target.value)}
         />
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <span className="text-gray-500 sm:text-sm" id="price-currency">

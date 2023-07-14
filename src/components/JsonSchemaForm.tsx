@@ -1,7 +1,7 @@
 import React from 'react'
-import Form, { ThemeProps, withTheme } from '@rjsf/core'
+import { ThemeProps, withTheme } from '@rjsf/core'
 import validator from '@rjsf/validator-ajv8'
-import { RJSFSchema, FieldProps, RegistryFieldsType } from '@rjsf/utils'
+import { FieldProps, RegistryFieldsType } from '@rjsf/utils'
 
 class StringFieldTemplate extends React.Component<FieldProps> {
   render() {

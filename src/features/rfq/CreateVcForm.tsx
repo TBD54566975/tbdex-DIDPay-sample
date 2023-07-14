@@ -9,6 +9,7 @@ import { getVcs, storeVc } from '../../utils/Web5Utils'
 import { createVc, createVp, createJwt, createJsonSchemaFromPresentationDefinition } from '../../utils/SsiUtils'
 import { RfqContext } from '../../context/RfqContext'
 import { useWeb5Context } from '../../context/Web5Context'
+import { SelectVcForm } from './SelectVcForm'
 
 
 /**
@@ -22,13 +23,14 @@ import { useWeb5Context } from '../../context/Web5Context'
 const pex = new PEXv2()
 
 type CreateVcFormProps = {
-  onNext: (formData: any) => void;
-  onBack: (formData: any) => void;
+  onNext: () => void;
+  onBack: () => void;
 };
 
 export function CreateVcForm(props: CreateVcFormProps) {
   const { web5, profile } = useWeb5Context()
   const { offering, vcs, setVcs, setKycProof } = useContext(RfqContext)
+  const [initialized, setInitialized] = useState(false)
 
   const [formData, setFormData] = useState<any>({
     'First Name': 'Ephraim',
@@ -39,30 +41,34 @@ export function CreateVcForm(props: CreateVcFormProps) {
     'City': 'Consequences',
     'State': 'New Mexico',
     'Zip Code': '78724',
-    'Country': 'USA'
+    'Country': 'US'
   })
-
-
+  const [currentVc, setCurrentVc] = useState<any>(undefined)
   const [vcFormSchema, setVcFormSchema] = useState<any>(undefined)
   const [fieldNameToJsonPathMap, setFieldNameToJsonPathMap] = useState(undefined)
+  const [selectedVcs, setSelectedVcs] = useState(undefined)
 
   const kycRequirements = offering.kycRequirements
 
   const handleNext = async () => {
-    const vc = createVc(profile.did.id, formData, fieldNameToJsonPathMap)
-    const vcJwt = await createJwt({
-      profile: profile,
-      payload: { vc },
-      issuer: profile.did.id,
-      subject: profile.did.id
-    })
-    
+    let vcs
+    if (vcFormSchema) {
+      const vc = createVc(profile.did.id, formData, fieldNameToJsonPathMap)
+      const vcJwt = await createJwt({
+        profile: profile,
+        payload: { vc },
+        issuer: profile.did.id,
+        subject: profile.did.id
+      })
+      vcs = [vcJwt]
+    } else {
+      vcs = selectedVcs
+    } 
 
-
-    const { verifiableCredential: matchedVcs, value: psub, errors } = pex.evaluateCredentials(offering.kycRequirements, [vcJwt])
+    const { verifiableCredential: matchedVcs, value: psub, errors } = pex.evaluateCredentials(offering.kycRequirements, vcs)
     if (!psub || errors.length > 0) {
       console.log(psub, errors)
-      
+        
       throw new Error('no creds match offering\'s kyc requirements')
     }
   
@@ -75,21 +81,20 @@ export function CreateVcForm(props: CreateVcFormProps) {
     })
     
     setKycProof(vpJwt)
-    storeVc(web5, vcJwt)
-    // props.onNext(formData)
+    if (vcFormSchema) {
+      storeVc(web5, vcs[0])
+    } 
+    props.onNext()
   }
 
-  const handleBack = (formData: any) => {
-    props.onBack(undefined)
+  const handleBack = () => {
+    props.onBack()
   }
 
   useEffect(() => {
     const init = async () => {
-      const vcs = await getVcs(web5)
-      console.log('WEE-SEES', vcs)
-      
+      const vcs = await getVcs(web5)      
       setVcs(vcs)
-
       return vcs
     }
     
@@ -98,24 +103,44 @@ export function CreateVcForm(props: CreateVcFormProps) {
         const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(kycRequirements)
         setVcFormSchema(jsonSchema)
         setFieldNameToJsonPathMap(fieldNameToJsonPathMap)
+      } else {
+        const { 
+          verifiableCredential: matchedVcs,
+          value: psub, 
+          errors 
+        } = pex.evaluateCredentials(offering.kycRequirements, vcs)
+
+        if (!psub || errors.length > 0) {
+          console.log(psub, errors)
+          const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(kycRequirements)
+          setVcFormSchema(jsonSchema)
+          setFieldNameToJsonPathMap(fieldNameToJsonPathMap)
+          // throw new Error('no creds match offering\'s kyc requirements')
+        } else {
+          setSelectedVcs(matchedVcs)
+        }
       }
+      setInitialized(true)
     })
   }, [])
 
+  if (!initialized) {
+    return <></>
+  }
+
   return (
-    <div className="mt-4 mb-8 pl-8 pr-8">
-      <div className=" text-black">
+    <>
+      <div className=" text-black pl-8 pr-8">
         {vcFormSchema ? 
           <JsonSchemaForm 
             schema={vcFormSchema}
             validator={validator}
             formData={formData}
             onChange={e => { 
-              console.log(formData)
               setFormData(e.formData)
             } 
             } /> :
-          <></>
+          <SelectVcForm vcs={selectedVcs} setCurrentVc={setCurrentVc} onNext={props.onNext} onBack={props.onBack}/>
         }
       </div>
       <div className="mt-12 pl-8 pr-8 flex items-center justify-end gap-x-6">
@@ -132,6 +157,6 @@ export function CreateVcForm(props: CreateVcFormProps) {
           Next
         </button>
       </div>
-    </div>
+    </>
   )
 }

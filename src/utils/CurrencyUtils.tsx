@@ -22,3 +22,20 @@ export function getCurrencySymbol(ticker: string): string {
 export function getSubunits(quoteAmount: string) {
   return currency(quoteAmount).intValue.toString() 
 }
+
+export function shortenAddress(address) {
+  const prefixLength = 6 // Number of characters to keep from the beginning of the address
+  const suffixLength = 4 // Number of characters to keep from the end of the address
+  
+  if (!address || address.length <= prefixLength + suffixLength) {
+    return address // Return the original address if it is too short or invalid
+  }
+  
+  const prefix = address.substring(0, prefixLength)
+  const suffix = address.substring(address.length - suffixLength)
+  
+  const shortenedAddress = `${prefix}...${suffix}`
+  
+  return shortenedAddress
+}
+  

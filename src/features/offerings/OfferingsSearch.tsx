@@ -42,7 +42,7 @@ export function OfferingsSearch() {
       }
       setOpen(false)
     } else {
-      console.log('hehe')
+      // console.log('hehe')
     }
   }
 

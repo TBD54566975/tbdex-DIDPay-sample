@@ -1,6 +1,5 @@
 import React, { useState, Dispatch, SetStateAction } from 'react'
 import { PaymentMethod } from '@tbd54566975/tbdex'
-import { createRfq } from '../utils/Web5Utils'
 
 export const RfqContext = React.createContext({ 
   offering: undefined,
