@@ -10,8 +10,8 @@ function createJsonSchemaFromPresentationDefinition(pd) {
     'properties': {}
   }
 
-  
-  const [ inputDescriptor ] = pd.input_descriptors
+
+  const [inputDescriptor] = pd.input_descriptors
   const { constraints } = inputDescriptor
 
   for (let field of constraints.fields) {
@@ -20,7 +20,7 @@ function createJsonSchemaFromPresentationDefinition(pd) {
     if (!field.optional) {
       jsonSchema.required.push(field.name)
     }
-    
+
     fieldNameToJsonPathMap[field.name] = field.path[0]
   }
 
@@ -32,10 +32,10 @@ function createVc(data, fieldNameToJsonPathMap) {
     '@context': [
       'https://www.w3.org/2018/credentials/v1',
     ],
-    'id'                : 'in-yo-face-cred',
-    'type'              : ['VerifiableCredential', 'KycCredential'],
-    'issuer'            : 'TODO',
-    'issuanceDate'      : new Date().toISOString(),
+    'id': 'in-yo-face-cred',
+    'type': ['VerifiableCredential', 'KycCredential'],
+    'issuer': 'TODO',
+    'issuanceDate': new Date().toISOString(),
     'credentialSubject': {
       'id': 'TODO'
     }
@@ -43,7 +43,7 @@ function createVc(data, fieldNameToJsonPathMap) {
   for (let property in data) {
     const path = fieldNameToJsonPathMap[property]
     const value = data[property]
-    
+
     JSONPath.value(vc.credentialSubject, path, value)
   }
 
@@ -51,15 +51,15 @@ function createVc(data, fieldNameToJsonPathMap) {
 }
 
 const pd = {
-  'id'                : '2eddf25f-f79f-4105-ac81-544c988f6d78',
-  'name'              : 'Core Personal Identity Claims',
-  'purpose'           : 'Claims for PFI to evaluate Alice',
-  'input_descriptors' : [
+  'id': '2eddf25f-f79f-4105-ac81-544c988f6d78',
+  'name': 'Core Personal Identity Claims',
+  'purpose': 'Claims for PFI to evaluate Alice',
+  'input_descriptors': [
     {
-      'id'          : '707585e4-3d74-49e7-b21e-a8e1cbf8e31b',
-      'purpose'     : 'Claims for PFI to evaluate Alice',
-      'constraints' : {
-        'subject_is_issuer': true,
+      'id': '707585e4-3d74-49e7-b21e-a8e1cbf8e31b',
+      'purpose': 'Claims for PFI to evaluate Alice',
+      'constraints': {
+        'subject_is_issuer': 'required', // this means that the VC must be self-signed
         'fields': [
           {
             'path': ['$.credentialSubject.givenName'],
@@ -71,7 +71,7 @@ const pd = {
           {
             'path': ['$.credentialSubject.middleName'],
             'name': 'Middle Name',
-            'optional': true,
+            // 'optional' : true, WAITING ON APPROVAL OF PEX PR
             'filter': {
               'type': 'string'
             }
@@ -88,7 +88,7 @@ const pd = {
             'name': 'DOB',
             'filter': {
               'type': 'string',
-              format: 'date'
+              'format': 'date'
             }
           },
           {
@@ -120,10 +120,11 @@ const pd = {
             }
           },
           {
-            'path': ['$.credentialSubject.address.region'],
+            'path': ['$.credentialSubject.address.country'],
             'name': 'Country',
             'filter': {
-              'type' : 'string'
+              'type': 'string',
+              'maxLength': 2
             }
           }
         ]
