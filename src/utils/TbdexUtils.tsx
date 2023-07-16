@@ -4,6 +4,7 @@ import { Web5 } from '@tbd54566975/web5'
 import { PaymentInstructions, aliceProtocolDefinition } from '@tbd54566975/tbdex'
 
 import { TbdexThread } from './TbdexThread'
+import { DateSort } from '@tbd54566975/dwn-sdk-js'
 
 export function formatPaymentMethodKind(paymentMethod: string): string {
   let key = paymentMethod.toLowerCase().replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function(key) { return key.toUpperCase()})
@@ -98,8 +99,10 @@ export async function getThreads(web5: Web5) {
       filter: {
         schema: aliceProtocolDefinition.types.RFQ.schema,
       },
+      dateSort: DateSort.CreatedDescending
     },
   })
+
 
   if (status.code !== 200) {
     throw new Error(`Failed to get tbdex threads. Error: ${JSON.stringify(status, null, 2)}`)

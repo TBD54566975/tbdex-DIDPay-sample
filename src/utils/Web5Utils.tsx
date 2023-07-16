@@ -11,8 +11,6 @@ import { DateSort } from '@tbd54566975/dwn-sdk-js'
 import { Web5 } from '@tbd54566975/web5'
 import { TbdexThread } from './TbdexThread'
 import { getSubunits } from './CurrencyUtils'
-import { RecordThread } from '../features/threads/Thread'
-import { Record } from '@tbd54566975/web5/dist/types/record'
 
 
 export async function getVcs(web5: Web5) {
@@ -76,7 +74,7 @@ export const getOfferingFromRfq = async (
   web5: Web5,
   rfqMsg: TbDEXMessage<'rfq'>,
 ) => {
-  const { records = [] } = await web5.dwn.records.query({
+  const { records = [], status } = await web5.dwn.records.query({
     from: rfqMsg.to,
     message: {
       filter: {
@@ -93,41 +91,41 @@ export const getOfferingFromRfq = async (
   }
 }
 
-export const threadInit = async (
-  web5: Web5,
-  recordThread: RecordThread,
-  pfiDid: string,
-  setRecordThread: React.Dispatch<React.SetStateAction<RecordThread>>,
-) => {
-  try {
-    console.log('beginning thread init')
-    const { records = [] } = await web5.dwn.records.query({
-      from: pfiDid,
-      message: {
-        filter: {
-          contextId: recordThread.rfqRecord.contextId
-        },
-        dateSort: DateSort.CreatedAscending
-      },
-    })
+// export const threadInit = async (
+//   web5: Web5,
+//   recordThread: RecordThread,
+//   pfiDid: string,
+//   setRecordThread: React.Dispatch<React.SetStateAction<RecordThread>>,
+// ) => {
+//   try {
+//     console.log('beginning thread init')
+//     const { records = [] } = await web5.dwn.records.query({
+//       from: pfiDid,
+//       message: {
+//         filter: {
+//           contextId: recordThread.rfqRecord.contextId
+//         },
+//         dateSort: DateSort.CreatedAscending
+//       },
+//     })
 
-    for (const record of records) {
-      const tbdexMsg = await record.data.json()
-      console.log(tbdexMsg)
-      if (tbdexMsg.type === 'quote') {
-        setRecordThread({ ...recordThread, quote: tbdexMsg })      
-      } else if (tbdexMsg.type === 'orderStatus') {
-        setRecordThread({ ...recordThread, orderStatuses: [...recordThread.orderStatuses, tbdexMsg] })  
-      } else if (tbdexMsg.type === 'close') {
-        setRecordThread({ ...recordThread, close: tbdexMsg })      
-      }
-    }
+//     for (const record of records) {
+//       const tbdexMsg = await record.data.json()
+//       console.log(tbdexMsg)
+//       if (tbdexMsg.type === 'quote') {
+//         setRecordThread({ ...recordThread, quote: tbdexMsg })      
+//       } else if (tbdexMsg.type === 'orderStatus') {
+//         setRecordThread({ ...recordThread, orderStatuses: [...recordThread.orderStatuses, tbdexMsg] })  
+//       } else if (tbdexMsg.type === 'close') {
+//         setRecordThread({ ...recordThread, close: tbdexMsg })      
+//       }
+//     }
     
-  } catch (error) {
-    // console.log('No child for record: ' + record.id);
-  }
+//   } catch (error) {
+//     // console.log('No child for record: ' + record.id);
+//   }
 
-}
+// }
 
 export const createRfq = async (
   web5: Web5,

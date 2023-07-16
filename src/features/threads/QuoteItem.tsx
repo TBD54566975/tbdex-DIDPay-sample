@@ -1,6 +1,7 @@
 import React from 'react'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { Offering, TbDEXMessage } from '@tbd54566975/tbdex'
+import { TbdexThread } from '../../utils/TbdexThread'
 import { BTC, USD } from '../../utils/CurrencyUtils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -12,19 +13,22 @@ function classNames(...classes: string[]) {
 }
 
 type QuoteItemProps = {
-  quote?: TbDEXMessage<'quote'>;
-  offering?: Offering;
+  tbdexThread: TbdexThread;
 };
 
-export function QuoteItem({ quote: quoteMsg, offering }: QuoteItemProps) {
+export function QuoteItem(props: QuoteItemProps) {
   const yolo = false
-  const baseCurrency = offering?.baseCurrency.currencyCode
-  const quoteCurrency = offering?.quoteCurrency.currencyCode
 
-  const baseUnits = BTC(quoteMsg?.body.base.amountSubunits).format()
-  const quoteUnits = USD(quoteMsg?.body.quote.amountSubunits).format()
+  const quote = props.tbdexThread.quote
+  // console.log(quote)
+  if (!quote) return <></>
+
+  const offering = props.tbdexThread.offering
+
+  const baseCurrency = offering.baseCurrency.currencyCode
+  const baseUnits = BTC(quote.message.body.base.amountSubunits).format()
   return (
-    <li key={quoteMsg?.id} className="relative flex gap-x-4">
+    <li key={quote.message.id} className="relative flex gap-x-4">
       <div
         className={classNames(
           yolo ? 'h-6' : '-bottom-6',
@@ -56,10 +60,10 @@ export function QuoteItem({ quote: quoteMsg, offering }: QuoteItemProps) {
         .
       </p>
       <time
-        dateTime={quoteMsg?.createdTime}
+        dateTime={quote.message.createdTime}
         className="flex-none py-0.5 text-xs leading-5 text-gray-500"
       >
-        {dayjs(quoteMsg?.createdTime).fromNow(true)} ago
+        {dayjs(quote.message.createdTime).fromNow(true)} ago
       </time>
     </li>
   )
