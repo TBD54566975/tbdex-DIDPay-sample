@@ -147,12 +147,21 @@ img {
 	font-size: 0.8em;
 }
 
-.descriptor .fullName {
+.descriptor .title {
 	position: relative;
 	z-index: 3;
 	margin: 0;
 	padding: 0;
 	font-size: 1.5em;
+}
+
+.descriptor .subtitle {
+	position: relative;
+	z-index: 3;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	font-weight: normal;
 }
 
 .descriptor .description {
@@ -292,28 +301,28 @@ export class VerifiableCredential extends HTMLElement {
   static observedAttributes = ['src', 'cred', 'manifest', 'show-qr']
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
-    case 'src':
-      this.#srcFetchAbortController?.abort()
-      this.#srcFetchAbortController = new AbortController()
+      case 'src':
+        this.#srcFetchAbortController?.abort()
+        this.#srcFetchAbortController = new AbortController()
 
-      fetch(newValue, { signal: this.#srcFetchAbortController.signal })
-        .then((response) => response.json())
-        .then((json) => {
-          this.data = json
-        })
-        .catch((error) => {
-          if (error.name !== 'AbortError') throw error // surface `fetch` errors for developers
-        })
-      return
+        fetch(newValue, { signal: this.#srcFetchAbortController.signal })
+          .then((response) => response.json())
+          .then((json) => {
+            this.data = json
+          })
+          .catch((error) => {
+            if (error.name !== 'AbortError') throw error // surface `fetch` errors for developers
+          })
+        return
 
-    case 'manifest':
-      this.#manifestFetchAbortController?.abort()
-      this.#manifestFetchAbortController = new AbortController()
+      case 'manifest':
+        this.#manifestFetchAbortController?.abort()
+        this.#manifestFetchAbortController = new AbortController()
 
-      this.manifest = JSON.parse(newValue)
-      return
-    case 'cred':
-      this.data = JSON.parse(newValue)
+        this.manifest = JSON.parse(newValue)
+        return
+      case 'cred':
+        this.data = JSON.parse(newValue)
     }
   }
 
@@ -337,11 +346,9 @@ export class VerifiableCredential extends HTMLElement {
         descriptionLabelSlotElement
           .assignedNodes()
           .map((slottedNode) => slottedNode.textContent)
-          .join('') || 'Street Address' // TODO: ummmmm
-      for (let descriptionLabelElement of descriptionLabelElements) {
+          .join('') || 'Description'
+      for (let descriptionLabelElement of descriptionLabelElements)
         descriptionLabelElement.textContent = descriptionLabel
-        console.log(descriptionLabel)
-      }
     }
     let descriptionLabelSlotMutationObserver = new MutationObserver(
       (records) => {
@@ -396,46 +403,33 @@ export class VerifiableCredential extends HTMLElement {
         document.createElement('section')
       )
       descriptorElement.classList.add('descriptor')
-      
+
       this.#applyEntityStyles(descriptor['styles'], descriptorElement)
 
       // <https://identity.foundation/wallet-rendering/#data-display>
 
-      let givenName = resolveDisplayMappingObject(
-        descriptor['display']?.['fullName']?.['givenName'],
+      let title = resolveDisplayMappingObject(
+        descriptor['display']?.['title'],
         this.#data
       )
-      let familyName = resolveDisplayMappingObject(
-        descriptor['display']?.['fullName']?.['familyName'],
-        this.#data
-      )
-
-      if (givenName && familyName) {
-        let fullNameElement = descriptorElement.appendChild(
+      if (title) {
+        let titleElement = descriptorElement.appendChild(
           document.createElement('h1')
         )
-        fullNameElement.classList.add('fullName')
-        fullNameElement.textContent = givenName + ' ' + familyName
-      } else if (givenName) {
-        // TODO
-      } else if (familyName) {
-        // TODO
+        titleElement.classList.add('title')
+        titleElement.textContent = title
       }
 
-      let birthDate = resolveDisplayMappingObject(
-        descriptor['display']?.['birthDate'],
+      let subtitle = resolveDisplayMappingObject(
+        descriptor['display']?.['subtitle'],
         this.#data
       )
-      if (birthDate) {
-        let birthDateElement = descriptorElement.appendChild(
-          document.createElement('p')
+      if (subtitle) {
+        let subtitleElement = descriptorElement.appendChild(
+          document.createElement('h2')
         )
-        birthDateElement.classList.add('birthDate')
-        const date = new Date(`${birthDate}`)
-        const options = { month: 'long', day: 'numeric', year: 'numeric' }
-        const formattedBirthDate = date.toLocaleDateString(undefined, options)
-
-        birthDateElement.textContent = formattedBirthDate
+        subtitleElement.classList.add('subtitle')
+        subtitleElement.textContent = subtitle
       }
 
       let description = resolveDisplayMappingObject(
@@ -453,7 +447,7 @@ export class VerifiableCredential extends HTMLElement {
         )
         labelElement.classList.add('label')
         descriptionLabelElements.push(labelElement)
-        
+
         const dtextElem = document.createElement('span')
         dtextElem.textContent = ` ${description}`
         // descriptionElement.append(" ", description);

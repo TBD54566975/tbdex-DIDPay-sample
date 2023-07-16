@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { TbdexThread } from '../../utils/TbdexThread'
 import { useWeb5Context } from '../../context/Web5Context'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
