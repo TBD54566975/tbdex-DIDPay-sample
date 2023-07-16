@@ -8,13 +8,13 @@ import { getOfferingFromRfq } from './Web5Utils'
 
 type ThreadEventTypes = 'quote' | 'close' | 'orderStatus'
 type EventCallback = (record: any, tbdexMessage: any) => Promise<void> | void
-type TbdexMessageRecord = {
+export type TbdexMessageRecord = {
   record: Record
-  message: any;
-  messageType: string;
+  message: any
+  messageType: string
 }
 
-type MessageRecordMap = Map<string, TbdexMessageRecord[]>
+export type MessageRecordMap = Map<string, TbdexMessageRecord[]>
 
 export class TbdexThread {
   web5: Web5
@@ -62,7 +62,7 @@ export class TbdexThread {
     return new TbdexThread(web5, dwnContextId, rfq.to, messageRecordMap, offering)
   }
 
-  constructor(web5: Web5, contextId: string, pfiDid: string, messageRecordMap: MessageRecordMap, offering: Offering) {
+  constructor(web5: Web5, contextId: string, pfiDid: string, messageRecordMap: MessageRecordMap, offering: Offering, listeners?: { [event: string]: EventCallback }, intervalId?: NodeJS.Timer) {
     this.web5 = web5
     this.contextId = contextId
     this.pfiDid = pfiDid
@@ -71,9 +71,8 @@ export class TbdexThread {
     this.listeners = {}
     this.seenRecords = new Set([])
 
-    for (const messageType in messageRecordMap) {
-      const messageRecords = messageRecordMap.get(messageType)
-      
+    const messageRecordMapValues = Array.from(messageRecordMap.values())
+    for (const messageRecords of messageRecordMapValues) {      
       for (const messageRecord of messageRecords) {
         const recordId = messageRecord.record.id
         this.seenRecords.add(recordId)
@@ -82,15 +81,19 @@ export class TbdexThread {
   }
 
   get rfq() {
-    return this.messageRecordMap.get('rfq')[0]
+    // console.log(this.messageRecordMap)
+    // console.log('get rfq: ', this.messageRecordMap.get('rfq'))
+    return this.messageRecordMap.get('rfq')?.[0] ?? undefined
   }
 
   get quote() {
-    return this.messageRecordMap.get('quote')[0]
+    // console.log(this.messageRecordMap)
+    // console.log('get quote: ', this.messageRecordMap.get('quote'))
+    return this.messageRecordMap.get('quote')?.[0] ?? undefined
   }
 
   get close() {
-    return this.messageRecordMap.get('close')[0]
+    return this.messageRecordMap.get('close')?.[0] ?? undefined
   }
 
   get orderStatuses() {
@@ -104,6 +107,7 @@ export class TbdexThread {
   }
 
   isDone() {
+    console.log('liluiad')
     if (this.close) {
       return true
     }
@@ -112,9 +116,9 @@ export class TbdexThread {
     // TODO: figure out what the terminal order statuses are
   }
 
-  on(event: ThreadEventTypes, cb: EventCallback) {
+  on(event: ThreadEventTypes, cb: EventCallback, updateThread: any) {
     if (!this.intervalId) {
-      this.startPolling()
+      this.startPolling(updateThread) // TODO: check to see if this makes sense???
     }
 
     this.listeners[event] = cb
@@ -125,7 +129,7 @@ export class TbdexThread {
     this.intervalId = null
   }
 
-  startPolling() {
+  startPolling(updateThread) {
     this.intervalId = setInterval(async () => {
       const { records, status } = await this.web5.dwn.records.query({
         from    : this.pfiDid,
@@ -142,10 +146,10 @@ export class TbdexThread {
         if (this.seenRecords.has(record.id)) {
           continue
         }
-
         this.seenRecords.add(record.id)
 
         const tbdexMessage = await record.data.json()
+
         const messageType = tbdexMessage['type'] // TODO: revisit tbdex types
         const tbdexMessageRecord: TbdexMessageRecord = { message: tbdexMessage, messageType: messageType, record: record }
 
@@ -155,13 +159,16 @@ export class TbdexThread {
         } else {
           this.messageRecordMap.set(messageType, [tbdexMessageRecord])
         }
+        updateThread(this.messageRecordMap, this.seenRecords)
 
         const listener = this.listeners[messageType]
+        console.log(listener)
 
         if (listener) {
           await listener(record, tbdexMessage)
         }
       }
-    }, 5_000)
+      
+    }, 3_000)
   }
 }

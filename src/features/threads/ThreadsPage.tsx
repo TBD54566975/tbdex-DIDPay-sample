@@ -30,6 +30,8 @@ export function ThreadsPage() {
   useEffect(() => {
     const init = async () => {
       const threads = await getThreads(web5)
+      // console.log('in threads page i see this map: ', threads[0].messageRecordMap)
+      // console.log('this is what happens when i try to get quote: ', threads[0].messageRecordMap.get('quote'))
       setThreads(threads)
       setLoading(false)
     }
@@ -43,7 +45,7 @@ export function ThreadsPage() {
   return (
     <div>
       <ul className="mt-7">
-        {Object.keys(threadMap).length === 0 ? (
+        {threads.length === 0 ? (
           <div className="text-center">
             <h3 className="mt-2 text-sm font-semibold text-gray-400">
               No ongoing orders
@@ -67,12 +69,12 @@ export function ThreadsPage() {
             </div>
           </div>
         ) : (
-          Object.keys(threadMap).map((id, index) => (
+          threads.map((thread, index) => (
             <div className="flow-root pb-7" key={index}>
               <div className="overflow-hidden bg-neutral-900 shadow sm:rounded-lg rounded-md">
                 <div className="px-4 py-6 sm:px-6">
                   <Thread
-                    props={{ rfqRecord: threadMap[id].rfqRecord, rfq: threadMap[id].rfq, orderStatuses: [] }}
+                    tbdexThread={thread}
                   ></Thread>
                 </div>
               </div>

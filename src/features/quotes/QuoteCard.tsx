@@ -2,7 +2,7 @@ import React from 'react'
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/solid'
 import { ChevronRightIcon, CodeBracketIcon, CreditCardIcon, } from '@heroicons/react/20/solid'
 import { getPaymentInstructions } from '../../utils/TbdexUtils'
-import { Offering, PaymentInstructions, TbDEXMessage } from '@tbd54566975/tbdex'
+import { TbdexThread } from '../../utils/TbdexThread'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { BTC, USD, getCurrencySymbol } from '../../utils/CurrencyUtils'
@@ -10,17 +10,19 @@ import { BTC, USD, getCurrencySymbol } from '../../utils/CurrencyUtils'
 dayjs.extend(relativeTime)
 
 type QuoteCardProps = {
-  quote?: TbDEXMessage<'quote'>;
-  offering?: Offering;
+  tbdexThread: TbdexThread;
   onClick: () => void;
 };
 
 //TODO: maybe get rid of the pending status when a quote comes back
 export function QuoteCard(props: QuoteCardProps) {
-  const baseCurrency = props.offering.baseCurrency.currencyCode
-  const baseUnits = BTC(props.quote.body.base.amountSubunits).format()
-  const quoteCurrency = props.offering.quoteCurrency.currencyCode
-  const quoteUnits = USD(props.quote.body.quote.amountSubunits).format()
+  const quote = props.tbdexThread.quote
+  const offering = props.tbdexThread.offering
+
+  const baseCurrency = offering.baseCurrency.currencyCode
+  const baseUnits = BTC(quote.message.body.base.amountSubunits).format()
+  const quoteCurrency = offering.quoteCurrency.currencyCode
+  const quoteUnits = USD(quote.message.body.quote.amountSubunits).format()
   const currencySymbol = getCurrencySymbol(quoteCurrency)
 
   return (
@@ -40,7 +42,7 @@ export function QuoteCard(props: QuoteCardProps) {
             </div>
             <div className="mt-1 mb-3 flex w-full border-t border-gray-50/5 px-6 py-4">
               <p className="max-w-2xl text-xs leading-6 text-yellow-300">
-                Expires in{' '}{dayjs(props.quote.body.expiryTime).fromNow(true)}
+                Expires in{' '}{dayjs(quote.message.body.expiryTime).fromNow(true)}
               </p>
             </div>
           </dl>

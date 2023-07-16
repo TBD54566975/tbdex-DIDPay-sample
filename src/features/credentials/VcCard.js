@@ -147,21 +147,12 @@ img {
 	font-size: 0.8em;
 }
 
-.descriptor .title {
+.descriptor .fullName {
 	position: relative;
 	z-index: 3;
 	margin: 0;
 	padding: 0;
 	font-size: 1.5em;
-}
-
-.descriptor .subtitle {
-	position: relative;
-	z-index: 3;
-	margin: 0;
-	padding: 0;
-	font-size: 1em;
-	font-weight: normal;
 }
 
 .descriptor .description {
@@ -346,9 +337,11 @@ export class VerifiableCredential extends HTMLElement {
         descriptionLabelSlotElement
           .assignedNodes()
           .map((slottedNode) => slottedNode.textContent)
-          .join('') || 'Description'
-      for (let descriptionLabelElement of descriptionLabelElements)
+          .join('') || 'Street Address' // TODO: ummmmm
+      for (let descriptionLabelElement of descriptionLabelElements) {
         descriptionLabelElement.textContent = descriptionLabel
+        console.log(descriptionLabel)
+      }
     }
     let descriptionLabelSlotMutationObserver = new MutationObserver(
       (records) => {
@@ -408,28 +401,41 @@ export class VerifiableCredential extends HTMLElement {
 
       // <https://identity.foundation/wallet-rendering/#data-display>
 
-      let title = resolveDisplayMappingObject(
-        descriptor['display']?.['title'],
+      let givenName = resolveDisplayMappingObject(
+        descriptor['display']?.['fullName']?.['givenName'],
         this.#data
       )
-      if (title) {
-        let titleElement = descriptorElement.appendChild(
+      let familyName = resolveDisplayMappingObject(
+        descriptor['display']?.['fullName']?.['familyName'],
+        this.#data
+      )
+
+      if (givenName && familyName) {
+        let fullNameElement = descriptorElement.appendChild(
           document.createElement('h1')
         )
-        titleElement.classList.add('title')
-        titleElement.textContent = title
+        fullNameElement.classList.add('fullName')
+        fullNameElement.textContent = givenName + ' ' + familyName
+      } else if (givenName) {
+        // TODO
+      } else if (familyName) {
+        // TODO
       }
 
-      let subtitle = resolveDisplayMappingObject(
-        descriptor['display']?.['subtitle'],
+      let birthDate = resolveDisplayMappingObject(
+        descriptor['display']?.['birthDate'],
         this.#data
       )
-      if (subtitle) {
-        let subtitleElement = descriptorElement.appendChild(
-          document.createElement('h2')
+      if (birthDate) {
+        let birthDateElement = descriptorElement.appendChild(
+          document.createElement('p')
         )
-        subtitleElement.classList.add('subtitle')
-        subtitleElement.textContent = subtitle
+        birthDateElement.classList.add('birthDate')
+        const date = new Date(`${birthDate}`)
+        const options = { month: 'long', day: 'numeric', year: 'numeric' }
+        const formattedBirthDate = date.toLocaleDateString(undefined, options)
+
+        birthDateElement.textContent = formattedBirthDate
       }
 
       let description = resolveDisplayMappingObject(
