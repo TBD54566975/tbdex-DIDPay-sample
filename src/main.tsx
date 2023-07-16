@@ -1,14 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './styles/global.css'
-import * as serviceWorkerRegistration from './serviceWorkerRegistration'
-import reportWebVitals from './reportWebVitals'
-import App from './App'
+import App from './App.tsx'
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+import './styles/global.css'
+
+import * as serviceWorkerRegistration from './serviceWorkerRegistration.ts'
+import reportWebVitals from './reportWebVitals.ts'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 )
 
 // If you want your app to work offline and load faster, you can change

@@ -1,15 +1,10 @@
-import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Web5ContextProvider } from './context/Web5Context'
 import { RootPage } from './features/app/root/RootPage'
-import { IndexPage } from './features/app/IndexPage'
 import { VerifiableCredentialsPage } from './features/credentials/VerifiableCredentialsPage'
 import { ThreadsPage } from './features/threads/ThreadsPage'
 import { HistoryPage } from './features/history/HistoryPage'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { OfferingsPage } from './features/offerings/OfferingsPage'
-
-const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
   {
@@ -38,10 +33,8 @@ const router = createBrowserRouter([
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Web5ContextProvider>
-        <RouterProvider router={router} />
-      </Web5ContextProvider>
-    </QueryClientProvider>
+    <Web5ContextProvider>
+      <RouterProvider router={router} />
+    </Web5ContextProvider>
   )
 }

@@ -8,31 +8,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/**
- * Custom Classes
- */
-/* @import '_dark-color-filter.css';
-@import '_bracketed-text-header.css';
-@import '_illustration.css';
-@import '_social-media-tiles.css';
-@import '_media-card.css';
-@import '_page-header.css';
-@import '_tooltip.css';
-@import '_media-detail.css';
-@import '_rich-text.css'; */
-
 @layer base {
   :root {
     --base: 16px;
     --baseUnitless: 16;
-    --color-primary-yellow-filter: invert(98%) sepia(34%) saturate(4729%)
-      hue-rotate(335deg) brightness(102%) contrast(107%);
-    --color-primary-cyan-filter: invert(98%) sepia(87%) saturate(4083%)
-      hue-rotate(127deg) brightness(100%) contrast(101%);
-    --color-primary-purple-filter: invert(23%) sepia(98%) saturate(6670%)
-      hue-rotate(273deg) brightness(102%) contrast(103%);
-    --color-primary-white-filter: invert(100%) sepia(0%) saturate(7500%)
-      hue-rotate(331deg) brightness(107%) contrast(101%);
+    --color-primary-yellow-filter: invert(98%) sepia(34%) saturate(4729%) hue-rotate(335deg) brightness(102%) contrast(107%);
+    --color-primary-cyan-filter: invert(98%) sepia(87%) saturate(4083%) hue-rotate(127deg) brightness(100%) contrast(101%);
+    --color-primary-purple-filter: invert(23%) sepia(98%) saturate(6670%) hue-rotate(273deg) brightness(102%) contrast(103%);
+    --color-primary-white-filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(331deg) brightness(107%) contrast(101%);
     --max-page-width: 1440px;
   }
 

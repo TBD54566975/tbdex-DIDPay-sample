@@ -1,7 +1,7 @@
 import { Web5 } from '@tbd54566975/web5'
 import { DateSort } from '@tbd54566975/dwn-sdk-js'
 
-import type { Record } from '@tbd54566975/web5/dist/types/record'
+// import type { Record } from '@tbd54566975/web5/dist/types/record'
 import { TbDEXMessage, Offering } from '@tbd54566975/tbdex'
 
 import { getOfferingFromRfq } from './Web5Utils'
@@ -9,7 +9,7 @@ import { getOfferingFromRfq } from './Web5Utils'
 type ThreadEventTypes = 'quote' | 'close' | 'orderStatus'
 type EventCallback = (record: any, tbdexMessage: any) => Promise<void> | void
 type TbdexMessageRecord = {
-  record: Record
+  record: any
   message: any;
   messageType: string;
 }

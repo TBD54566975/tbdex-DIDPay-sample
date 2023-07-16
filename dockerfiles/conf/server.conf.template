@@ -1,0 +1,19 @@
+# this template is used by the nginx docker image to generate an nginx conf file.
+# Using this template allows us to configure the port that nginx listens on at container
+# runtime. More info can be found here: 
+# https://github.com/docker-library/docs/tree/master/nginx#using-environment-variables-in-nginx-configuration-new-in-119
+
+
+server {
+  listen       ${NGINX_PORT};
+  listen  [::]:${NGINX_PORT};
+  server_name  localhost;
+
+  access_log  /tmp/host.access.log  main;
+
+  location / {
+      root   /usr/share/nginx/html;
+      index  index.html index.htm;
+      try_files $uri $uri/ /index.html;
+  }
+}
