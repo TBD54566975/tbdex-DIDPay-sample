@@ -4,9 +4,8 @@ import { decodeJwt } from '../../utils/SsiUtils'
 import { KycCredential } from '../../credential-manifests'
 import '../credentials/VcCard'
 
-type VcDropdownProps = {
+type VcRenderProps = {
   decodedVcs: any[];
-  setCurrentVc: (vc: any) => void;
 }
 
 export type SelectVcFormData = {
@@ -20,12 +19,8 @@ type VcFormProps = {
   onBack: () => void;
 }
 
-function VcDropdown(props: VcDropdownProps) {
+export function VcRender(props: VcRenderProps) {
   const [selectedVc, setSelectedVc] = useState(props.decodedVcs[0])
-
-  // TODO: instead of a dropdown make this a card
-  // TODO: have a note that says: by continuing you agree.. bleh bleh
-  // TODO: select credential manifest dynamically based on VC ID
 
   return (
     <div>
@@ -78,10 +73,9 @@ export function SelectVcForm(props: VcFormProps) {
     <>
       <div className="mt-8 mb-8 pl-8 pr-8">
         <div className="mt-8 pb-8">
-          <VcDropdown
+          <VcRender
             decodedVcs={decodedVcs}
-            setCurrentVc={props.setCurrentVc}
-          ></VcDropdown>
+          ></VcRender>
         </div>
       </div>
     </>

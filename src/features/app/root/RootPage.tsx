@@ -20,18 +20,18 @@ let navigation = [
     icon: HomeIcon,
     current: true,
   },
-  {
-    name: 'Identity',
-    link: '/verifiablecredentials',
-    icon: UsersIcon,
-    current: false,
-  },
-  {
-    name: 'History',
-    link: '/history',
-    icon: ArrowPathIcon,
-    current: false,
-  },
+  // {
+  //   name: 'Identity',
+  //   link: '/verifiablecredentials',
+  //   icon: UsersIcon,
+  //   current: false,
+  // },
+  // {
+  //   name: 'History',
+  //   link: '/history',
+  //   icon: ArrowPathIcon,
+  //   current: false,
+  // },
 ]
 
 function classNames(...classes: string[]) {

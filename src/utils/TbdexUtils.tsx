@@ -13,6 +13,12 @@ export function formatPaymentMethodKind(paymentMethod: string): string {
   return key
 }
 
+export function formatOrderStatus(paymentMethod: string): string {
+  let key = paymentMethod.toLowerCase().replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function(key) { return key.toUpperCase()})
+
+  return key
+}
+
 export function getPaymentInstructions(
   paymentInstructions?: PaymentInstructions
 ) {

@@ -1,9 +1,7 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import validator from '@rjsf/validator-ajv8'
-
+import { ExclamationTriangleIcon } from '@heroicons/react/20/solid'
 import { PEXv2 } from '@sphereon/pex'
-import { useState, useEffect } from 'react'
-
 import { JsonSchemaForm } from '../../components/JsonSchemaForm'
 import { getVcs, storeVc } from '../../utils/Web5Utils'
 import { createVc, createVp, createJwt, createJsonSchemaFromPresentationDefinition } from '../../utils/SsiUtils'
@@ -29,7 +27,7 @@ type CreateVcFormProps = {
 
 export function CreateVcForm(props: CreateVcFormProps) {
   const { web5, profile } = useWeb5Context()
-  const { offering, vcs, setVcs, setKycProof } = useContext(RfqContext)
+  const { offering, setVcs, setKycProof } = useContext(RfqContext)
   const [initialized, setInitialized] = useState(false)
 
   const [formData, setFormData] = useState<any>({
@@ -95,7 +93,8 @@ export function CreateVcForm(props: CreateVcFormProps) {
 
   useEffect(() => {
     const init = async () => {
-      const vcs = await getVcs(web5)      
+      const vcs = await getVcs(web5)    
+      console.log('VCS: ', vcs)  
       setVcs(vcs)
       return vcs
     }
@@ -133,6 +132,18 @@ export function CreateVcForm(props: CreateVcFormProps) {
   return (
     <>
       <div className=" text-black pl-8 pr-8">
+      <div className="border-l-4 border-yellow-300 bg-neutral-950 p-4 mt-6">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+          </div>
+          <div className="ml-3">
+            <p className="text-sm text-yellow-400">
+            No verifiable credentials found. Create one now 🥰
+            </p>
+          </div>
+        </div>
+      </div>
         {vcFormSchema ? 
           <JsonSchemaForm 
             schema={vcFormSchema}
