@@ -132,19 +132,20 @@ export function CreateVcForm(props: CreateVcFormProps) {
   return (
     <>
       <div className=" text-black pl-8 pr-8">
-      <div className="border-l-4 border-yellow-300 bg-neutral-950 p-4 mt-6">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-yellow-400">
-            No verifiable credentials found. Create one now 🥰
-            </p>
-          </div>
-        </div>
-      </div>
         {vcFormSchema ? 
+        <>
+          <div className="border-l-4 border-yellow-300 bg-neutral-950 p-4 mt-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-yellow-400">
+                No verifiable credentials found. Create one now 🥰
+                </p>
+              </div>
+            </div>
+          </div>
           <JsonSchemaForm 
             schema={vcFormSchema}
             validator={validator}
@@ -152,8 +153,8 @@ export function CreateVcForm(props: CreateVcFormProps) {
             onChange={e => { 
               setFormData(e.formData)
             } 
-            } /> :
-          <SelectVcForm vcs={selectedVcs} setCurrentVc={setCurrentVc} onNext={props.onNext} onBack={props.onBack}/>
+            } />
+        </> : <SelectVcForm vcs={selectedVcs} setCurrentVc={setCurrentVc} onNext={props.onNext} onBack={props.onBack}/>
         }
       </div>
       <div className="mt-12 pl-8 pr-8 flex items-center justify-end gap-x-6">

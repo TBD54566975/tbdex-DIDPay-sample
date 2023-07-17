@@ -35,18 +35,11 @@ export function Thread(props: ThreadProps) {
 
   useEffect(() => {
     props.tbdexThread.startPolling(updateThread)
-
-    // props.tbdexThread.on('quote', (record: any, tbdexMessage: any) => {
-    //   console.log('got a quote!', JSON.stringify(tbdexMessage, null, 2))
-    // }, updateThread)
   }, [messageRecordMap, seenRecords]) // state var can go here to restart the interval
 
   if (props.tbdexThread.close) {
     return <></>
   }
-
-  console.log('rfq: ', props.tbdexThread.rfq)
-  console.log('quote: ', props.tbdexThread.quote)
 
   return (
     <>
