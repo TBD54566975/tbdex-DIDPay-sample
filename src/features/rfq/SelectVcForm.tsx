@@ -65,7 +65,7 @@ export function SelectVcForm(props: VcFormProps) {
     for (const vc of props.vcs) {
       const decodedVc = decodeJwt(vc)
       console.log(decodedVc.payload)
-      decodedVcs.push(decodedVc)
+      decodedVcs.push(decodedVc['vc'])
     }
     setDecodedVcs(decodedVcs)
     setInitialized(true)
