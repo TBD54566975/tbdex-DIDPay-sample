@@ -19,11 +19,6 @@ export function Thread(props: ThreadProps) {
   const orderStatuses = props.tbdexThread.orderStatuses
 
 
-  const handlePay = () => {
-    const url = props.tbdexThread.quote.message.body.paymentInstructions?.payin?.link || ''
-    window.open(url, '_blank', 'noreferrer')
-  }
-
   /**
    * Updates the message record map and seen records of the TbdexThread.
    * This function is called to update the state and trigger a rerender.
@@ -50,28 +45,16 @@ export function Thread(props: ThreadProps) {
     return <></>
   }
 
+  console.log('rfq: ', props.tbdexThread.rfq)
+  console.log('quote: ', props.tbdexThread.quote)
+
   return (
     <>
       <ul className="space-y-6">
         <RfqItem tbdexThread={props.tbdexThread} />
-        <QuoteItem tbdexThread={props.tbdexThread} />        
-        {/* {recordThread.orderStatuses.map((orderStatus, index) => (
-          <OrderStatusItem
-            key={orderStatus.id}
-            id={orderStatus.id}
-            index={index}
-            lastIndex={recordThread.orderStatuses.length - 1}
-          />
-        ))} */}
+        <QuoteItem tbdexThread={props.tbdexThread} />
+        <OrderStatusItem tbdexThread = {props.tbdexThread} />
       </ul>
-      {quote && orderStatuses.length < 1 && (
-        <div className="mt-6 flex gap-x-3">
-          <ExclamationCircleIcon className="h-6 w-6 flex-none rounded-full text-yellow-300" />
-          <div className="relative flex-auto rounded-md py-1 px-2 text-xs font-medium">
-            <QuoteCard tbdexThread={props.tbdexThread} onClick={handlePay} />
-          </div>
-        </div>
-      )}
     </>
   )
 }

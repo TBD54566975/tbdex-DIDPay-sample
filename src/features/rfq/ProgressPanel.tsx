@@ -3,17 +3,17 @@ import React from 'react'
 type ProgressPanelProps = {
   steps: Step[];
   currentStep: number;
-};
+}
 
 export type Step = {
   name: string;
   status: 'complete' | 'current' | 'upcoming';
-};
+}
 
 export const steps: Step[] = [
-  { name: 'Exchange', status: 'complete' },
-  { name: 'Payments', status: 'current' },
-  { name: 'Select VCs', status: 'upcoming' },
+  { name: 'Desired Amount', status: 'complete' },
+  { name: 'Payment Methods', status: 'current' },
+  { name: 'Verifiable Credential', status: 'upcoming' },
   { name: 'Review', status: 'upcoming' },
 ]
 

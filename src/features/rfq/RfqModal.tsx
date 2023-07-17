@@ -18,8 +18,7 @@ type RfqModalProps = {
   pfiDid: string;
   isOpen: boolean;
   onClose: (hasSubmitted: boolean) => void;
-};
-
+}
 
 export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
   const { web5, profile } = useWeb5Context()
@@ -99,18 +98,9 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
                       onNext={handleNextStep}
                       onBack={handlePreviousStep}
                     />
-                    // TODO: one of these two forms will be shown (based on what vcs user has)
-                    // <VcForm
-                    //   vcData={vcData}
-                    //   onSubmit={handleNextStep}
-                    //   onBack={handlePreviousStep}
-                    // />
                   )}
                   {step === 3 && (                    
                     <ReviewForm
-                    // exchangeData={exchangeData}
-                    // paymentData={{}}
-                    // vcData={vcData}
                       onSubmit={handleNextStep}
                       onBack={handlePreviousStep}
                     />
