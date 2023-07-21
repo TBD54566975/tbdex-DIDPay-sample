@@ -1,14 +1,11 @@
 import React from 'react'
-import { TbdexThread } from '../../utils/TbdexThread'
-import { USD } from '../../utils/CurrencyUtils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { classNames } from '../../utils/tailwind-utils'
+import { TbdexThread } from '../../tbdex-thread'
+import { USD } from '../../utils/currency-utils'
 
 dayjs.extend(relativeTime)
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 type RfqItemProps = {
   tbdexThread: TbdexThread

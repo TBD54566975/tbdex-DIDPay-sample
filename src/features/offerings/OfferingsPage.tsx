@@ -7,9 +7,7 @@ import { RfqProvider } from '../../context/RfqContext'
 
 export function OfferingsPage() {
   const [rfqModalOpen, setRfqModalOpen] = useState(false)
-  const [selectedOffering, setSelectedOffering] = useState<
-    Offering | undefined
-  >() // TODO: fix
+  const [selectedOffering, setSelectedOffering] = useState<Offering | undefined>() // TODO: fix
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -37,7 +35,7 @@ export function OfferingsPage() {
           <div className="pb-8 pl-4 pr-4" key={index}>
             <OfferingCard
               offering={offering}
-              handleAction={() => handleRequestQuote(offering)}
+              onClick={() => handleRequestQuote(offering)}
             ></OfferingCard>
           </div>
         ))}
@@ -50,7 +48,6 @@ export function OfferingsPage() {
             onClose={handleModalClose}
           />
         </RfqProvider>
-        
       )}
     </div>
   )

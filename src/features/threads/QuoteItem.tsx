@@ -1,16 +1,13 @@
 import React from 'react'
-import { Status } from '@tbd54566975/tbdex'
-import { QuoteCard } from '../quotes/QuoteCard'
-import { TbdexThread } from '../../utils/TbdexThread'
-import { BTC } from '../../utils/CurrencyUtils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { classNames } from '../../utils/tailwind-utils'
+import { Status } from '@tbd54566975/tbdex'
+import { QuoteCard } from '../quotes/QuoteCard'
+import { BTC } from '../../utils/currency-utils'
+import { TbdexThread } from '../../tbdex-thread'
 
 dayjs.extend(relativeTime)
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 type QuoteItemProps = {
   tbdexThread: TbdexThread
@@ -70,5 +67,4 @@ export function QuoteItem(props: QuoteItemProps) {
     </div>
     </li>
   )
-  
 }

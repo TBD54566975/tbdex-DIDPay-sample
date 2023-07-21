@@ -1,24 +1,35 @@
 import React from 'react'
+import { PaymentInstructions } from '@tbd54566975/tbdex'
 
-import { Web5 } from '@tbd54566975/web5'
-import { PaymentInstructions, aliceProtocolDefinition } from '@tbd54566975/tbdex'
-
-import { TbdexThread } from './TbdexThread'
-import { DateSort } from '@tbd54566975/dwn-sdk-js'
-
+/**
+ * Formats the payment method kind enum.
+ * @param paymentMethod - The payment method kind string (e.g., 'CASHAPP_PAY', 'BTC_ADDRESS').
+ * @returns {string} - The formatted payment method kind (e.g., 'Cash App Pay', 'BTC Address').
+ */
 export function formatPaymentMethodKind(paymentMethod: string): string {
-  let key = paymentMethod.toLowerCase().replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function(key) { return key.toUpperCase()})
+  let key = formatEnum(paymentMethod)
   key = key.replace('Btc', 'BTC ')
+  key = key.replace('Cashapp', 'Cash App ')
 
   return key
 }
 
-export function formatOrderStatus(paymentMethod: string): string {
-  let key = paymentMethod.toLowerCase().replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function(key) { return key.toUpperCase()})
+/**
+ * Removes underscore and all caps from enum strings.
+ * @param orderStatus - The order status string (e.g., 'PAYIN_INITIATED', 'PAYOUT_FAILED').
+ * @returns {string} - The formatted order status (e.g., 'Payin Intiated', 'Payout Failed').
+ */
+export function formatEnum(str: string): string {
+  const key = str.toLowerCase().replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function(key) { return key.toUpperCase()})
 
   return key
 }
 
+/**
+ * Generates JSX elements for displaying payment instructions.
+ * @param paymentInstructions - The PaymentInstructions object containing payin and payout details.
+ * @returns {JSX.Element | null} - JSX elements for displaying payment instructions, or null if no instructions are available.
+ */
 export function getPaymentInstructions(
   paymentInstructions?: PaymentInstructions
 ) {
@@ -47,16 +58,6 @@ export function getPaymentInstructions(
           </dd>
         )
       } 
-      // else if (payin.link) {
-      //   instructions.push(
-      //     <dd
-      //       key="payin-link"
-      //       className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0"
-      //     >
-      //       <span className="text-indigo-600">{payin.link}</span>
-      //     </dd>
-      //   )
-      // }
     }
 
     if (paymentInstructions.payout) {
@@ -81,43 +82,8 @@ export function getPaymentInstructions(
           </dd>
         )
       }
-      //  else if (payout.link) {
-      //   instructions.push(
-      //     <dd
-      //       key="payout-link"
-      //       className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0"
-      //     >
-      //       <span className="text-indigo-600">{payout.link}</span>
-      //     </dd>
-      //   )
-      // }
     }
   }
 
   return instructions.length > 0 ? <div>{instructions}</div> : null
-}
-
-export async function getThreads(web5: Web5) {
-  const threads: TbdexThread[] = []
-
-  const { records = [], status } = await web5.dwn.records.query({
-    message: {
-      filter: {
-        schema: aliceProtocolDefinition.types.RFQ.schema,
-      },
-      dateSort: DateSort.CreatedDescending
-    },
-  })
-
-
-  if (status.code !== 200) {
-    throw new Error(`Failed to get tbdex threads. Error: ${JSON.stringify(status, null, 2)}`)
-  }
-
-  for (const record of records) {
-    const tbdexThread = await TbdexThread.fetch(web5, record.contextId)
-    threads.push(tbdexThread)
-  }
-
-  return threads
 }

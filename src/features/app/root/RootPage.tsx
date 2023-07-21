@@ -1,17 +1,12 @@
 import React, { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import {
-  Bars3Icon,
-  ArrowPathIcon,
-  UsersIcon,
-  XMarkIcon,
-  HomeIcon,
-} from '@heroicons/react/24/outline'
+import { Bars3Icon, ArrowPathIcon, UsersIcon, XMarkIcon, HomeIcon } from '@heroicons/react/24/outline'
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { classNames } from '../../../utils/tailwind-utils'
 import { useWeb5Context } from '../../../context/Web5Context'
 import { OfferingsSearch } from '../../offerings/OfferingsSearch'
-import { default as leftBracket } from './left-bracket-light.svg'
-import { default as rightBracket } from './right-bracket-light.svg'
+import { default as leftBracket } from '../../../assets/images/left-bracket-light.svg'
+import { default as rightBracket } from '../../../assets/images/right-bracket-light.svg'
 
 let navigation = [
   {
@@ -20,23 +15,19 @@ let navigation = [
     icon: HomeIcon,
     current: true,
   },
-  // {
-  //   name: 'Identity',
-  //   link: '/verifiablecredentials',
-  //   icon: UsersIcon,
-  //   current: false,
-  // },
-  // {
-  //   name: 'History',
-  //   link: '/history',
-  //   icon: ArrowPathIcon,
-  //   current: false,
-  // },
+  {
+    name: 'Identity',
+    link: '/verifiablecredentials',
+    icon: UsersIcon,
+    current: false,
+  },
+  {
+    name: 'History',
+    link: '/history',
+    icon: ArrowPathIcon,
+    current: false,
+  },
 ]
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 export function RootPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -44,8 +35,6 @@ export function RootPage() {
 
   const { profile, web5 } = useWeb5Context()
   const location = useLocation()
-
-  const did = profile.did.id
 
   const handleSidebarItemClick = (index: number) => {
     const updatedNavigation = navigation.map((item, i) => ({
@@ -66,14 +55,6 @@ export function RootPage() {
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -127,7 +108,6 @@ export function RootPage() {
                       </button>
                     </div>
                   </Transition.Child>
-                  {/* Sidebar component, swap this element with another sidebar if you like */}
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-950 px-6 pb-2 ring-1 ring-white/10">
                     <div
                       className="flex h-16 shrink-0 items-center "
@@ -188,7 +168,6 @@ export function RootPage() {
 
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-          {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-950 px-6">
             <div className="flex h-16 shrink-0 items-center">
               <img

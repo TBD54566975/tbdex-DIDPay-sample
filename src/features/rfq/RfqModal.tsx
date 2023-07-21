@@ -1,17 +1,15 @@
 import React, { useContext } from 'react'
-
-import { Fragment, useState, createContext } from 'react'
+import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { Offering, PaymentMethod } from '@tbd54566975/tbdex'
-
-import { ReviewForm } from './ReviewForm'
-import { SelectPaymentMethodsForm } from './SelectPaymentMethodsForm'
-import { CreateVcForm } from './CreateVcForm'
-import { ProgressPanel, steps } from './ProgressPanel'
-import { SelectAmountForm } from './SelectAmountForm'
-import { createRfq } from '../../utils/Web5Utils'
+import { Offering } from '@tbd54566975/tbdex'
+import { ReviewForm } from './forms/ReviewForm'
+import { SelectPaymentMethodsForm } from './forms/SelectPaymentMethodsForm'
+import { SetQuoteAmountForm } from './forms/SetQuoteAmountForm'
+import { ProgressPanel, Step } from './ProgressPanel'
+import { CreateVcForm } from './forms/CreateVcForm'
 import { RfqContext } from '../../context/RfqContext'
 import { useWeb5Context } from '../../context/Web5Context'
+import { createRfq } from '../../utils/web5-utils'
 
 type RfqModalProps = {
   offering: Offering;
@@ -23,20 +21,20 @@ type RfqModalProps = {
 export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
   const { web5, profile } = useWeb5Context()
   const [step, setStep] = useState(0)
-  // TODO: these dont need to be here, purely for logging
   const {
     quoteAmount,
-    setQuoteAmount,
     kycProof,
     selectedPayinMethod,
-    setSelectedPayinMethod,
-    payinDetails,
-    setPayinDetails,
     selectedPayoutMethod,
-    setSelectedPayoutMethod,
     payoutDetails,
-    setPayoutDetails
-  } = useContext(RfqContext)  
+  } = useContext(RfqContext) 
+  
+  const steps: Step[] = [
+    { name: 'Desired Amount', status: 'complete' },
+    { name: 'Payment Methods', status: 'current' },
+    { name: 'Verifiable Credential', status: 'upcoming' },
+    { name: 'Review', status: 'upcoming' },
+  ]
 
   const handleNextStep = async () => {
     if (step === 3) {
@@ -83,7 +81,7 @@ export function RfqModal({ offering, pfiDid, isOpen, onClose }: RfqModalProps) {
                 >
                   <ProgressPanel steps={steps} currentStep={step} />
                   {step === 0 && (
-                    <SelectAmountForm
+                    <SetQuoteAmountForm
                       onNext={handleNextStep}
                     />
                   )}

@@ -4,8 +4,8 @@ import App from './App.tsx'
 
 import './styles/global.css'
 
-import * as serviceWorkerRegistration from './serviceWorkerRegistration.ts'
-import reportWebVitals from './reportWebVitals.ts'
+import * as serviceWorkerRegistration from './service-worker-registration.ts'
+import reportWebVitals from './report-web-vitals.ts'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

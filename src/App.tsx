@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Web5ContextProvider } from './context/Web5Context'
 import { RootPage } from './features/app/root/RootPage'
-import { VerifiableCredentialsPage } from './features/credentials/VerifiableCredentialsPage'
+import { ManageVcPage } from './features/vc/ManageVcPage'
 import { ThreadsPage } from './features/threads/ThreadsPage'
 import { HistoryPage } from './features/history/HistoryPage'
 import { OfferingsPage } from './features/offerings/OfferingsPage'
@@ -17,7 +17,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/verifiablecredentials',
-        element: <VerifiableCredentialsPage />,
+        element: <ManageVcPage />,
       },
       {
         path: '/history',

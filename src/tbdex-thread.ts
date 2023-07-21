@@ -1,10 +1,6 @@
 import { Web5 } from '@tbd54566975/web5'
 import { DateSort } from '@tbd54566975/dwn-sdk-js'
-
-// import type { Record } from '@tbd54566975/web5/dist/types/record'
 import { TbDEXMessage, Offering } from '@tbd54566975/tbdex'
-
-import { getOfferingFromRfq } from './Web5Utils'
 
 type ThreadEventTypes = 'quote' | 'close' | 'orderStatus'
 type EventCallback = (record: any, tbdexMessage: any) => Promise<void> | void
@@ -25,6 +21,28 @@ export class TbdexThread {
   seenRecords: Set<string>
   listeners: { [event: string]: EventCallback }
   intervalId: NodeJS.Timer
+
+  static async getOfferingFromRfq(web5: Web5, rfqMsg: TbDEXMessage<'rfq'>) {
+    const { records = [], status } = await web5.dwn.records.query({
+      from: rfqMsg.to,
+      message: {
+        filter: {
+          schema: 'https://tbd.website/resources/tbdex/Offering',
+        },
+      },
+    })
+
+    if (status.code !== 200) {
+      throw new Error(`Failed to get offering from PFI. Error: ${JSON.stringify(status, null, 2)}`)
+    }
+  
+    for (const record of records) {
+      const offering = await record.data.json()
+      if (offering.id === rfqMsg.body.offeringId) {
+        return offering
+      }
+    }
+  }
 
   static async fetch(web5: Web5, dwnContextId: string) {
     const { records = [], status } = await web5.dwn.records.query({
@@ -56,8 +74,7 @@ export class TbdexThread {
     }
 
     const rfq: TbDEXMessage<'rfq'> = messageRecordMap.get('rfq')[0].message
-    const offering = await getOfferingFromRfq(web5, rfq)
-
+    const offering = await TbdexThread.getOfferingFromRfq(web5, rfq)
 
     return new TbdexThread(web5, dwnContextId, rfq.to, messageRecordMap, offering)
   }
@@ -81,14 +98,10 @@ export class TbdexThread {
   }
 
   get rfq() {
-    // console.log(this.messageRecordMap)
-    // console.log('get rfq: ', this.messageRecordMap.get('rfq'))
     return this.messageRecordMap.get('rfq')?.[0] ?? undefined
   }
 
   get quote() {
-    // console.log(this.messageRecordMap)
-    // console.log('get quote: ', this.messageRecordMap.get('quote'))
     return this.messageRecordMap.get('quote')?.[0] ?? undefined
   }
 
@@ -107,7 +120,6 @@ export class TbdexThread {
   }
 
   isDone() {
-    console.log('liluiad')
     if (this.close) {
       return true
     }
@@ -118,7 +130,7 @@ export class TbdexThread {
 
   on(event: ThreadEventTypes, cb: EventCallback, updateThread: any) {
     if (!this.intervalId) {
-      this.startPolling(updateThread) // TODO: check to see if this makes sense???
+      this.startPolling(updateThread)
     }
 
     this.listeners[event] = cb
@@ -150,7 +162,7 @@ export class TbdexThread {
 
         const tbdexMessage = await record.data.json()
 
-        const messageType = tbdexMessage['type'] // TODO: revisit tbdex types
+        const messageType = tbdexMessage['type']
         const tbdexMessageRecord: TbdexMessageRecord = { message: tbdexMessage, messageType: messageType, record: record }
 
         if (this.messageRecordMap.has(messageType)) {
@@ -162,7 +174,6 @@ export class TbdexThread {
         updateThread(this.messageRecordMap, this.seenRecords)
 
         const listener = this.listeners[messageType]
-        console.log(listener)
 
         if (listener) {
           await listener(record, tbdexMessage)

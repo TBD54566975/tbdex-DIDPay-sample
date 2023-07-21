@@ -2,28 +2,19 @@ import React, { useContext, useState, useEffect } from 'react'
 import validator from '@rjsf/validator-ajv8'
 import { ExclamationTriangleIcon } from '@heroicons/react/20/solid'
 import { PEXv2 } from '@sphereon/pex'
-import { JsonSchemaForm } from '../../components/JsonSchemaForm'
-import { getVcs, storeVc } from '../../utils/Web5Utils'
-import { createVc, createVp, createJwt, createJsonSchemaFromPresentationDefinition } from '../../utils/SsiUtils'
-import { RfqContext } from '../../context/RfqContext'
-import { useWeb5Context } from '../../context/Web5Context'
-import { SelectVcForm } from './SelectVcForm'
-
-
-/**
- * TODO:
- * 1. Get all existing VCs (DONE)
- * 2. Eval kycRequirements (DONE)
- * 3. if no kyc cred present, render form (DONE)
- * 4. if kyc cred present, render dropdown
- */
+import { DisplayVc } from '../../vc/DisplayVc'
+import { JsonSchemaForm } from '../../../components/JsonSchemaForm'
+import { RfqContext } from '../../../context/RfqContext'
+import { useWeb5Context } from '../../../context/Web5Context'
+import { getVcs, storeVc } from '../../../utils/web5-utils'
+import { createVc, createVp, createJwt, createJsonSchemaFromPresentationDefinition } from '../../../utils/ssi-utils'
 
 const pex = new PEXv2()
 
 type CreateVcFormProps = {
   onNext: () => void;
   onBack: () => void;
-};
+}
 
 export function CreateVcForm(props: CreateVcFormProps) {
   const { web5, profile } = useWeb5Context()
@@ -41,13 +32,13 @@ export function CreateVcForm(props: CreateVcFormProps) {
     'Zip Code': '78724',
     'Country': 'US'
   })
-  const [currentVc, setCurrentVc] = useState<any>(undefined)
   const [vcFormSchema, setVcFormSchema] = useState<any>(undefined)
   const [fieldNameToJsonPathMap, setFieldNameToJsonPathMap] = useState(undefined)
   const [selectedVcs, setSelectedVcs] = useState(undefined)
 
   const kycRequirements = offering.kycRequirements
 
+  // TODO: instead, create the vc after review form is submitted
   const handleNext = async () => {
     let vcs
     if (vcFormSchema) {
@@ -62,8 +53,6 @@ export function CreateVcForm(props: CreateVcFormProps) {
     } else {
       vcs = selectedVcs
     } 
-
-    console.log(vcs.vc)
 
     const { verifiableCredential: matchedVcs, value: psub, errors } = pex.evaluateCredentials(offering.kycRequirements, vcs)
     if (!psub || errors.length > 0) {
@@ -94,7 +83,6 @@ export function CreateVcForm(props: CreateVcFormProps) {
   useEffect(() => {
     const init = async () => {
       const vcs = await getVcs(web5)    
-      console.log('VCS: ', vcs)  
       setVcs(vcs)
       return vcs
     }
@@ -116,7 +104,6 @@ export function CreateVcForm(props: CreateVcFormProps) {
           const { jsonSchema, fieldNameToJsonPathMap } = createJsonSchemaFromPresentationDefinition(kycRequirements)
           setVcFormSchema(jsonSchema)
           setFieldNameToJsonPathMap(fieldNameToJsonPathMap)
-          // throw new Error('no creds match offering\'s kyc requirements')
         } else {
           setSelectedVcs(matchedVcs)
         }
@@ -133,28 +120,29 @@ export function CreateVcForm(props: CreateVcFormProps) {
     <>
       <div className=" text-black pl-8 pr-8">
         {vcFormSchema ? 
-        <>
-          <div className="border-l-4 border-yellow-300 bg-neutral-950 p-4 mt-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-yellow-400">
-                No verifiable credentials found. Create one now 🥰
-                </p>
+          <>
+            <div className="border-l-4 border-yellow-300 bg-neutral-950 p-4 mt-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-yellow-400">
+                    No verifiable credentials found. Create one now 🥰
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-          <JsonSchemaForm 
-            schema={vcFormSchema}
-            validator={validator}
-            formData={formData}
-            onChange={e => { 
-              setFormData(e.formData)
-            } 
-            } />
-        </> : <SelectVcForm vcs={selectedVcs} setCurrentVc={setCurrentVc} onNext={props.onNext} onBack={props.onBack}/>
+            <JsonSchemaForm 
+              schema={vcFormSchema}
+              validator={validator}
+              formData={formData}
+              onChange={e => { 
+                setFormData(e.formData)
+              } 
+              } />
+          </>
+        : <DisplayVc vcs={selectedVcs} displayWarning={true} />
         }
       </div>
       <div className="mt-12 pl-8 pr-8 flex items-center justify-end gap-x-6">

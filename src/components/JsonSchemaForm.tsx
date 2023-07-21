@@ -3,6 +3,8 @@ import { ThemeProps, withTheme } from '@rjsf/core'
 import validator from '@rjsf/validator-ajv8'
 import { FieldProps, RegistryFieldsType } from '@rjsf/utils'
 
+// Custom React component for rendering the StringField in the form.
+// This component is used as a template for rendering string input fields in the JSON Schema Form.
 class StringFieldTemplate extends React.Component<FieldProps> {
   render() {
     return (
@@ -26,12 +28,14 @@ class StringFieldTemplate extends React.Component<FieldProps> {
   }
 }
 
+// This component is purposely empty, indicating that it won't render any description field.
 function DescriptionFieldTemplate() {
   return (
     <></>
   )
 }
 
+// This component is purposely empty, indicating that it won't render any title field.
 function TitleFieldTemplate() {
   return (
     <></>

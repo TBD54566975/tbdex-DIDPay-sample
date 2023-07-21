@@ -1,23 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
+import React, { useEffect, useState } from 'react'
 import { RfqItem } from './RfqItem'
 import { QuoteItem } from './QuoteItem'
 import { OrderStatusItem } from './OrderStatusItem'
-import { QuoteCard } from '../quotes/QuoteCard'
-import { TbdexThread, MessageRecordMap } from '../../utils/TbdexThread'
+import { TbdexThread, MessageRecordMap } from '../../tbdex-thread'
 
-type ThreadProps = { 
+type ThreadItemProps = { 
   tbdexThread: TbdexThread 
-};
+}
 
-export function Thread(props: ThreadProps) {
+export function ThreadItem(props: ThreadItemProps) {
   const [messageRecordMap, setMessageRecordMap] = useState<MessageRecordMap>(props.tbdexThread.messageRecordMap)
   const [seenRecords, setSeenRecords] = useState<Set<string>>(props.tbdexThread.seenRecords)
-
-  // TODO: quote only updates after second poll 
-  const quote = props.tbdexThread.quote
-  const orderStatuses = props.tbdexThread.orderStatuses
-
 
   /**
    * Updates the message record map and seen records of the TbdexThread.

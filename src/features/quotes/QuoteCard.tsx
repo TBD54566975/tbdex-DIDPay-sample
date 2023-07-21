@@ -1,20 +1,16 @@
 import React from 'react'
-import { ArrowsRightLeftIcon } from '@heroicons/react/24/solid'
-import { ChevronRightIcon, CodeBracketIcon, CreditCardIcon, } from '@heroicons/react/20/solid'
-import { getPaymentInstructions } from '../../utils/TbdexUtils'
-import { TbdexThread } from '../../utils/TbdexThread'
+import { TbdexThread } from '../../tbdex-thread'
+import { BTC, USD, getCurrencySymbol } from '../../utils/currency-utils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { BTC, USD, getCurrencySymbol } from '../../utils/CurrencyUtils'
 
 dayjs.extend(relativeTime)
 
 type QuoteCardProps = {
   tbdexThread: TbdexThread;
   onClick: () => void;
-};
+}
 
-//TODO: maybe get rid of the pending status when a quote comes back
 export function QuoteCard(props: QuoteCardProps) {
   const quote = props.tbdexThread.quote
   const offering = props.tbdexThread.offering

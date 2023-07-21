@@ -10,13 +10,6 @@ export type Step = {
   status: 'complete' | 'current' | 'upcoming';
 }
 
-export const steps: Step[] = [
-  { name: 'Desired Amount', status: 'complete' },
-  { name: 'Payment Methods', status: 'current' },
-  { name: 'Verifiable Credential', status: 'upcoming' },
-  { name: 'Review', status: 'upcoming' },
-]
-
 export function ProgressPanel({ steps, currentStep }: ProgressPanelProps) {
   return (
     <nav className="flex items-center justify-center" aria-label="Progress">

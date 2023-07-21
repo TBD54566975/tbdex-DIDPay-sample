@@ -1,4 +1,4 @@
-import React, { useState, Dispatch, SetStateAction } from 'react'
+import React, { useState } from 'react'
 import { PaymentMethod } from '@tbd54566975/tbdex'
 
 export const RfqContext = React.createContext({ 
@@ -21,11 +21,7 @@ export const RfqContext = React.createContext({
   setKycProof: undefined
 })
 
-// TODO: in progress 
 export const RfqProvider = ({ children, offering }) => {
-
-  const [step, setStep] = useState(0)
-
   const [baseAmount, setBaseAmount] = useState('')
   const [quoteAmount, setQuoteAmount] = useState('')
 

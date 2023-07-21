@@ -1,101 +1,29 @@
+import React, { Fragment } from 'react'
 import validator from '@rjsf/validator-ajv8'
-import React, { Fragment, useContext } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { PaymentMethod } from '@tbd54566975/tbdex'
-import { formatPaymentMethodKind } from '../../utils/TbdexUtils'
-import { JsonSchemaForm } from '../../components/JsonSchemaForm'
-import { RfqContext } from '../../context/RfqContext'
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
-
-type PaymentFormProps = {
-  onNext: () => void;
-  onBack: () => void;
-};
-
-export function SelectPaymentMethodsForm(props: PaymentFormProps) {  
-  const {
-    offering,
-    selectedPayinMethod,
-    setSelectedPayinMethod,
-    payinDetails,
-    setPayinDetails,
-    selectedPayoutMethod,
-    setSelectedPayoutMethod,
-    payoutDetails,
-    setPayoutDetails
-  } = useContext(RfqContext)
-
-  return (
-    <>
-      <div className="mt-8 mb-8 pl-8 pr-8">
-        <div className="mt-8">
-          <PaymentDropdown
-            header="Pay-in instrument"
-            selectedPaymentMethod={selectedPayinMethod}
-            setSelectedPaymentMethod={setSelectedPayinMethod}
-            // setSelectedPaymentKind={setSelectedPayinKind}
-            paymentDetails={payinDetails}
-            setPaymentDetails={setPayinDetails}
-            paymentMethods={offering.payinMethods}
-          ></PaymentDropdown>
-        </div>
-
-        <div className="mt-4">
-          <PaymentDropdown
-            header="Pay-out instrument"
-            selectedPaymentMethod={selectedPayoutMethod}
-            setSelectedPaymentMethod={setSelectedPayoutMethod}
-            // setSelectedPaymentKind={setSelectedPayoutKind}
-            paymentDetails={payoutDetails}
-            setPaymentDetails={setPayoutDetails}
-            paymentMethods={offering.payoutMethods}
-          ></PaymentDropdown>
-        </div>
-      </div>
-      <div className="mt-12 pl-8 pr-8 flex items-center justify-end gap-x-6">
-        <button
-          type="button"
-          className="text-sm font-semibold leading-6 text-white"
-          onClick={props.onBack}
-        >
-          Back
-        </button>
-        <button
-          type="submit"
-          className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-          onClick={props.onNext}
-        >
-          Next
-        </button>
-      </div>
-    </>
-  )
-}
+import { classNames } from '../utils/tailwind-utils'
+import { formatPaymentMethodKind } from './PaymentUtils'
+import { JsonSchemaForm } from './JsonSchemaForm'
 
 type PaymentDropdownProps = {
   header: string;
   paymentMethods: PaymentMethod[];
   selectedPaymentMethod: PaymentMethod;
-  paymentDetails: Partial<{ [key: string]: any }>
+  paymentDetails: Partial<{ [key: string]: any }>;
   setSelectedPaymentMethod: (pm: PaymentMethod) => void;
   setPaymentDetails: (pd: any) => void;
-};
+}
 
-function PaymentDropdown(props: PaymentDropdownProps) {
+export function PaymentDropdown(props: PaymentDropdownProps) {
   const handleSelectItem = (paymentMethod: PaymentMethod) => {
     props.setSelectedPaymentMethod(paymentMethod)
   }
 
   return (
     <div>
-      <Listbox
-        value={props.selectedPaymentMethod}
-        onChange={(paymentMethod) => handleSelectItem(paymentMethod)}
-      >
+      <Listbox value={props.selectedPaymentMethod} onChange={(paymentMethod) => handleSelectItem(paymentMethod)}>
         {({ open }) => (
           <>
             <Listbox.Label className="block text-sm font-medium leading-6 text-white">
@@ -168,15 +96,18 @@ function PaymentDropdown(props: PaymentDropdownProps) {
                 </Listbox.Options>
               </Transition>
 
-              { props.selectedPaymentMethod.requiredPaymentDetails ? 
+              {props.selectedPaymentMethod.requiredPaymentDetails ? (
                 <JsonSchemaForm
                   validator={validator}
-                  schema={props.selectedPaymentMethod.requiredPaymentDetails as any}
+                  schema={
+                    props.selectedPaymentMethod.requiredPaymentDetails as any
+                  }
                   formData={props.paymentDetails}
-                  onChange={e => props.setPaymentDetails(e.formData)}
-                /> :
+                  onChange={(e) => props.setPaymentDetails(e.formData)}
+                />
+              ) : (
                 <></>
-              }
+              )}
             </div>
           </>
         )}

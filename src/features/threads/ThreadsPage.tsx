@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
-import { TbdexThread } from '../../utils/TbdexThread'
+import { TbdexThread } from '../../tbdex-thread'
 import { useWeb5Context } from '../../context/Web5Context'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
-import { Thread } from './Thread'
-import { getThreads } from '../../utils/TbdexUtils'
+import { ThreadItem } from './ThreadItem'
+import { getThreads } from '../../utils/web5-utils'
 
 export function ThreadsPage() {
   const [threads, setThreads] = useState<TbdexThread[]>([])
-  const [loading, setLoading] = useState(true)
-  const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const [initialized, setInitialized] = useState(true)
   const { web5 } = useWeb5Context()
+  const searchButtonRef = useRef<HTMLButtonElement>(null)
 
   // launches the search command pallete
   const handleDiscoverOfferings = () => {
@@ -30,15 +30,14 @@ export function ThreadsPage() {
   useEffect(() => {
     const init = async () => {
       const threads = await getThreads(web5)
-      // console.log('in threads page i see this map: ', threads[0].messageRecordMap)
-      // console.log('this is what happens when i try to get quote: ', threads[0].messageRecordMap.get('quote'))
       setThreads(threads)
-      setLoading(false)
     }
-    init()
+    init().then(() => {
+      setInitialized(true)
+    })
   }, [])
 
-  if (loading) {
+  if (!initialized) {
     return <></>
   }
 
@@ -73,9 +72,9 @@ export function ThreadsPage() {
             <div className="flow-root pb-7" key={index}>
               <div className="overflow-hidden bg-neutral-900 shadow sm:rounded-lg rounded-md">
                 <div className="px-4 py-6 sm:px-6">
-                  <Thread
+                  <ThreadItem
                     tbdexThread={thread}
-                  ></Thread>
+                  ></ThreadItem>
                 </div>
               </div>
             </div>

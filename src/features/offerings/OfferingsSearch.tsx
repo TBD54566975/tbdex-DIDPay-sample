@@ -3,9 +3,9 @@ import { Combobox, Dialog, Transition } from '@headlessui/react'
 import { Offering } from '@tbd54566975/tbdex'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useNavigate } from 'react-router-dom'
+import { classNames } from '../../utils/tailwind-utils'
 import { useWeb5Context } from '../../context/Web5Context'
-import { fakeOfferings } from '../FakeObjects'
-import { getOfferings } from '../../utils/Web5Utils'
+import { getOfferings } from '../../utils/web5-utils'
 
 export function OfferingsSearch() {
   const [pfiDid, setPfiDid] = useState('')
@@ -18,15 +18,13 @@ export function OfferingsSearch() {
 
   const handleComboboxChange = (offering: Offering) => {
     const selectedOffering = [offering]
-    // TODO: this pfiDid should be hardcoded?
     navigate('/offerings', {
       state: { offerings: selectedOffering, pfiDid: pfiDid },
     })
     setOpen(false)
   }
 
-  const handleInputChange = (event: { target: { value: any } }) => {
-    const value = event.target.value
+  const handleInputChange = (value) => {
     setQuery(value)
     setPfiDid(value)
   }
@@ -42,25 +40,25 @@ export function OfferingsSearch() {
       }
       setOpen(false)
     } else {
-      // console.log('hehe')
+      console.log('pfiDid does not start with \'did:ion:\'')
     }
   }
 
-  //TODO: also need to handle searching for pfi by did
-  const filteredOfferings =
-    query === ''
-      ? []
-      : fakeOfferings.filter((offering: Offering) => {
-        const baseCurrency = offering.baseCurrency.currencyCode
-          .toLowerCase()
-          .includes(query.toLowerCase())
+  //TODO: should we have default offerings in some way?
+  const filteredOfferings = []
+    // query === ''
+    //   ? []
+    //   : fakeOfferings.filter((offering: Offering) => {
+    //     const baseCurrency = offering.baseCurrency.currencyCode
+    //       .toLowerCase()
+    //       .includes(query.toLowerCase())
 
-        const quoteCurrency = offering.quoteCurrency.currencyCode
-          .toLowerCase()
-          .includes(query.toLowerCase())
+    //     const quoteCurrency = offering.quoteCurrency.currencyCode
+    //       .toLowerCase()
+    //       .includes(query.toLowerCase())
 
-        return baseCurrency || quoteCurrency
-      })
+    //     return baseCurrency || quoteCurrency
+    //   })
 
   function getRate(
     unitPrice: string,
@@ -68,10 +66,6 @@ export function OfferingsSearch() {
     baseCurrency: string
   ) {
     return `1 ${quoteCurrency} / ${unitPrice} ${baseCurrency}`
-  }
-
-  function classNames(...classes: (string | boolean)[]) {
-    return classes.filter(Boolean).join(' ')
   }
 
   useEffect(() => {
@@ -100,12 +94,8 @@ export function OfferingsSearch() {
             style={{ outline: 'none', boxShadow: 'none' }}
             readOnly
           />
-
-          {/* <span className="absolute inset-y-0 right-3 flex items-center text-gray-400">
-            <span className="hidden lg:inline-block">⌘K</span>
-          </span> */}
           <span className="absolute inset-y-0 right-3 flex items-center text-gray-400">
-            <kbd className="hidden lg:inline-block inline-flex items-center rounded border border-gray-500 px-1 font-sans text-xs text-gray-500">
+            <kbd className="lg:inline-block inline-flex items-center rounded border border-gray-500 px-1 font-sans text-xs text-gray-500">
               ⌘K
             </kbd>
           </span>
@@ -157,7 +147,7 @@ export function OfferingsSearch() {
                         <Combobox.Input
                           className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm"
                           placeholder="Enter a DID..."
-                          onChange={handleInputChange}
+                          onChange={(event) => handleInputChange(event.target.value)}
                           onKeyDown={(event) => {
                             // Listen for enter key
                             if (event.key === 'Enter') {

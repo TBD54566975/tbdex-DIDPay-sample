@@ -1,40 +1,15 @@
 import React from 'react'
-import { ClockIcon } from '@heroicons/react/24/solid'
-import { TbdexThread } from '../../utils/TbdexThread'
-import { formatOrderStatus } from '../../utils/TbdexUtils'
-import { OrderStatus, Status, TbDEXMessage } from '@tbd54566975/tbdex'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { classNames } from '../../utils/tailwind-utils'
+import { TbdexThread } from '../../tbdex-thread'
+import { formatEnum } from '../../components/PaymentUtils'
 
 dayjs.extend(relativeTime)
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 type OrderStatusItemProps = {
   tbdexThread: TbdexThread
 }
-
-// const init: OrderStatus = {
-//   orderStatus: Status.PAYIN_INITIATED
-// }
-// const comp: OrderStatus = {
-//   orderStatus: Status.PAYIN_COMPLETED
-// }
-
-// const tbdInit = {
-//   type: 'orderStatus',
-//   body: init,
-//   createdTime: ''
-// }
-// const tbdComp = {
-//   type: 'orderStatus',
-//   body: comp,
-//   createdTime: ''
-// }
-
-// const fake = [{ message: tbdInit }, { message: tbdComp }]
 
 export function OrderStatusItem(props: OrderStatusItemProps) {
   const quote = props.tbdexThread.quote
@@ -64,7 +39,7 @@ export function OrderStatusItem(props: OrderStatusItemProps) {
             </div>
             <p className="flex-auto py-0.5 text-xs leading-5 text-gray-500">
               Status update: {' '}
-              <span className="font-medium text-gray-300">{formatOrderStatus(statusMsg.body.orderStatus)}</span>.
+              <span className="font-medium text-gray-300">{formatEnum(statusMsg.body.orderStatus)}</span>.
             </p>
             <div className="flex-none py-0.5 text-xs leading-5 text-gray-500">
               {dayjs(statusMsg.createdTime).fromNow(true)} ago
@@ -74,5 +49,4 @@ export function OrderStatusItem(props: OrderStatusItemProps) {
       })}
     </>
   )
-
 }
